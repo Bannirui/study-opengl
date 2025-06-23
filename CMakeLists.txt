@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 # 项目信息
 project(study-opengl
         VERSION 1.0
-        LANGUAGES CXX
+        LANGUAGES CXX C
 )
 
 # cpp标准
@@ -22,18 +22,18 @@ add_subdirectory(vendor)
 
 # 源文件
 set(source_dir "${PROJECT_SOURCE_DIR}/src")
-file(GLOB_RECURSE srcs "${source_dir}/*.cpp")
-list(APPEND ${srcs} "${CMAKE_CURRENT_SOURCE_DIR}/vendor/GLAD/glad.c")
+file(GLOB_RECURSE srcs
+        "${source_dir}/*.cpp"
+        "${source_dir}/*.c"
+)
 
 # exe
 add_executable(${PROJECT_NAME} ${srcs})
-# PCH
-target_precompile_headers(${PROJECT_NAME} PRIVATE "include/pch.h")
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE "${PROJECT_SOURCE_DIR}/vendor/GLFW/include"
-        PRIVATE "${PROJECT_SOURCE_DIR}/vendor/GLAD"
         PUBLIC "${PROJECT_SOURCE_DIR}/include"
+        PUBLIC "${PROJECT_SOURCE_DIR}/include/GLAD"
 )
 target_link_libraries(${PROJECT_NAME}
         PRIVATE glfw
