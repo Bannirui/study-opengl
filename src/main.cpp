@@ -43,7 +43,8 @@ int main()
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-        // processInput(window);
+        // check for specific key press and react accordingly every frame
+        processInput(window);
         // swap the color buffer
         glfwSwapBuffers(window);
         // check if any events are triggered
