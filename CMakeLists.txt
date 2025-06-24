@@ -33,7 +33,6 @@ add_executable(${PROJECT_NAME} ${srcs})
 target_include_directories(${PROJECT_NAME}
         PRIVATE "${PROJECT_SOURCE_DIR}/vendor/GLFW/include"
         PUBLIC "${PROJECT_SOURCE_DIR}/include"
-        PUBLIC "${PROJECT_SOURCE_DIR}/include/GLAD"
 )
 target_link_libraries(${PROJECT_NAME}
         PRIVATE glfw

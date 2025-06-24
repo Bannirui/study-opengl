@@ -4,6 +4,10 @@
 
 #include <iostream>
 
+// be sure to include GLAD before other header files that require OpenGL
+#include <GLAD/glad.h>
+#include <GLFW/glfw3.h>
+
 #include "callback.h"
 
 int main()
@@ -15,6 +19,9 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     // tell GLFW explicitly to use the core-profile
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    #ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
     // create a window object
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
     if (!window)
@@ -36,6 +43,7 @@ int main()
     // render loop
     while (!glfwWindowShouldClose(window))
     {
+        // processInput(window);
         // swap the color buffer
         glfwSwapBuffers(window);
         // check if any events are triggered
