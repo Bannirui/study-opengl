@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 
 // be sure to include GLAD before other header files that require OpenGL
 #include <GLAD/glad.h>
@@ -30,38 +31,38 @@ const char* vertexShaderSource = "#version 330 core\n"
                                  "layout (location=0) in vec3 aPos;\n"
                                  "void main()\n"
                                  "{\n"
-                                 "  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                 "  gl_Position = vec4(aPos, 1.0);\n"
                                  "}\0";
 
 // 计算机中图像表示的4元组RGBA(红 绿 蓝 透明度)
 // 每个值[0...1]
 const char* fragmentShaderSource = "#version 330 core\n"
                                    "out vec4 FragColor;\n"
+                                   "uniform vec4 ourColor;\n"
                                    "void main()\n"
                                    "{\n"
-                                   "  FragColor = vec4(1.0f, 1.0f, 0.2f, 0.9f);\n"
+                                   "  FragColor = ourColor;\n"
                                    "}\n\0";
 
 int main()
 {
-    // initialize GLFW
+    // initialize GLFW OpenGL的版本是3.3
     glfwInit();
-    // opengl ver 3.3
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     // tell GLFW explicitly to use the core-profile
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    #ifdef __APPLE__
+#ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    #endif
+#endif
     // create a window object
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
-    if (!window)
-    {
+    if (!window) {
         std::cout << "Failed to create GLFW window\n";
         glfwTerminate();
         return -1;
     }
+    // 设置好上下文后就要初始化glad 后面才能安全使用glad的函数
     glfwMakeContextCurrent(window);
     // 窗口变化回调
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -105,7 +106,7 @@ int main()
     glAttachShader(shaderProgram, fragmentShader);
     // 把shader链接到shader program上
     glLinkProgram(shaderProgram);
-    // check for link error
+    // 看看链接执行结果
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
@@ -151,7 +152,7 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    glBindVertexArray(VAO);
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -163,6 +164,12 @@ int main()
         // 显式调用shader program
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
+        // 更新shader
+        double timeValue = glfwGetTime();
+        float gVal = static_cast<float>(sin(timeValue)/2.0+0.5);
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+        glUniform4f(vertexColorLocation, 0.0f, gVal, 0.0f, 1.0f);
+        // 渲染
         glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(float), GL_UNSIGNED_INT, 0);
         // swap the color buffer
         glfwSwapBuffers(window);
