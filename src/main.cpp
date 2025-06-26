@@ -27,21 +27,29 @@ const unsigned int SCR_HEIGHT = 600;
 
 // GLSL编写的vertex shader
 // 必须先声明版本 OpenGL3.3声明的版本是330 OpenGL4.2版本声明为420
+// 随后是输入输出的变量 大部分情况场景float都足够使用了 因此vecn类型是最高频使用的变量类型
+// uniform变量 uniform是CPU传递给GPU的全局只读变量
+// mian函数 跟C语言一样main是入口
+// 通过location告诉输入数据怎么组织的
+// vertex shader的出参是fragment shader的入参 类型是vec4
 const char* vertexShaderSource = "#version 330 core\n"
                                  "layout (location=0) in vec3 aPos;\n"
+                                 "layout (location=1) in vec3 aColor;\n"
+                                 "out vec3 ourColor;\n"
                                  "void main()\n"
                                  "{\n"
-                                 "  gl_Position = vec4(aPos, 1.0);\n"
+                                 "  gl_Position = vec4(aPos, 1.0f);\n"
+                                 "  ourColor = aColor;\n"
                                  "}\0";
 
 // 计算机中图像表示的4元组RGBA(红 绿 蓝 透明度)
 // 每个值[0...1]
 const char* fragmentShaderSource = "#version 330 core\n"
                                    "out vec4 FragColor;\n"
-                                   "uniform vec4 ourColor;\n"
+                                   "in vec3 ourColor;\n"
                                    "void main()\n"
                                    "{\n"
-                                   "  FragColor = ourColor;\n"
+                                   "  FragColor = vec4(ourColor, 1.0f);\n"
                                    "}\n\0";
 
 int main()
@@ -118,22 +126,17 @@ int main()
     glDeleteShader(fragmentShader);
     // 三角形的三维坐标 z被压扁 3个顶点
     float vertices[] = {
-        0.5f, 0.5f, 0.0f,
-        -0.5, 0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        0.5f,  -0.5f, 0.0f
-    };
-    unsigned int indices[] = {
-        0, 1, 2,
-        0, 2, 3,
+        // position        // color
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // 上
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // 在下
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // 右下
     };
     // VBO(vertex buffer objects)管理顶点坐标 批量向显卡发送数据
     // OpenGL有许多buffer objects VBO是array buffer
     // VAO(vertex array object)
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
     // bind vertex array object first, then buffer
     glBindVertexArray(VAO);
     // OpenGL开放这个函数把创建的buffer绑定到array buffer
@@ -144,33 +147,25 @@ int main()
     // data 要传递的数据
     // usage 显卡怎么处理这些数据 GL_STREAM_DRAW数据只设置一次GPU有使用次数限制 GL_STATIC_DRAW数据只设置一次GPU可以多次使用 GL_DYNAMIC_DRAW数据会变化GPU可以多次使用
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
     // 把所有坐标点传到了buffer里面 告诉shader怎么用这些数据
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // 位置
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(VAO);
+    // 颜色
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // 显式调用shader program
+    glUseProgram(shaderProgram);
     // render loop
     while (!glfwWindowShouldClose(window))
     {
         // check for specific key press and react accordingly every frame
         processInput(window);
-        // render
-        glClearColor(0.1f, 0.3f, 0.3f, 1.0f);
+        // 每一帧都要清屏 防止残留前一帧图像
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        // 显式调用shader program
-        glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        // 更新shader
-        double timeValue = glfwGetTime();
-        float gVal = static_cast<float>(sin(timeValue)/2.0+0.5);
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        glUniform4f(vertexColorLocation, 0.0f, gVal, 0.0f, 1.0f);
-        // 渲染
-        glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(float), GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         // swap the color buffer
         glfwSwapBuffers(window);
         // check if any events are triggered
@@ -179,7 +174,6 @@ int main()
     // 回收资源
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
     // 回收GLFW资源
     glfwTerminate();
