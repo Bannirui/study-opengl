@@ -4,8 +4,9 @@
 
 #include <iostream>
 
-// be sure to include GLAD before other header files that require OpenGL
+// glad是加载显卡驱动对opengl函数的实现的 所以一定要在glfw之前引用进来
 #include <GLAD/glad.h>
+// glfw实现了窗体 在窗体创建好后就用glad加载显卡驱动函数
 #include <GLFW/glfw3.h>
 #include <STB/stb_image.h>
 
@@ -17,32 +18,36 @@ const unsigned int SCR_HEIGHT = 600;
 
 int main()
 {
-    // initialize GLFW OpenGL的版本是3.3
+    // 初始化GLFW的基本环境 OpenGL的版本是3.3
     glfwInit();
+    // 主版本
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    // 次版本
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // tell GLFW explicitly to use the core-profile
+    // 使用核心模式
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    // create a window object
+    // 创建窗体对象
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
     if (!window) {
         std::cout << "Failed to create GLFW window\n";
         glfwTerminate();
         return -1;
     }
-    // 设置好上下文后就要初始化glad 后面才能安全使用glad的函数
+    // 窗体对象设置给opengl绘制
     glfwMakeContextCurrent(window);
-    // 窗口变化回调
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    // GLAD manages function pointers for OpenGL, initialize GLAD before calling any OpenGL function
+    // glad加载出显卡驱动的函数 之后才能使用opengl
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD\n";
         return -1;
     }
+    // 窗口变化回调
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    // 键盘回调
+    glfwSetKeyCallback(window, keyboard_callback);
     // 创建shader实例
     Shader ourShader("resources/shader/3.3.shader.vs", "resources/shader/3.3.shader.fs");
     // 三角形的三维坐标 z被压扁 3个顶点
@@ -125,7 +130,7 @@ int main()
     ourShader.use();
     glUniform1i(glGetUniformLocation(ourShader.m_ID, "texture1"), 0);
     ourShader.setInt("texture2", 1);
-    // render loop
+    // 窗体循环
     while (!glfwWindowShouldClose(window))
     {
         // check for specific key press and react accordingly every frame
@@ -144,14 +149,14 @@ int main()
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // swap the color buffer
         glfwSwapBuffers(window);
-        // check if any events are triggered
+        // 接收并分发窗口消息
         glfwPollEvents();
     }
     // 回收资源
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    // 回收GLFW资源
+    // 退出程序
     glfwTerminate();
     return 0;
 }

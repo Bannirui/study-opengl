@@ -11,9 +11,14 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    std::cout << "w:" << width << ", h:" << height << std::endl;
+    std::cout << "新窗口大小 w:" << width << ", h:" << height << std::endl;
     // tell OpenGL the size of the rendering window
     glViewport(0, 0, width, height);
+}
+
+void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    std::cout << "key:" << key << ", scancode:" << scancode << ", action: " << action << ", mods:" << mods << std::endl;
 }
 
 void processInput(GLFWwindow* window)
