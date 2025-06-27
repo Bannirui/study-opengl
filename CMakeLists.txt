@@ -24,6 +24,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # sub directory
 add_subdirectory(vendor/GLAD)
 add_subdirectory(vendor/GLFW)
+add_subdirectory(vendor/STB)
 
 # 源文件
 set(source_dir "${PROJECT_SOURCE_DIR}/src")
@@ -40,10 +41,11 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         PRIVATE glad
         PRIVATE glfw
+        PRIVATE stb
 )
 
 # 资源文件
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/shader $<TARGET_FILE_DIR:${PROJECT_NAME}>/shader
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
 )
