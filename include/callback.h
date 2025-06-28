@@ -13,12 +13,11 @@ struct GLFWwindow;
 void framebuffer_size_callback(int width, int height);
 
 // 键盘事件回调
-// @Param window 哪个窗体
 // @Param key 字母按键码
 // @Param scancode 物理按键码
 // @Param action 按下还是抬起
 // @Param mods 是否有shift或者ctrl
-void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void keyboard_callback(int key, int scancode, int action, int mods);
 
 // 检测按键
 // esc关闭窗口

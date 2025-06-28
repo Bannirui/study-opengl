@@ -18,7 +18,7 @@ void framebuffer_size_callback(int width, int height)
     glViewport(0, 0, width, height);
 }
 
-void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void keyboard_callback(int key, int scancode, int action, int mods)
 {
     std::cout << "key:" << key << ", scancode:" << scancode << ", action: " << action << ", mods:" << mods << std::endl;
 }

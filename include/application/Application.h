@@ -12,7 +12,9 @@
 struct GLFWwindow;
 
 // 函数指针类型 窗体大小变化后回调的函数
-using ResizeCallback = void(*)(int,int);
+using ResizeCallback = void(*)(int width, int height);
+// 键盘事件
+using KeyboardCallback = void(*)(int key, int scancode, int action, int mods);
 
 // 单例类
 class Application
@@ -30,13 +32,17 @@ class Application
         // glfw窗口关闭
         void destroy();
         // 设置窗口变化回调函数
-        void setResizeCallback(ResizeCallback callback) { m_ResizeCallback = callback; }
+        void setResizeCallback(ResizeCallback fn) { m_ResizeCallback = fn; }
+        // 设置键盘事件回调函数
+        void setKeyboardCallback(KeyboardCallback fn) { m_KeyboardCallback = fn; }
     private:
         // glfw窗体事件回调
         // @Param window 哪个窗体发生了变化
         // @Param width 新的宽度
         // @Param height 新的高度
         static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+        // glfw键盘事件回调
+        static void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     private:
         // 单例对象
         static Application* s_Instance;
@@ -49,4 +55,5 @@ class Application
         GLFWwindow* m_Window { nullptr };
         // 窗体大小变化回调的函数指针
         ResizeCallback m_ResizeCallback { nullptr };
+        KeyboardCallback m_KeyboardCallback { nullptr };
 };

@@ -24,7 +24,7 @@ int main()
     // 窗口变化回调
     app->setResizeCallback(framebuffer_size_callback);
     // 键盘回调
-    // glfwSetKeyCallback(window, keyboard_callback);
+    app->setKeyboardCallback(keyboard_callback);
     // 创建shader实例
     Shader ourShader("resources/shader/3.3.shader.vs", "resources/shader/3.3.shader.fs");
     // 三角形的三维坐标 z被压扁 3个顶点
