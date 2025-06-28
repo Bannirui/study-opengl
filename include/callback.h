@@ -8,10 +8,9 @@
 struct GLFWwindow;
 
 // 窗体大小发生变化的回调 窗体大小发生变化了视口跟着变
-// @Param window 哪个窗体对象发生了大小变化
 // @Param width 变化之后的窗体宽度
 // @Param height 变化之后的窗体高度
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void framebuffer_size_callback(int width, int height);
 
 // 键盘事件回调
 // @Param window 哪个窗体

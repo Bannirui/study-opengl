@@ -11,6 +11,9 @@
 // 前向声明
 struct GLFWwindow;
 
+// 函数指针类型 窗体大小变化后回调的函数
+using ResizeCallback = void(*)(int,int);
+
 // 单例类
 class Application
 {
@@ -26,6 +29,14 @@ class Application
         bool update();
         // glfw窗口关闭
         void destroy();
+        // 设置窗口变化回调函数
+        void setResizeCallback(ResizeCallback callback) { m_ResizeCallback = callback; }
+    private:
+        // glfw窗体事件回调
+        // @Param window 哪个窗体发生了变化
+        // @Param width 新的宽度
+        // @Param height 新的高度
+        static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
     private:
         // 单例对象
         static Application* s_Instance;
@@ -36,4 +47,6 @@ class Application
         uint32_t m_Height { 0 };
         // 窗体对象
         GLFWwindow* m_Window { nullptr };
+        // 窗体大小变化回调的函数指针
+        ResizeCallback m_ResizeCallback { nullptr };
 };

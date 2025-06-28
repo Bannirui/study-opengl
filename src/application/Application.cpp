@@ -53,6 +53,10 @@ bool Application::init(const uint32_t& width, const uint32_t& height)
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         return false;
     }
+    // glfw窗体变化回调
+    glfwSetFramebufferSizeCallback(m_Window, framebufferSizeCallback);
+    // 把Application单例的实例放到glfw的window中 以后想要Application就从window中拿
+    glfwSetWindowUserPointer(m_Window, this);
     return true;
 }
 bool Application::update()
@@ -68,4 +72,10 @@ void Application::destroy()
 {
     // 关闭glfw窗口对象
     glfwTerminate();
+}
+
+void Application::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    Application* self = (Application*)glfwGetWindowUserPointer(window);
+    self->m_ResizeCallback(width, height);
 }

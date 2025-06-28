@@ -9,7 +9,7 @@
 
 #include "callback.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(int width, int height)
 {
     std::cout << "新窗口大小 w:" << width << ", h:" << height << std::endl;
     // 视口 设置窗口中opengl负责渲染的区域

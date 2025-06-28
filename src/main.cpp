@@ -22,7 +22,7 @@ int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
     // 窗口变化回调
-    // glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    app->setResizeCallback(framebuffer_size_callback);
     // 键盘回调
     // glfwSetKeyCallback(window, keyboard_callback);
     // 创建shader实例
