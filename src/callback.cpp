@@ -12,7 +12,9 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     std::cout << "新窗口大小 w:" << width << ", h:" << height << std::endl;
-    // tell OpenGL the size of the rendering window
+    // 视口 设置窗口中opengl负责渲染的区域
+    // x y将相对窗口左下角的起始位置
+    // width height渲染区域的长度 高度
     glViewport(0, 0, width, height);
 }
 

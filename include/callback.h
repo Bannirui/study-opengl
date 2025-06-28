@@ -7,7 +7,7 @@
 // 前向声明 链接的时候到glfw中找
 struct GLFWwindow;
 
-// 窗体大小发生变化的回调
+// 窗体大小发生变化的回调 窗体大小发生变化了视口跟着变
 // @Param window 哪个窗体对象发生了大小变化
 // @Param width 变化之后的窗体宽度
 // @Param height 变化之后的窗体高度

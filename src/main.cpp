@@ -38,9 +38,8 @@ int main()
     }
     // 窗体对象设置给opengl绘制
     glfwMakeContextCurrent(window);
-    // glad加载出显卡驱动的函数 之后才能使用opengl
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    // 使用glad加载当前opengl版本的所有函数
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD\n";
         return -1;
     }
@@ -130,13 +129,14 @@ int main()
     ourShader.use();
     glUniform1i(glGetUniformLocation(ourShader.m_ID, "texture1"), 0);
     ourShader.setInt("texture2", 1);
+    // 清理画布的时候清成啥样
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     // 窗体循环
     while (!glfwWindowShouldClose(window))
     {
         // check for specific key press and react accordingly every frame
         processInput(window);
         // 每一帧都要清屏 防止残留前一帧图像
-        glClearColor(0.8f, 1.0f, 0.93f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
@@ -147,7 +147,7 @@ int main()
         ourShader.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // swap the color buffer
+        // 双缓冲 每一帧都执行切换双缓存的动作
         glfwSwapBuffers(window);
         // 接收并分发窗口消息
         glfwPollEvents();
