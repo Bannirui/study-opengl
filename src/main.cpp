@@ -138,8 +138,7 @@ int main()
         // check for specific key press and react accordingly every frame
         processInput(window);
         // 每一帧都要清屏 防止残留前一帧图像
-        glClear(GL_COLOR_BUFFER_BIT);
-        CHECK_GL_ERRORS;
+        GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);

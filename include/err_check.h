@@ -28,4 +28,10 @@
             std::cout << errMsg << std::endl;                                                  \
             assert(false);                                                                     \
         }                                                                                      \
-    } while(0)
+    } while (0)
+
+#ifdef DEBUG
+#define GL_CALL_AND_CHECK_ERR(fn) do { fn; CHECK_GL_ERRORS; } while (0)
+#else
+#define GL_CALL_AND_CHECK_ERR(fn) do { fn; } while (0)
+#endif

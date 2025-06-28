@@ -21,6 +21,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+# 向项目添加全局的预编译宏
+add_definitions(-DDEBUG)
+
 # sub directory
 add_subdirectory(vendor/GLAD)
 add_subdirectory(vendor/GLFW)
