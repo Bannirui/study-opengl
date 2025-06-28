@@ -13,41 +13,18 @@
 #include "callback.h"
 #include "Shader.h"
 #include "err_check.h"
+#include "application/Application.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main()
 {
-    // 初始化GLFW的基本环境 OpenGL的版本是3.3
-    glfwInit();
-    // 主版本
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    // 次版本
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // 使用核心模式
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-    // 创建窗体对象
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
-    if (!window) {
-        std::cout << "Failed to create GLFW window\n";
-        glfwTerminate();
-        return -1;
-    }
-    // 窗体对象设置给opengl绘制
-    glfwMakeContextCurrent(window);
-    // 使用glad加载当前opengl版本的所有函数
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD\n";
-        return -1;
-    }
+    if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
     // 窗口变化回调
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    // glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     // 键盘回调
-    glfwSetKeyCallback(window, keyboard_callback);
+    // glfwSetKeyCallback(window, keyboard_callback);
     // 创建shader实例
     Shader ourShader("resources/shader/3.3.shader.vs", "resources/shader/3.3.shader.fs");
     // 三角形的三维坐标 z被压扁 3个顶点
@@ -133,10 +110,10 @@ int main()
     // 清理画布的时候清成啥样
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     // 窗体循环
-    while (!glfwWindowShouldClose(window))
+    while (app->update())
     {
         // check for specific key press and react accordingly every frame
-        processInput(window);
+        // processInput(window);
         // 每一帧都要清屏 防止残留前一帧图像
         GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
 
@@ -148,16 +125,11 @@ int main()
         ourShader.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // 双缓冲 每一帧都执行切换双缓存的动作
-        glfwSwapBuffers(window);
-        // 接收并分发窗口消息
-        glfwPollEvents();
     }
     // 回收资源
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    // 退出程序
-    glfwTerminate();
+    app->destroy();
     return 0;
 }
