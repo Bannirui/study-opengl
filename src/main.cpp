@@ -12,6 +12,7 @@
 
 #include "callback.h"
 #include "Shader.h"
+#include "err_check.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -138,6 +139,7 @@ int main()
         processInput(window);
         // 每一帧都要清屏 防止残留前一帧图像
         glClear(GL_COLOR_BUFFER_BIT);
+        CHECK_GL_ERRORS;
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
