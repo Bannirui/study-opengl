@@ -27,7 +27,7 @@ int main()
     app->setKeyboardCallback(keyboard_callback);
     // 创建shader实例
     Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
-    // 三角形的三维坐标 z被压扁 3个顶点
+    // 顶点的多属性数据
     float vertices[] = {
         // position        // color         // texture坐标
         0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
@@ -57,7 +57,7 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // 把所有坐标点传到了buffer里面 告诉shader怎么用这些数据
+    // 把所有坐标点传到了VBO里面 告诉shader怎么用这些数据
     // 位置
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);

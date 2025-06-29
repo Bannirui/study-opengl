@@ -69,3 +69,10 @@ void glBufferData(GLenum target, GLsizeptr size, const void* data, GLenum usage)
   - GL_DYNAMIC_DRAW VBO模型数据会频繁改变
 
 CPU告诉OpenGL要把内存中数据填入到GPU中，直到这时候GPU才会分配显存用来接收这些数据
+
+### 3 多属性数据
+
+顶点中不单单是顶点坐标信息，还包括顶点的颜色数据，OpenGL会根据差值算法对颜色进行过渡
+
+- single buffer策略 每个属性存储为一个VBO
+- interleaved buffer交叉策略 所有属性存储为一个VBO
