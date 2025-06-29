@@ -42,14 +42,16 @@ int main()
     // VBO(vertex buffer objects)管理顶点坐标 批量向显卡发送数据
     // OpenGL有许多buffer objects VBO是array buffer
     // VAO(vertex array object)
-    unsigned int VBO, VAO, EBO;
+    unsigned int VAO;
+    // VBO EBO
+    unsigned int vbo_arr[2] = {0, 0};
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    // 创建VBO
+    glGenBuffers(2, vbo_arr);
     // bind vertex array object first, then buffer
     glBindVertexArray(VAO);
     // OpenGL开放这个函数把创建的buffer绑定到array buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_arr[0]);
     // 用户态的数据拷贝到buffer
     // target 接收数据的buffer类型
     // size 要把多少byte数据传递给buffer
@@ -57,7 +59,7 @@ int main()
     // usage 显卡怎么处理这些数据 GL_STREAM_DRAW数据只设置一次GPU有使用次数限制 GL_STATIC_DRAW数据只设置一次GPU可以多次使用 GL_DYNAMIC_DRAW数据会变化GPU可以多次使用
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // 把所有坐标点传到了buffer里面 告诉shader怎么用这些数据
@@ -128,8 +130,8 @@ int main()
     }
     // 回收资源
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    // 销毁VBO
+    glDeleteBuffers(2, vbo_arr);
     app->destroy();
     return 0;
 }
