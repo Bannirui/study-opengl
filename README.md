@@ -124,3 +124,18 @@ void glDeleteVertexArrays(GLsizei n, GLuint* arrays);
 
 - n 要删除多少个VAO
 - arrays 要删除的VAO编号存放在数组中
+
+#### 4.4 向VAO中加入VBO描述
+
+```glsl
+glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+```
+
+- index VAO是个数组里面放了很多描述信息 要把描述信息放到VAO数组的哪个数组脚标上
+- size 这个属性用多少个数字描述
+- type 这个属性每个数字的大小是多大(Byte)
+- normalized 是否归一化
+- stride 每个顶点数据的步长
+- pointer 属性在顶点数据内的偏移量
+
+为什么这个API不需要显式指定向VAO中添加的描述信息是哪个VBO的，因为OpenGL的VBO插槽机制，在每时每刻至多只有一个VBO绑定到了OpenGL的VBO插槽上，所以在添加VAO的时候隐含的语义就是用OpenGL状态机VBO插槽的那个VBO

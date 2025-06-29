@@ -18,6 +18,11 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+void prepareBuffer()
+{
+
+}
+
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -39,16 +44,10 @@ int main()
         0, 1, 3,
         1, 2, 3,
     };
-    // VBO(vertex buffer objects)管理顶点坐标 批量向显卡发送数据
-    // OpenGL有许多buffer objects VBO是array buffer
-    // VAO(vertex array object)
-    unsigned int VAO;
     // VBO EBO
     unsigned int vbo_arr[2] = {0, 0};
-    glGenVertexArrays(1, &VAO);
     // 创建VBO
     glGenBuffers(2, vbo_arr);
-    glBindVertexArray(VAO);
     // 绑定VBO到OpenGL当前VBO的插槽上 后面向OpenGL当前VBO插槽的操作就是间接在操作VBO
     glBindBuffer(GL_ARRAY_BUFFER, vbo_arr[0]);
     // 向OpenGL状态机当前VBO插槽填装数据
@@ -57,16 +56,25 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // 把所有坐标点传到了VBO里面 告诉shader怎么用这些数据
-    // 位置
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    // 创建VAO绑定到OpenGL的VAL插槽上 此时OpenGL状态机VBO插槽上关联的是vbo_arr[0]这个VBO
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    // 向VAO中添加VBO的属性
+    // 激活VAO脚标
     glEnableVertexAttribArray(0);
-    // 颜色
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    // 位置属性放在VAO数组的0号脚标上
+    // 位置属性用3个数字
+    // 每个数字是float类型
+    // 顶点的步长是8个float
+    // 位置在顶点内部的偏移是0
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    // 颜色属性放在VAO数组的1号脚标上
     glEnableVertexAttribArray(1);
-    // texture
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    // texture属性放在VAO数组的2号脚标上
     glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     unsigned int texture1, texture2;
     // texture1
     glGenTextures(1, &texture1);
