@@ -139,3 +139,17 @@ glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalize
 - pointer 属性在顶点数据内的偏移量
 
 为什么这个API不需要显式指定向VAO中添加的描述信息是哪个VBO的，因为OpenGL的VBO插槽机制，在每时每刻至多只有一个VBO绑定到了OpenGL的VBO插槽上，所以在添加VAO的时候隐含的语义就是用OpenGL状态机VBO插槽的那个VBO
+
+### 5 Shader
+
+什么是Shader，着色器程序，运行在GPU类C语言，用于处理顶点数据以及决定像素片元最终着色
+
+Shader对三角形的处理分为
+- VertexShader 顶点处理
+- FragmentShader 片元处理
+
+GLSL(Graphic Library Shader Language)为图形计算量身定制的语言，包含一些对向量和矩阵操作的有用特性
+
+特点
+- 将输入转化为输出
+- 程序独立，彼此之间不能通信，只能通过输入输出相互承接
