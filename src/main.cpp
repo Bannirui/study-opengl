@@ -48,15 +48,10 @@ int main()
     glGenVertexArrays(1, &VAO);
     // 创建VBO
     glGenBuffers(2, vbo_arr);
-    // bind vertex array object first, then buffer
     glBindVertexArray(VAO);
-    // OpenGL开放这个函数把创建的buffer绑定到array buffer
+    // 绑定VBO到OpenGL当前VBO的插槽上 后面向OpenGL当前VBO插槽的操作就是间接在操作VBO
     glBindBuffer(GL_ARRAY_BUFFER, vbo_arr[0]);
-    // 用户态的数据拷贝到buffer
-    // target 接收数据的buffer类型
-    // size 要把多少byte数据传递给buffer
-    // data 要传递的数据
-    // usage 显卡怎么处理这些数据 GL_STREAM_DRAW数据只设置一次GPU有使用次数限制 GL_STATIC_DRAW数据只设置一次GPU可以多次使用 GL_DYNAMIC_DRAW数据会变化GPU可以多次使用
+    // 向OpenGL状态机当前VBO插槽填装数据
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
