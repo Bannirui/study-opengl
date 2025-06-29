@@ -76,3 +76,20 @@ CPU告诉OpenGL要把内存中数据填入到GPU中，直到这时候GPU才会�
 
 - single buffer策略 每个属性存储为一个VBO
 - interleaved buffer交叉策略 所有属性存储为一个VBO
+
+### 4 VAO
+
+在图形学编程中，对于一组纯粹的数据，往往要给出一段描述结构
+
+- size 每个顶点几个数字
+- type 每个数字是float类型
+- stride 每个顶点的数据布多少Byte 为什么有了size和type还需要stride
+
+Vertex Array Object 顶点数组对象，用于存储一个Mesh网格所有的顶点属性描述信息
+
+VBO中存储的顶点数组，VAO是个数组，装着的是描述信息
+- 0号位是位置数据
+- 1号位是颜色数据
+- XXX数据
+
+VAO是数组，数组里面状态很多描述信息，每个数组项对应一个描述信息，位置，颜色...
