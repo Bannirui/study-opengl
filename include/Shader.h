@@ -39,5 +39,6 @@ class Shader
         // shader program的唯一id
         unsigned int m_ID;
     private:
-        void checkCompileErrors(unsigned int shader, std::string type);
+        enum ShaderType { vs_compile, fs_compile, program_link };
+        void checkCompileErrors(unsigned int shader, ShaderType type);
 };
