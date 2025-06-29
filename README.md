@@ -81,9 +81,15 @@ CPU告诉OpenGL要把内存中数据填入到GPU中，直到这时候GPU才会�
 
 在图形学编程中，对于一组纯粹的数据，往往要给出一段描述结构
 
+三角形顶点的某一个属性，我们需要知道的描述信息是
 - size 每个顶点几个数字
 - type 每个数字是float类型
-- stride 每个顶点的数据布多少Byte 为什么有了size和type还需要stride
+- stride 每个顶点的数据步长是Byte 为什么有了size和type还需要stride 因为交叉存储的时候每个顶点存着多个属性信息 所以要明确知道每个顶点的跨度是多大
+- offset 每个顶点中有多个属性 某个属性在顶点数据的偏移 比如一个顶点有8个float数据
+  - 前3个float是位置 所以位置属性在顶点数据的offset是0个float
+  - 中间3个是颜色 所以颜色属性在顶点数据的offset是3个float
+  - 后2个是xx属性 所以xx属性在顶点数据的offset是6个float
+- 此属性存储在xxx号VBO中
 
 Vertex Array Object 顶点数组对象，用于存储一个Mesh网格所有的顶点属性描述信息
 
@@ -93,3 +99,28 @@ VBO中存储的顶点数组，VAO是个数组，装着的是描述信息
 - XXX数据
 
 VAO是数组，数组里面状态很多描述信息，每个数组项对应一个描述信息，位置，颜色...
+
+#### 4.1 创建
+
+```glsl
+void glGenVertexArrays(GLsizei n, GLuint* arrays);
+```
+- n 创建多少个VAO
+- arrays 创建出来的VAO编号 都放到arrays指向的数组中
+
+#### 4.2 绑定
+
+```glsl
+void glBindVertexArray(GLuint array);
+```
+
+- array 要绑定的VAO编号
+- 
+#### 4.3 删除
+
+```glsl
+void glDeleteVertexArrays(GLsizei n, GLuint* arrays);
+```
+
+- n 要删除多少个VAO
+- arrays 要删除的VAO编号存放在数组中

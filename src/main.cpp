@@ -27,7 +27,7 @@ int main()
     app->setKeyboardCallback(keyboard_callback);
     // 创建shader实例
     Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
-    // 顶点的多属性数据
+    // 顶点数据 交叉属性 放到一个VBO里面 用VAO告诉GPU属性信息
     float vertices[] = {
         // position        // color         // texture坐标
         0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
