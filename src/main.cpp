@@ -18,26 +18,15 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// 生成VAO
 void prepareBuffer()
 {
-
-}
-
-int main()
-{
-    if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
-    // 窗口变化回调
-    app->setResizeCallback(framebuffer_size_callback);
-    // 键盘回调
-    app->setKeyboardCallback(keyboard_callback);
-    // 创建shader实例
-    Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
     // 顶点数据 交叉属性 放到一个VBO里面 用VAO告诉GPU属性信息
     float vertices[] = {
-        // position        // color         // texture坐标
+        // position xyz   // color rgb      // texture坐标
         0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,  // 左下
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
         -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // 左上
     };
     unsigned int indices[] = {
@@ -55,8 +44,7 @@ int main()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // 创建VAO绑定到OpenGL的VAL插槽上 此时OpenGL状态机VBO插槽上关联的是vbo_arr[0]这个VBO
+    // 创建VAO绑定到OpenGL的VAO插槽上 此时OpenGL状态机VBO插槽上关联的是vbo_arr[0]这个VBO
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -75,6 +63,20 @@ int main()
     // texture属性放在VAO数组的2号脚标上
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    // 解绑OpenGL状态机的VAO插槽 最好不要一直保持着某个VAO的绑定状态
+    glBindVertexArray(0);
+}
+
+int main()
+{
+    if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
+    // 窗口变化回调
+    app->setResizeCallback(framebuffer_size_callback);
+    // 键盘回调
+    app->setKeyboardCallback(keyboard_callback);
+    prepareBuffer();
+    // 创建shader实例
+    Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
     unsigned int texture1, texture2;
     // texture1
     glGenTextures(1, &texture1);
@@ -128,13 +130,13 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture2);
 
         ourShader.use();
-        glBindVertexArray(VAO);
+        // glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
     // 回收资源
-    glDeleteVertexArrays(1, &VAO);
+    // glDeleteVertexArrays(1, &VAO);
     // 销毁VBO
-    glDeleteBuffers(2, vbo_arr);
+    // glDeleteBuffers(2, vbo_arr);
     app->destroy();
     return 0;
 }
