@@ -26,7 +26,7 @@ int main()
     // 键盘回调
     app->setKeyboardCallback(keyboard_callback);
     // 创建shader实例
-    Shader ourShader("resources/shader/3.3.shader.vs", "resources/shader/3.3.shader.fs");
+    Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
     // 三角形的三维坐标 z被压扁 3个顶点
     float vertices[] = {
         // position        // color         // texture坐标

@@ -1,3 +1,5 @@
+// fragment shader片元处理 计算每个像素片元应该着什么颜色
+// 片元处理着色阶段比较耗时
 #version 330 core
 out vec4 FragColor;
 
