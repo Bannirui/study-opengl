@@ -153,3 +153,36 @@ GLSL(Graphic Library Shader Language)为图形计算量身定制的语言，包�
 特点
 - 将输入转化为输出
 - 程序独立，彼此之间不能通信，只能通过输入输出相互承接
+
+### 6 绘制图形
+
+- 几何数据存储在VBO和VAO中
+- 材质数据依赖材质程序vertex shader和fragment shader
+
+所以只要告诉GPU使用几何数据和材质程序就行
+
+#### 6.1 告诉GPU接下来绘制的时候使用的Shader程序
+
+```c++
+void glUseProgram(GLuint program);
+```
+
+#### 6.1 告诉GPU接下来绘制使用的VAO几何信息
+
+```c++
+void glBindVertexArray(GLuint array);
+```
+
+#### 6.1 向GPU发送渲染指令
+
+向GPU发送DrawCall渲染指令
+
+```c++
+void glDrawArrays(GLenum mode, GLint first, GLsizei count);
+```
+
+- mode 绘制模式
+  - GL_TRANGLES
+  - GL_LINES
+- first 从第几个顶点开始绘制
+- count 绘制到第几个顶点数据

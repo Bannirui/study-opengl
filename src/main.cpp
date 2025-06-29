@@ -18,8 +18,13 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// VBO EBO
+unsigned int vbo_arr[2] = {0, 0};
+unsigned int VAO = 0;
+// texture1 texture2
+unsigned int texture_arr[2] = {0,0};
 // 生成VAO
-void prepareBuffer()
+void prepareVAO()
 {
     // 顶点数据 交叉属性 放到一个VBO里面 用VAO告诉GPU属性信息
     float vertices[] = {
@@ -33,19 +38,16 @@ void prepareBuffer()
         0, 1, 3,
         1, 2, 3,
     };
-    // VBO EBO
-    unsigned int vbo_arr[2] = {0, 0};
     // 创建VBO
     glGenBuffers(2, vbo_arr);
     // 绑定VBO到OpenGL当前VBO的插槽上 后面向OpenGL当前VBO插槽的操作就是间接在操作VBO
     glBindBuffer(GL_ARRAY_BUFFER, vbo_arr[0]);
     // 向OpenGL状态机当前VBO插槽填装数据
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+    // 绑定OpenGL状态机EBO插槽
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // 创建VAO绑定到OpenGL的VAO插槽上 此时OpenGL状态机VBO插槽上关联的是vbo_arr[0]这个VBO
-    unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     // 向VAO中添加VBO的属性
@@ -65,39 +67,27 @@ void prepareBuffer()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     // 解绑OpenGL状态机的VAO插槽 最好不要一直保持着某个VAO的绑定状态
     glBindVertexArray(0);
-}
 
-int main()
-{
-    if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
-    // 窗口变化回调
-    app->setResizeCallback(framebuffer_size_callback);
-    // 键盘回调
-    app->setKeyboardCallback(keyboard_callback);
-    prepareBuffer();
-    // 创建shader实例
-    Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
-    unsigned int texture1, texture2;
+    glGenTextures(2, texture_arr);
     // texture1
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
+    int width, height, nrChannels;
     unsigned char* data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load texture" << std::endl;
+        assert(false);
     }
     stbi_image_free(data);
     // texture2
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
+    glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -108,8 +98,38 @@ int main()
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load texture" << std::endl;
+        assert(false);
     }
     stbi_image_free(data);
+}
+
+void render(Shader shader)
+{
+        // 每一帧都要清屏 防止残留前一帧图像
+        GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
+
+        // 告诉GPU接下来绘制用的shader程序是哪个
+        shader.use();
+        // 告诉GPU绘制图形用的VAO
+        glBindVertexArray(VAO);
+        GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+}
+
+int main()
+{
+    if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
+    // 窗口变化回调
+    app->setResizeCallback(framebuffer_size_callback);
+    // 键盘回调
+    app->setKeyboardCallback(keyboard_callback);
+    prepareVAO();
+    // 创建shader实例
+    Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
     // 显式调用shader program
     ourShader.use();
     glUniform1i(glGetUniformLocation(ourShader.m_ID, "texture1"), 0);
@@ -119,24 +139,13 @@ int main()
     // 窗体循环
     while (app->update())
     {
-        // check for specific key press and react accordingly every frame
+        render(ourShader);
         // processInput(window);
-        // 每一帧都要清屏 防止残留前一帧图像
-        GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
-        ourShader.use();
-        // glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
     // 回收资源
-    // glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &VAO);
     // 销毁VBO
-    // glDeleteBuffers(2, vbo_arr);
+    glDeleteBuffers(2, vbo_arr);
     app->destroy();
     return 0;
 }

@@ -31,6 +31,7 @@ class Shader
     public:
         Shader(const char* vertexPath, const char* fragmentPath);
         virtual ~Shader();
+        // 告诉GPU接下来绘制图形使用的Shader程序是谁
         void use();
         void setBool(const std::string& name, bool value) const;
         void setInt(const std::string& name, int value) const;
