@@ -5,10 +5,6 @@ project(study-opengl
         VERSION 1.0
         LANGUAGES CXX
 )
-if (APPLE)
-    set(CMAKE_C_COMPILER /usr/bin/clang)
-    set(CMAKE_CXX_COMPILER /usr/bin/clang++)
-endif ()
 # c/cpp标准
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
