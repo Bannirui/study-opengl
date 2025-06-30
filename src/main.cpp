@@ -30,9 +30,9 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// VBO EBO
 unsigned int vbo = 0;
 unsigned int vao = 0;
+unsigned int ebo = 0;
 // texture1 texture2
 unsigned int texture_arr[] = {0, 0};
 // 生成VAO
@@ -84,27 +84,48 @@ void prepareVAO(Shader shader)
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
     };
+    unsigned int indices[] = {
+        0,1,2,
+        3,4,5,
+        6,7,8,
+        9,10,11,
+        12,13,14,
+        15,16,17,
+        18,19,20,
+        21,22,23,
+        24,25,26,
+        27,28,29,
+        30,31,32,
+        33,34,35,
+    };
     // 创建VBO
     glGenBuffers(1, &vbo);
     // 绑定VBO到OpenGL当前VBO的插槽上 后面向OpenGL当前VBO插槽的操作就是间接在操作VBO
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // 向OpenGL状态机当前VBO插槽填装数据
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // 创建EBO
+    glGenBuffers(1, &ebo);
+    // GL状态机
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    // 灌数据
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     // 创建VAO绑定到OpenGL的VAO插槽上 此时OpenGL状态机VBO插槽上关联的是vbo_arr[0]这个VBO
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    // 向VAO中添加VBO的属性
-    // 激活VAO脚标
+
+    // VAO中加入VBO的属性信息
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glEnableVertexAttribArray(0);
-    // 位置属性放在VAO数组的0号脚标上
-    // 位置属性用3个数字
-    // 每个数字是float类型
-    // 顶点的步长是8个float
-    // 位置在顶点内部的偏移是0
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    // texture属性放在VAO数组的1号脚标上
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    // VAO中加入EBO的索引信息
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
     // 解绑OpenGL状态机的VAO插槽 最好不要一直保持着某个VAO的绑定状态
     glBindVertexArray(0);
 
@@ -192,7 +213,7 @@ void render(Shader shader)
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader.setMat4("model", model);
         // 向GPU发送绘制指令
-        GL_CALL_AND_CHECK_ERR(glDrawArrays(GL_TRIANGLES, 0, 36));
+        GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
     }
 }
 
@@ -235,8 +256,8 @@ int main()
     }
     // 回收资源
     glDeleteVertexArrays(1, &vao);
-    // 销毁VBO
     glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
     app->destroy();
     return 0;
 }

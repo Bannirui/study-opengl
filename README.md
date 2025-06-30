@@ -186,3 +186,51 @@ void glDrawArrays(GLenum mode, GLint first, GLsizei count);
   - GL_LINES
 - first 从第几个顶点开始绘制
 - count 绘制到第几个顶点数据
+
+### 7 EBO
+
+顶点索引 描述一个三角形使用哪几个顶点数据的数字序列
+
+为了复用VBO中的顶点数据
+
+EBO(Element Buffer Object) 用于存储顶点绘制顺序索引号的GPU显存区域
+
+#### 7.1 创建
+
+``c
+unsigned int indices[] = {
+  0,1,2,
+  0,2,3,
+};
+
+GLuint ebo;
+glGenBuffers(1,&ebo);
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+glBufferData(GL_ELEMENT_ARRAY, sizeof(indices), indices, GL_STATIC_DRAW);
+``
+
+#### 7.2 绑定
+
+```c++
+glBindVertexArray(vao);
+glBindBuffer(GL_ELELEMENT_ARRAY_BUFFR, ebo);
+```
+
+- 绑定VAO之后，GL状态机就认为后续操作针对的是当前这个VAO
+- 的当前VAO状态下，绑定任何VBO或者EBO，都会被记录到当前VAO中
+
+### 8 索引绘制
+
+```c++
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices);
+```
+
+- mode 绘制模式
+  - GL_TRIANGLES
+  - GL_LINES
+- count EBO索引数组中每个数字都是VBO中顶点的脚标 所以就是告诉GL用几个顶点绘制图形
+- type 索引的数据类型
+- indices
+  - 使用了EBO 通常直接填写0
+  - 使用了EBO 不填写0 表示索引内的偏移量
+  - 如果不使用EBO 可以直接传入索引数组
