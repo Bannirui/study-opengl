@@ -19,10 +19,12 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // VBO EBO
-unsigned int vbo_arr[2] = {0, 0};
-unsigned int VAO = 0;
+unsigned int vbo = 0;
+unsigned int ebo = 0;
+unsigned int vao = 0;
 // texture1 texture2
-unsigned int texture_arr[2] = {0,0};
+unsigned int texture1 = 0;
+unsigned int texture2 = 0;
 // 生成VAO
 void prepareVAO()
 {
@@ -30,26 +32,27 @@ void prepareVAO()
     float vertices[] = {
         // position xyz   // color rgb      // texture坐标
         0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
         -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // 左上
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
     };
     unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3,
+        0, 1, 2,
+        2, 3, 0,
     };
     // 创建VBO
-    glGenBuffers(2, vbo_arr);
+    glGenBuffers(1, &vbo);
     // 绑定VBO到OpenGL当前VBO的插槽上 后面向OpenGL当前VBO插槽的操作就是间接在操作VBO
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_arr[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // 向OpenGL状态机当前VBO插槽填装数据
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     // 绑定OpenGL状态机EBO插槽
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // 创建VAO绑定到OpenGL的VAO插槽上 此时OpenGL状态机VBO插槽上关联的是vbo_arr[0]这个VBO
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
     // 向VAO中添加VBO的属性
     // 激活VAO脚标
     glEnableVertexAttribArray(0);
@@ -68,9 +71,9 @@ void prepareVAO()
     // 解绑OpenGL状态机的VAO插槽 最好不要一直保持着某个VAO的绑定状态
     glBindVertexArray(0);
 
-    glGenTextures(2, texture_arr);
+    glGenTextures(1, &texture1);
     // texture1
-    glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
+    glBindTexture(GL_TEXTURE_2D, texture1);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -87,7 +90,8 @@ void prepareVAO()
     }
     stbi_image_free(data);
     // texture2
-    glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -109,14 +113,16 @@ void render(Shader shader)
         GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
+        glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
         // 告诉GPU接下来绘制用的shader程序是哪个
         shader.use();
         // 告诉GPU绘制图形用的VAO
-        glBindVertexArray(VAO);
+        glBindVertexArray(vao);
+        // 绘制时候用到EBO 绑定到OpenGL插槽
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 }
 
@@ -143,9 +149,10 @@ int main()
         // processInput(window);
     }
     // 回收资源
-    glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &vao);
     // 销毁VBO
-    glDeleteBuffers(2, vbo_arr);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
     app->destroy();
     return 0;
 }
