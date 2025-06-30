@@ -22,20 +22,6 @@ void framebuffer_size_callback(int width, int height)
 
 void keyboard_callback(int key, int scancode, int action, int mods)
 {
-    std::cout << "key:" << key << ", scancode:" << scancode << ", action: " << action << ", mods:" << mods << std::endl;
+    std::cout << "键盘事件 键位" << static_cast<char>(key) << ", 操作" << action << ", 有没有ctrl或者shift功能键"<< mods << std::endl;
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) Application::setShouldClose(true);
-}
-
-void processInput(GLFWwindow* window)
-{
-    // esc退出
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
-    // ctrl-c退出
-    if ((glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS
-        || glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS)
-        && glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
 }

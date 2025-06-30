@@ -17,9 +17,18 @@
 #include "Shader.h"
 #include "err_check.h"
 #include "application/Application.h"
+#include "input/Input.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+// 相机坐标
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 // VBO EBO
 unsigned int vbo = 0;
@@ -140,6 +149,10 @@ void prepareVAO(Shader shader)
 
 void render(Shader shader)
 {
+    float curFrameTime = static_cast<float>(glfwGetTime());
+    deltaTime = curFrameTime - lastFrame;
+    lastFrame = curFrameTime;
+
     // 每一帧都要清屏 防止残留前一帧图像
     GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
     // 删除depth buffer
@@ -154,14 +167,9 @@ void render(Shader shader)
     // 告诉GPU绘制图形用的VAO
     glBindVertexArray(vao);
     // 转换坐标
-    glm::mat4 view = glm::mat4(1.0f);
-    float radius = 10.0f;
-    float camX = static_cast<float>(sin(glfwGetTime()) * radius);
-    float camZ = static_cast<float>(cos(glfwGetTime()) * radius);
-    view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     shader.setMat4("view", view);
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
     shader.setMat4("projection", projection);
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
@@ -188,6 +196,22 @@ void render(Shader shader)
     }
 }
 
+void processInput() {
+    float cameraSpeed = static_cast<float>(25 * deltaTime);
+    if (Input::isKeyPressed(GLFW_KEY_W)) {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if (Input::isKeyPressed(GLFW_KEY_S)) {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if (Input::isKeyPressed(GLFW_KEY_A)) {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (Input::isKeyPressed(GLFW_KEY_D)) {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+}
+
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -195,7 +219,7 @@ int main()
     app->setResizeCallback(framebuffer_size_callback);
     // 键盘回调
     app->setKeyboardCallback(keyboard_callback);
-    // 开启deptch testing
+    // 开启deep testing
     glEnable(GL_DEPTH_TEST);
     // 创建shader实例
     Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
@@ -205,6 +229,8 @@ int main()
     // 窗体循环
     while (app->update())
     {
+        // 键盘状态
+        processInput();
         render(ourShader);
     }
     // 回收资源

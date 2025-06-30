@@ -2,10 +2,12 @@
 // Created by dingrui on 25-6-28.
 //
 
+#include "application/Application.h"
+
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "application/Application.h"
+#include "input/Input.h"
 
 // 初始化静态变量
 Application* Application::s_Instance = nullptr;
@@ -59,12 +61,18 @@ bool Application::init(const uint32_t& width, const uint32_t& height)
     glfwSetKeyCallback(m_Window, keyboardCallback);
     // 把Application单例的实例放到glfw的window中 以后想要Application就从window中拿
     glfwSetWindowUserPointer(m_Window, this);
+    // 集成Input
+    Input::init(m_Window);
     return true;
 }
 bool Application::update()
 {
     if (glfwWindowShouldClose(m_Window)) return false;
     if (s_shouldClose) glfwSetWindowShouldClose(m_Window, true);
+    // 更新键盘状态
+    Input::update();
+    // 处理输入 不是回调类
+    processInput();
     // 接收并分发窗口消息
     glfwPollEvents();
     // 双缓冲 每一帧都执行切换双缓存的动作
@@ -86,6 +94,9 @@ void Application::keyboardCallback(GLFWwindow* window, int key, int scancode, in
 {
     Application* self = (Application*)glfwGetWindowUserPointer(window);
     if (self->m_KeyboardCallback) self->m_KeyboardCallback(key, scancode, action, mods);
+}
+void Application::processInput() {
+    // todo
 }
 void Application::setShouldClose(bool flag) {
     s_shouldClose = flag;

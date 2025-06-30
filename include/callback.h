@@ -18,7 +18,3 @@ void framebuffer_size_callback(int width, int height);
 // @Param action 按下还是抬起
 // @Param mods 是否有shift或者ctrl
 void keyboard_callback(int key, int scancode, int action, int mods);
-
-// 检测按键
-// esc关闭窗口
-void processInput(GLFWwindow* window);

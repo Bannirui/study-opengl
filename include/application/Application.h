@@ -44,6 +44,8 @@ class Application
         static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
         // glfw键盘事件回调
         static void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        // 处理输入 不是回调类的事件
+        void processInput();
     private:
         // 单例对象
         static Application* s_Instance;
