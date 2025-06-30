@@ -34,10 +34,17 @@ class Shader
         virtual ~Shader();
         // 告诉GPU接下来绘制图形使用的Shader程序是谁
         void use();
+        // 给shader设置uniform全局变量
+        // @Param name uniform变量名
         void setBool(const std::string& name, bool value) const;
+        // 给shader设置uniform全局变量
+        // @Param name uniform变量名
         void setInt(const std::string& name, int value) const;
+        // 给shader设置uniform全局变量
+        // @Param name uniform变量名
         void setFloat(const std::string& name, float value) const;
-        // 发送矩阵给shader
+        // 给shader设置uniform全局变量
+        // @Param name uniform变量名
         void setMat4(const std::string& name, glm::mat4& mat) const;
     public:
         // shader program的唯一id
