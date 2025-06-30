@@ -11,12 +11,9 @@
 // 每个VertexShader都从VAO中拿对应属性 再根据属性描述到VBO中拿到顶点数据
 // 从VAO的0号位置拿到位置属性
 layout (location = 0) in vec3 aPos;
-// 从VAO的1号位置拿到颜色属性
-layout (location = 1) in vec3 aColor;
-// 从VAO的2号位置拿到texture属性
-layout (location = 2) in vec2 aTexCoord;
+// 从VAO的2号位置拿到texture坐标
+layout (location = 1) in vec2 aTexCoord;
 
-out vec3 color;
 out vec2 texCoord;
 
 uniform mat4 model;
@@ -28,6 +25,5 @@ void main()
     // gl_Position是GLSL的内置变量 负责向后续阶段输出顶点位置处理的结果
     // 输入的本身已经是NDC坐标 不需要转换 直接就输出给gl_Position向后传
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
-    color = aColor;
     texCoord = aTexCoord;
 }

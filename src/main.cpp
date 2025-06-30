@@ -22,7 +22,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // VBO EBO
-unsigned int vbo_arr[2] = {0, 0};
+unsigned int vbo = 0;
 unsigned int vao = 0;
 // texture1 texture2
 unsigned int texture_arr[] = {0, 0};
@@ -30,26 +30,57 @@ unsigned int texture_arr[] = {0, 0};
 void prepareVAO(Shader shader)
 {
     // 顶点数据 交叉属性 放到一个VBO里面 用VAO告诉GPU属性信息
+    // 立方体6个面 每个面1个矩形 1个矩形等于2个三角形 1个三角形3个顶点 那就总共需要36个顶点信息
     float vertices[] = {
-        // position XYZ   // color RGB      // texture坐标ST
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
-        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // 左上
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
+        // position XYZ       // texture坐标ST
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
     };
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3,
-    };
-    // 创建VBO EBO
-    glGenBuffers(2, vbo_arr);
+    // 创建VBO
+    glGenBuffers(1, &vbo);
     // 绑定VBO到OpenGL当前VBO的插槽上 后面向OpenGL当前VBO插槽的操作就是间接在操作VBO
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_arr[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // 向OpenGL状态机当前VBO插槽填装数据
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // 绑定OpenGL状态机EBO插槽
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // 创建VAO绑定到OpenGL的VAO插槽上 此时OpenGL状态机VBO插槽上关联的是vbo_arr[0]这个VBO
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -61,13 +92,10 @@ void prepareVAO(Shader shader)
     // 每个数字是float类型
     // 顶点的步长是8个float
     // 位置在顶点内部的偏移是0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    // 颜色属性放在VAO数组的1号脚标上
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    // texture属性放在VAO数组的1号脚标上
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    // texture属性放在VAO数组的2号脚标上
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     // 解绑OpenGL状态机的VAO插槽 最好不要一直保持着某个VAO的绑定状态
     glBindVertexArray(0);
 
@@ -112,35 +140,34 @@ void prepareVAO(Shader shader)
 
 void render(Shader shader)
 {
-        // 每一帧都要清屏 防止残留前一帧图像
-        GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
+    // 每一帧都要清屏 防止残留前一帧图像
+    GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
+    // 删除depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
-
-        // 告诉GPU接下来绘制用的shader程序是哪个
-        shader.use();
-        // 告诉GPU绘制图形用的VAO
-        glBindVertexArray(vao);
-        // 绘制时候用到EBO 绑定到OpenGL插槽
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
-        // 转换坐标
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), (float)app->getWidth()/app->getHeight(), 0.1f, 100.0f);
-        // 开辟uniform全局变量给vertex shader
-        unsigned int modelLoc = glGetUniformLocation(shader.m_ID, "model");
-        unsigned int viewLoc = glGetUniformLocation(shader.m_ID, "view");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        shader.setMat4("projection", projection);
-        // 向GPU发送绘制指令
-        GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+    // 告诉GPU接下来绘制用的shader程序是哪个
+    shader.use();
+    // 告诉GPU绘制图形用的VAO
+    glBindVertexArray(vao);
+    // 转换坐标
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
+    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    projection = glm::perspective(glm::radians(45.0f), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
+    // 开辟uniform全局变量给vertex shader
+    unsigned int modelLoc = glGetUniformLocation(shader.m_ID, "model");
+    unsigned int viewLoc = glGetUniformLocation(shader.m_ID, "view");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+    shader.setMat4("projection", projection);
+    // 向GPU发送绘制指令
+    GL_CALL_AND_CHECK_ERR(glDrawArrays(GL_TRIANGLES, 0, 36));
 }
 
 int main()
@@ -150,6 +177,8 @@ int main()
     app->setResizeCallback(framebuffer_size_callback);
     // 键盘回调
     app->setKeyboardCallback(keyboard_callback);
+    // 开启deptch testing
+    glEnable(GL_DEPTH_TEST);
     // 创建shader实例
     Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
     prepareVAO(ourShader);
@@ -163,7 +192,7 @@ int main()
     // 回收资源
     glDeleteVertexArrays(1, &vao);
     // 销毁VBO
-    glDeleteBuffers(2, vbo_arr);
+    glDeleteBuffers(1, &vbo);
     app->destroy();
     return 0;
 }
