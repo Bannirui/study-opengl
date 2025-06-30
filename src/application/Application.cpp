@@ -9,6 +9,7 @@
 
 // 初始化静态变量
 Application* Application::s_Instance = nullptr;
+bool Application::s_shouldClose = false;
 
 Application* Application::getInstance()
 {
@@ -63,6 +64,7 @@ bool Application::init(const uint32_t& width, const uint32_t& height)
 bool Application::update()
 {
     if (glfwWindowShouldClose(m_Window)) return false;
+    if (s_shouldClose) glfwSetWindowShouldClose(m_Window, true);
     // 接收并分发窗口消息
     glfwPollEvents();
     // 双缓冲 每一帧都执行切换双缓存的动作
@@ -85,4 +87,8 @@ void Application::keyboardCallback(GLFWwindow* window, int key, int scancode, in
     Application* self = (Application*)glfwGetWindowUserPointer(window);
     if (self->m_KeyboardCallback) self->m_KeyboardCallback(key, scancode, action, mods);
 }
+void Application::setShouldClose(bool flag) {
+    s_shouldClose = flag;
+}
+
 

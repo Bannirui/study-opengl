@@ -35,6 +35,7 @@ class Application
         void setResizeCallback(ResizeCallback fn) { m_ResizeCallback = fn; }
         // 设置键盘事件回调函数
         void setKeyboardCallback(KeyboardCallback fn) { m_KeyboardCallback = fn; }
+        static void setShouldClose(bool flag);
     private:
         // glfw窗体事件回调
         // @Param window 哪个窗体发生了变化
@@ -46,6 +47,7 @@ class Application
     private:
         // 单例对象
         static Application* s_Instance;
+        static bool s_shouldClose;
         Application();
         // 窗体宽度
         uint32_t m_Width { 0 };

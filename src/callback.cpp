@@ -9,6 +9,8 @@
 
 #include "callback.h"
 
+#include <application/Application.h>
+
 void framebuffer_size_callback(int width, int height)
 {
     std::cout << "新窗口大小 w:" << width << ", h:" << height << std::endl;
@@ -21,6 +23,7 @@ void framebuffer_size_callback(int width, int height)
 void keyboard_callback(int key, int scancode, int action, int mods)
 {
     std::cout << "key:" << key << ", scancode:" << scancode << ", action: " << action << ", mods:" << mods << std::endl;
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) Application::setShouldClose(true);
 }
 
 void processInput(GLFWwindow* window)
