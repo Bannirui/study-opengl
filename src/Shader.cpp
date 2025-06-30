@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include <GLAD/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
 
@@ -77,6 +78,9 @@ void Shader::setInt(const std::string &name, int value) const {
 void Shader::setFloat(const std::string &name, float value) const {
     glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 }
+void Shader::setMat4(const std::string &name, glm::mat4& mat) const {
+    glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+}
 
 void Shader::checkCompileErrors(unsigned int shader, ShaderType type) {
     int success = 0;
@@ -96,6 +100,3 @@ void Shader::checkCompileErrors(unsigned int shader, ShaderType type) {
     std::cout << "ERROR::SHADER_ERROR of type: " << type << "\n" << errInfo << std::endl;
     assert(false);
 }
-
-
-

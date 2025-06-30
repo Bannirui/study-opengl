@@ -9,6 +9,9 @@
 // glfw实现了窗体 在窗体创建好后就用glad加载显卡驱动函数
 #include <GLFW/glfw3.h>
 #include <STB/stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "callback.h"
 #include "Shader.h"
@@ -35,8 +38,8 @@ void prepareVAO(Shader shader)
         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
     };
     unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0,
+        0, 1, 3,
+        1, 2, 3,
     };
     // 创建VBO EBO
     glGenBuffers(2, vbo_arr);
@@ -103,7 +106,7 @@ void prepareVAO(Shader shader)
     stbi_image_free(data);
     // 在帧循环之前告诉OpenGL哪个shader程序用哪个全局变量 只调用一次
     shader.use();
-    glUniform1i(glGetUniformLocation(shader.m_ID, "texture1"), 0);
+    shader.setInt("texture1", 0);
     shader.setInt("texture2", 1);
 }
 
@@ -123,6 +126,20 @@ void render(Shader shader)
         glBindVertexArray(vao);
         // 绘制时候用到EBO 绑定到OpenGL插槽
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_arr[1]);
+        // 转换坐标
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), (float)app->getWidth()/app->getHeight(), 0.1f, 100.0f);
+        // 开辟uniform全局变量给vertex shader
+        unsigned int modelLoc = glGetUniformLocation(shader.m_ID, "model");
+        unsigned int viewLoc = glGetUniformLocation(shader.m_ID, "view");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        shader.setMat4("projection", projection);
+        // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 }
 
@@ -142,7 +159,6 @@ int main()
     while (app->update())
     {
         render(ourShader);
-        // processInput(window);
     }
     // 回收资源
     glDeleteVertexArrays(1, &vao);

@@ -19,11 +19,15 @@ layout (location = 2) in vec2 aTexCoord;
 out vec3 color;
 out vec2 texCoord;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 void main()
 {
     // gl_Position是GLSL的内置变量 负责向后续阶段输出顶点位置处理的结果
     // 输入的本身已经是NDC坐标 不需要转换 直接就输出给gl_Position向后传
-    gl_Position = vec4(aPos, 1.0f);
+    gl_Position = projection * view * model * vec4(aPos, 1.0f);
     color = aColor;
     texCoord = aTexCoord;
 }

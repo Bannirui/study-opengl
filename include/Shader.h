@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include <glm/fwd.hpp>
 
 // OpenGL中万物都是3维 但是在显示器上是2维 OpenGL负责把3维坐标转换到2维像素点 这个工作由graphics pipeline负责
 // 分2部分
@@ -36,6 +37,8 @@ class Shader
         void setBool(const std::string& name, bool value) const;
         void setInt(const std::string& name, int value) const;
         void setFloat(const std::string& name, float value) const;
+        // 发送矩阵给shader
+        void setMat4(const std::string& name, glm::mat4& mat) const;
     public:
         // shader program的唯一id
         unsigned int m_ID;
