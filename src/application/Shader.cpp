@@ -2,6 +2,8 @@
 // Created by rui ding on 2025/6/26.
 //
 
+#include "application/Shader.h"
+
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -9,8 +11,6 @@
 
 #include <GLAD/glad.h>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "Shader.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
     std::string vertexCode, fragmentCode;

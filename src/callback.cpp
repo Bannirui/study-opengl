@@ -9,6 +9,9 @@
 #include <glm/glm.hpp>
 
 #include "callback.h"
+
+#include <application/Camera.h>
+
 #include "application/Application.h"
 
 void framebuffer_size_callback(int width, int height)
@@ -26,13 +29,10 @@ void keyboard_callback(int key, int scancode, int action, int mods)
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) Application::setShouldClose(true);
 }
 
-extern glm::vec3 cameraFront;
+extern Camera camera;
 extern bool firstMouse;
-extern float yaw;
-extern float pitch;
 extern float lastX;
 extern float lastY;
-extern float fov;
 void cursor_position_callback(double x, double y) {
     std::cout << "鼠标位置发生了变化 现在的 x=" << x << ", y=" << y << std::endl;
     if (firstMouse) {
@@ -44,28 +44,11 @@ void cursor_position_callback(double x, double y) {
     float yoffset = lastY - y;
     lastX = x;
     lastY = y;
-
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    if (pitch > 89.0f) pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
-
-    glm::vec3 front;
-    front.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-    front.y = glm::sin(glm::radians(pitch));
-    front.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
+    camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void mouse_scroll_callback(double yoffset) {
     if (yoffset > 0) std::cout << "鼠标滚轮放大 yoffset: " << yoffset << std::endl;
     else std::cout << "鼠标滚轮缩小 yoffset: " << yoffset << std::endl;
-    fov -= (float)yoffset;
-    if (fov < 1.0f) fov = 1.0f;
-    if (fov > 45.0f) fov = 45.0f;
+    camera.ProcessMouseScroll(yoffset);
 }
