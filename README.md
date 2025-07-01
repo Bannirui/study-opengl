@@ -234,3 +234,5 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices
   - 使用了EBO 通常直接填写0
   - 使用了EBO 不填写0 表示索引内的偏移量
   - 如果不使用EBO 可以直接传入索引数组
+
+### 9 重心插值算法

@@ -11,10 +11,12 @@
 // 每个VertexShader都从VAO中拿对应属性 再根据属性描述到VBO中拿到顶点数据
 // 从VAO的0号位置拿到位置属性
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aColor;
 // 从VAO的2号位置拿到texture坐标
-layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec2 aTexPos;
 
-out vec2 texCoord;
+out vec2 texPos;
+out vec3 color;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -32,5 +34,7 @@ void main()
     // view视图矩阵 世界空间->摄影机空间
     // projection投影矩阵 摄影机空间->剪裁空间
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
-    texCoord = aTexCoord;
+    texPos = aTexPos;
+    // color往后传
+    color = aColor;
 }
