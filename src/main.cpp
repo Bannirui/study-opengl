@@ -220,6 +220,8 @@ void render(Shader shader)
         // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
     }
+    // 绘制完一帧解绑VAO防止状态误用
+    glBindVertexArray(0);
 }
 
 void processInput() {
@@ -241,8 +243,8 @@ int main()
     // 开启deep testing
     glEnable(GL_DEPTH_TEST);
     // 创建shader实例
-    Shader ourShader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
-    prepareVAO(ourShader);
+    Shader shader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
+    prepareVAO(shader);
     // 清理画布的时候清成啥样
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     // 窗体循环
@@ -250,7 +252,7 @@ int main()
     {
         // 键盘状态
         processInput();
-        render(ourShader);
+        render(shader);
     }
     // 回收资源
     glDeleteVertexArrays(1, &vao);
