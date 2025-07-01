@@ -27,6 +27,13 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+bool firstMouse = true;
+float yaw = -90.0f;
+float pitch = 0.0f;
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+float fov = 45.0f;
+
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -190,7 +197,7 @@ void render(Shader shader)
     // 转换坐标
     glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     shader.setMat4("view", view);
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
     shader.setMat4("projection", projection);
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
