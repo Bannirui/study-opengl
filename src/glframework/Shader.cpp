@@ -2,15 +2,16 @@
 // Created by rui ding on 2025/6/26.
 //
 
-#include "application/Shader.h"
+#include "glframework/Shader.h"
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <assert.h>
 
 #include <GLAD/glad.h>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "err_check.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
     std::string vertexCode, fragmentCode;
@@ -43,19 +44,19 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, nullptr);
     glCompileShader(vertex);
-    checkCompileErrors(vertex, ShaderType::vs_compile);
+    checkCompileErrors(vertex, vs_compile);
     // 编译fragment shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, nullptr);
     glCompileShader(fragment);
-    checkCompileErrors(fragment, ShaderType::fs_compile);
+    checkCompileErrors(fragment, fs_compile);
     // 链接
     m_ID = glCreateProgram();
     // 把编译好的vertex shader和fragment shader放到程序容器中然后进行链接
     glAttachShader(m_ID, vertex);
     glAttachShader(m_ID, fragment);
     glLinkProgram(m_ID);
-    checkCompileErrors(m_ID, ShaderType::program_link);
+    checkCompileErrors(m_ID, program_link);
     // 回收vertex和fragment
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -64,7 +65,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 Shader::~Shader() {}
 
 void Shader::use() {
-    glUseProgram(m_ID);
+    GL_CALL_AND_CHECK_ERR(glUseProgram(m_ID));
+}
+void Shader::end()
+{
+    // 解绑
+    GL_CALL_AND_CHECK_ERR(glUseProgram(0));
 }
 
 void Shader::setBool(const std::string &name, bool value) const {

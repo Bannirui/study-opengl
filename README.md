@@ -1,5 +1,7 @@
 # study-opengl
-study OpenGL
+study OpenGL and make note
+
+[关于项目代码组织结构](./doc/ProjStructure.md)
 
 ### 1 NDC(Normalized Device Coordinate)
 

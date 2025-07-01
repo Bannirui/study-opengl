@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "glframework/Core.h"
 #include <string>
 #include <glm/fwd.hpp>
 
@@ -27,6 +28,9 @@
 // vertex shader的出参是fragment shader的入参 类型是vec4
 // 计算机中图像表示的4元组RGBA(红 绿 蓝 透明度)
 // 每个值[0...1]
+
+enum ShaderType { vs_compile, fs_compile, program_link };
+
 class Shader
 {
     public:
@@ -34,6 +38,8 @@ class Shader
         virtual ~Shader();
         // 告诉GPU接下来绘制图形使用的Shader程序是谁
         void use();
+        // 结束使用program shader
+        void end();
         // 给shader设置uniform全局变量
         // @Param name uniform变量名
         void setBool(const std::string& name, bool value) const;
@@ -47,9 +53,8 @@ class Shader
         // @Param name uniform变量名
         void setMat4(const std::string& name, glm::mat4& mat) const;
     public:
-        // shader program的唯一id
+        // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader
         unsigned int m_ID;
     private:
-        enum ShaderType { vs_compile, fs_compile, program_link };
         void checkCompileErrors(unsigned int shader, ShaderType type);
 };

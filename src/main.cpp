@@ -4,20 +4,17 @@
 
 #include <iostream>
 
-// glad是加载显卡驱动对opengl函数的实现的 所以一定要在glfw之前引用进来
-#include <GLAD/glad.h>
-// glfw实现了窗体 在窗体创建好后就用glad加载显卡驱动函数
-#include <GLFW/glfw3.h>
 #include <STB/stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "glframework/Core.h"
 #include "callback.h"
 #include "err_check.h"
-#include "application/Shader.h"
 #include "application/Application.h"
 #include "application/Camera.h"
+#include "glframework/Shader.h"
 #include "input/Input.h"
 
 const unsigned int SCR_WIDTH = 800;
@@ -110,7 +107,7 @@ void prepareVAO(Shader shader)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     stbi_set_flip_vertically_on_load(true);
     int width, height, nrChannels;
-    unsigned char* data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("resources/texture/container.jpg", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -125,7 +122,7 @@ void prepareVAO(Shader shader)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    data = stbi_load("resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("resources/texture/awesomeface.png", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -212,7 +209,7 @@ int main()
     // 开启deep testing
     glEnable(GL_DEPTH_TEST);
     // 创建shader实例
-    Shader shader("resources/shader/3.3.shader.vsh", "resources/shader/3.3.shader.fsh");
+    Shader shader("resources/shader/3.3.vertex.glsl", "resources/shader/3.3.fragment.glsl");
     prepareVAO(shader);
     // 清理画布的时候清成啥样
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
