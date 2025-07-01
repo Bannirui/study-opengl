@@ -190,9 +190,10 @@ void render(Shader shader)
     shader.use();
     // 告诉GPU绘制图形用的VAO
     glBindVertexArray(vao);
-    // 转换坐标
+    // 视图矩阵 世界空间->摄影机空间
     glm::mat4 view = camera.GetViewMatrix();
     shader.setMat4("view", view);
+    // 投影矩阵 摄影机空间->剪裁空间
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
     shader.setMat4("projection", projection);
     // 开辟uniform全局变量给vertex shader
@@ -210,6 +211,7 @@ void render(Shader shader)
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
     for (unsigned int i = 0, sz=sizeof(positions); i < sz / sizeof(positions[0]); i++) {
+        // 模型矩阵 aPos模型->世界空间
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, positions[i]);
         float angle = 20.0f * i;

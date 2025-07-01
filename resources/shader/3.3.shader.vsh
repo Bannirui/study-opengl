@@ -24,6 +24,13 @@ void main()
 {
     // gl_Position是GLSL的内置变量 负责向后续阶段输出顶点位置处理的结果
     // 输入的本身已经是NDC坐标 不需要转换 直接就输出给gl_Position向后传
+    // 将顶点从模型空间转换到剪裁空间
+    // projection view model是4*4矩阵 aPos是4维向量
+    // aPos顶点本地坐标 gl_Position输出到光栅化阶段的顶点坐标
+    // 计算顺序是从右往左
+    // model模型矩阵 模型->世界空间
+    // view视图矩阵 世界空间->摄影机空间
+    // projection投影矩阵 摄影机空间->剪裁空间
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
     texCoord = aTexCoord;
 }
