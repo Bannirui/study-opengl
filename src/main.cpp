@@ -240,6 +240,7 @@ int main()
     app->setResizeCallback(framebuffer_size_callback);
     app->setKeyboardCallback(keyboard_callback);
     app->setCursorPosCallback(cursor_position_callback);
+    app->setScrollCallback(mouse_scroll_callback);
 
     // 开启deep testing
     glEnable(GL_DEPTH_TEST);

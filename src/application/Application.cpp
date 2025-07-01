@@ -60,6 +60,7 @@ bool Application::init(const uint32_t& width, const uint32_t& height)
     glfwSetFramebufferSizeCallback(m_Window, framebufferSizeCallback);
     glfwSetKeyCallback(m_Window, keyboardCallback);
     glfwSetCursorPosCallback(m_Window, mousePosCallback);
+    glfwSetScrollCallback(m_Window, Application::mouseScrollCallback);
 
     // 把Application单例的实例放到glfw的window中 以后想要Application就从window中拿
     glfwSetWindowUserPointer(m_Window, this);
@@ -100,6 +101,10 @@ void Application::keyboardCallback(GLFWwindow* window, int key, int scancode, in
 void Application::mousePosCallback(GLFWwindow *window, double x, double y) {
     Application* self = (Application*)glfwGetWindowUserPointer(window);
     if (self->m_MousePosCallback) self->m_MousePosCallback(x, y);
+}
+void Application::mouseScrollCallback(GLFWwindow *window, double x, double y) {
+    Application* self = (Application*)glfwGetWindowUserPointer(window);
+    if (self->m_MouseScrollCallback) self->m_MouseScrollCallback(y);
 }
 
 void Application::processInput() {

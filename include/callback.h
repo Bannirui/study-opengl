@@ -21,3 +21,6 @@ void keyboard_callback(int key, int scancode, int action, int mods);
 
 // 监听鼠标位置变化
 void cursor_position_callback(double x, double y);
+// 监听鼠标滚轮缩放 glfw的缩放是两个向量必如触摸板或者侧轮 我们只关注正常滚轮
+// @Param yoffset 缩放量 >0表示向上滚动 放大 <0表示向下滚动 缩小
+void mouse_scroll_callback(double yoffset);

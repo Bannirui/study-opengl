@@ -17,8 +17,10 @@ using ResizeCallback = void(*)(int width, int height);
 using KeyboardCallback = void(*)(int key, int scancode, int action, int mods);
 // 鼠标位置
 using MousePosCallbackPtr = void(*)(double x, double y);
-// 鼠标滚轮缩放
-using MouseScrollCallbackPtr = void(*)();
+// 鼠标滚轮缩放 glfw的滚轮缩放有两个向量 常规的鼠标滚轮是yoffset
+// 有的鼠标滚轮可以左右拨动 触摸板也可以左右 所以有x向量
+// @Param yoffset 缩放量 >0表示向上滚动 放大 <0表示向下滚动 缩小
+using MouseScrollCallbackPtr = void(*)(double yoffset);
 
 // 单例类
 class Application
@@ -41,6 +43,8 @@ class Application
         void setKeyboardCallback(KeyboardCallback fn) { m_KeyboardCallback = fn; }
         // 设置鼠标位置变化监听
         void setCursorPosCallback(MousePosCallbackPtr fn) { m_MousePosCallback = fn; }
+        // 设置鼠标滚轮缩放事件
+        void setScrollCallback(MouseScrollCallbackPtr fn) { Application::m_MouseScrollCallback = fn; }
         static void setShouldClose(bool flag);
     private:
         // glfw窗体事件回调
@@ -52,6 +56,9 @@ class Application
         static void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         // glfw鼠标位置回调
         static void mousePosCallback(GLFWwindow* window, double x, double y);
+        // gflw鼠标滚轮缩放回调
+        // @Param yoffset 缩放量 >0表示向上滚动 放大 <0表示向下滚动 缩小
+        static void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
         // 处理输入 不是回调类的事件
         void processInput();
     private:
@@ -69,5 +76,5 @@ class Application
         ResizeCallback m_ResizeCallback { nullptr };
         KeyboardCallback m_KeyboardCallback { nullptr };
         MousePosCallbackPtr m_MousePosCallback { nullptr };
-        // MouseScrollCallbackPtr m_MouseScrollCallback { nullptr };
+        MouseScrollCallbackPtr m_MouseScrollCallback { nullptr };
 };

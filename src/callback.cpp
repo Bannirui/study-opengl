@@ -29,3 +29,8 @@ void keyboard_callback(int key, int scancode, int action, int mods)
 void cursor_position_callback(double x, double y) {
     std::cout << "鼠标位置发生了变化 现在的 x=" << x << ", y=" << y << std::endl;
 }
+
+void mouse_scroll_callback(double yoffset) {
+    if (yoffset > 0) std::cout << "鼠标滚轮放大 yoffset: " << yoffset << std::endl;
+    else std::cout << "鼠标滚轮缩小 yoffset: " << yoffset << std::endl;
+}
