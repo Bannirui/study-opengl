@@ -25,3 +25,7 @@ void keyboard_callback(int key, int scancode, int action, int mods)
     std::cout << "键盘事件 键位" << static_cast<char>(key) << ", 操作" << action << ", 有没有ctrl或者shift功能键"<< mods << std::endl;
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) Application::setShouldClose(true);
 }
+
+void cursor_position_callback(double x, double y) {
+    std::cout << "鼠标位置发生了变化 现在的 x=" << x << ", y=" << y << std::endl;
+}

@@ -18,3 +18,6 @@ void framebuffer_size_callback(int width, int height);
 // @Param action 按下还是抬起
 // @Param mods 是否有shift或者ctrl
 void keyboard_callback(int key, int scancode, int action, int mods);
+
+// 监听鼠标位置变化
+void cursor_position_callback(double x, double y);

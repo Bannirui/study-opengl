@@ -15,6 +15,10 @@ struct GLFWwindow;
 using ResizeCallback = void(*)(int width, int height);
 // 键盘事件
 using KeyboardCallback = void(*)(int key, int scancode, int action, int mods);
+// 鼠标位置
+using MousePosCallbackPtr = void(*)(double x, double y);
+// 鼠标滚轮缩放
+using MouseScrollCallbackPtr = void(*)();
 
 // 单例类
 class Application
@@ -35,6 +39,8 @@ class Application
         void setResizeCallback(ResizeCallback fn) { m_ResizeCallback = fn; }
         // 设置键盘事件回调函数
         void setKeyboardCallback(KeyboardCallback fn) { m_KeyboardCallback = fn; }
+        // 设置鼠标位置变化监听
+        void setCursorPosCallback(MousePosCallbackPtr fn) { m_MousePosCallback = fn; }
         static void setShouldClose(bool flag);
     private:
         // glfw窗体事件回调
@@ -44,6 +50,8 @@ class Application
         static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
         // glfw键盘事件回调
         static void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        // glfw鼠标位置回调
+        static void mousePosCallback(GLFWwindow* window, double x, double y);
         // 处理输入 不是回调类的事件
         void processInput();
     private:
@@ -60,4 +68,6 @@ class Application
         // 窗体大小变化回调的函数指针
         ResizeCallback m_ResizeCallback { nullptr };
         KeyboardCallback m_KeyboardCallback { nullptr };
+        MousePosCallbackPtr m_MousePosCallback { nullptr };
+        // MouseScrollCallbackPtr m_MouseScrollCallback { nullptr };
 };
