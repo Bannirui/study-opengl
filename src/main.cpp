@@ -35,8 +35,16 @@ unsigned int vao = 0;
 unsigned int ebo = 0;
 // texture1 texture2
 unsigned int texture_arr[] = {0, 0};
+
+// 创建shader实例
+Shader* prepareShader()
+{
+    Shader* shader = new Shader("resources/shader/3.3.vertex.glsl", "resources/shader/3.3.fragment.glsl");
+    return shader;
+}
+
 // 生成VAO
-void prepareVAO(Shader shader)
+void prepareVAO(Shader* shader)
 {
     // 顶点数据 交叉属性 放到一个VBO里面 用VAO告诉GPU属性信息
     // 立方体6个面 每个面1个矩形 1个矩形等于2个三角形 1个三角形3个顶点 那就总共需要36个顶点信息
@@ -132,12 +140,14 @@ void prepareVAO(Shader shader)
     }
     stbi_image_free(data);
     // 在帧循环之前告诉OpenGL哪个shader程序用哪个全局变量 只调用一次
-    shader.use();
-    shader.setInt("texture1", 0);
-    shader.setInt("texture2", 1);
+    shader->use();
+    shader->setInt("texture1", 0);
+    shader->setInt("texture2", 1);
+    shader->end();
 }
 
-void render(Shader shader)
+
+void render(Shader* shader)
 {
     float curFrameTime = static_cast<float>(glfwGetTime());
     deltaTime = curFrameTime - lastFrame;
@@ -153,15 +163,15 @@ void render(Shader shader)
     glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
 
     // 告诉GPU接下来绘制用的shader程序是哪个
-    shader.use();
+    shader->use();
     // 告诉GPU绘制图形用的VAO
     glBindVertexArray(vao);
     // 视图矩阵 世界空间->摄影机空间
     glm::mat4 view = camera.GetViewMatrix();
-    shader.setMat4("view", view);
+    shader->setMat4("view", view);
     // 投影矩阵 摄影机空间->剪裁空间
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
-    shader.setMat4("projection", projection);
+    shader->setMat4("projection", projection);
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
     glm::vec3 positions[] = {
@@ -182,12 +192,13 @@ void render(Shader shader)
         model = glm::translate(model, positions[i]);
         float angle = 20.0f * i;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        shader.setMat4("model", model);
+        shader->setMat4("model", model);
         // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
     }
     // 绘制完一帧解绑VAO防止状态误用
     glBindVertexArray(0);
+    shader->end();
 }
 
 void processInput() {
@@ -208,8 +219,7 @@ int main()
 
     // 开启deep testing
     glEnable(GL_DEPTH_TEST);
-    // 创建shader实例
-    Shader shader("resources/shader/3.3.vertex.glsl", "resources/shader/3.3.fragment.glsl");
+    Shader* shader = prepareShader();
     prepareVAO(shader);
     // 清理画布的时候清成啥样
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -225,5 +235,6 @@ int main()
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
     app->destroy();
+    delete shader;
     return 0;
 }

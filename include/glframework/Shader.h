@@ -29,32 +29,42 @@
 // 计算机中图像表示的4元组RGBA(红 绿 蓝 透明度)
 // 每个值[0...1]
 
-enum ShaderType { vs_compile, fs_compile, program_link };
+enum ShaderType
+{
+    vs_compile,
+    fs_compile,
+    program_link
+};
 
 class Shader
 {
-    public:
-        Shader(const char* vertexPath, const char* fragmentPath);
-        virtual ~Shader();
-        // 告诉GPU接下来绘制图形使用的Shader程序是谁
-        void use();
-        // 结束使用program shader
-        void end();
-        // 给shader设置uniform全局变量
-        // @Param name uniform变量名
-        void setBool(const std::string& name, bool value) const;
-        // 给shader设置uniform全局变量
-        // @Param name uniform变量名
-        void setInt(const std::string& name, int value) const;
-        // 给shader设置uniform全局变量
-        // @Param name uniform变量名
-        void setFloat(const std::string& name, float value) const;
-        // 给shader设置uniform全局变量
-        // @Param name uniform变量名
-        void setMat4(const std::string& name, glm::mat4& mat) const;
-    public:
-        // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader
-        unsigned int m_ID;
-    private:
-        void checkCompileErrors(unsigned int shader, ShaderType type);
+public:
+    /**
+     * 读取vs程序和fs程序编译链接成shader program
+     * @param vertexPath vs程序的文件路径
+     * @param fragmentPath fs程序的文件路径
+     */
+    Shader(const char* vertexPath, const char* fragmentPath);
+    virtual ~Shader();
+    // 告诉GPU接下来绘制图形使用的Shader程序是谁
+    void use();
+    // 结束使用program shader use和end成对使用
+    void end();
+    /**
+     * 给shader设置uniform全局变量
+     * 不同数据类型调用gl函数不一样 所以就给不同类型开放接口
+     * @param name uniform变量名
+     * @param value 要传给uniform全局变量的内容
+     */
+    void setBool(const std::string& name, bool value) const;
+    void setInt(const std::string& name, int value) const;
+    void setFloat(const std::string& name, float value) const;
+    void setMat4(const std::string& name, glm::mat4& mat) const;
+
+public:
+    // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader
+    unsigned int m_Program;
+
+private:
+    static void checkCompileErrors(unsigned int shader, ShaderType type);
 };
