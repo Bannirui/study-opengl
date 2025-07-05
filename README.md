@@ -238,3 +238,53 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices
   - 如果不使用EBO 可以直接传入索引数组
 
 ### 9 重心插值算法
+
+### 10 GLSL
+
+#### 10.1 基础数据类型
+
+- void 空类型
+- bool true false
+- int 至少16位浮点数
+- float 32位浮点数
+- double 64位浮点数
+
+#### 10.2 向量数据类型
+
+- vecn n个float分量的向量
+- bvecn bool
+- ivecn int
+- uvecn unsigned int
+- dvecn double
+
+#### 10.3 向量初始化
+
+```glsl
+vec3 color = vec3(1.0, 1.0, 1.0);
+vec3 color = vec3(1.0);
+```
+
+#### 10.4 向量分量的使用
+
+```glsl
+vec4 color = vec4(0.9, 0.8, 0.7, 0.6);
+float x = color.x;
+float r = color.r;
+float w = color.w;
+float a = color.a;
+```
+
+#### 10.5 重组
+
+```glsl
+vec4 color = vec4(0.9, 0.8, 0.7, 0.6);
+vec4 param0 = color.xyzz;
+vec4 param1 = color.zyzz;
+vec4 param2 = param0.xxxx + pram1.yzwx;
+```
+
+```glsl
+vec4 color = vec4(0.1, 0.2, 0.3, 0.4);
+vec4 param0 = vec4(color.xyz, 0.5);
+vec4 param1 = vec4(color.yz, 0.3, 0.2);
+```
