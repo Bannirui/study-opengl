@@ -36,11 +36,12 @@ void main()
     // model模型矩阵 模型->世界空间
     // view视图矩阵 世界空间->摄影机空间
     // projection投影矩阵 摄影机空间->剪裁空间
+    gl_Position = projection * view * model * vec4(aPos, 1.0f);
+//     周期变化顶点的x坐标达到水平移动效果
+//     float dx = 0.5;
+//     float offsetX = sin(systime * movSpeed) * dx;
+//     gl_Position = vec4(aPos.x + offsetX, aPos.y, aPos.z, 1.0f);
 
-    //gl_Position = projection * view * model * vec4(aPos, 1.0f);
-    float dx = 0.5;
-    float offsetX = sin(systime * movSpeed) * dx;
-    gl_Position = vec4(aPos.x + offsetX, aPos.y, aPos.z, 1.0f);
     texPos = aTexPos;
     // color往后传
     color = aColor;
