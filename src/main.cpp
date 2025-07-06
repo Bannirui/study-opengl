@@ -200,6 +200,8 @@ void render(Shader* shader)
     glBindVertexArray(0);
     // 每一帧拿到系统时间告诉shader 达到呼吸效果
     shader->setFloat("systime", glfwGetTime());
+    // 控制运动速率
+    shader->setFloat("movSpeed", 4.0f);
     shader->end();
 }
 
