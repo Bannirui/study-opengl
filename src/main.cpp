@@ -198,6 +198,8 @@ void render(Shader* shader)
     }
     // 绘制完一帧解绑VAO防止状态误用
     glBindVertexArray(0);
+    // 每一帧拿到系统时间告诉shader 达到呼吸效果
+    shader->setFloat("systime", glfwGetTime());
     shader->end();
 }
 

@@ -84,6 +84,7 @@ void Shader::end()
 
 void Shader::setBool(const std::string& name, bool value) const
 {
+    // 在shader程序中用uniform关键字声明了全局变量 获取到uniform变量在shader程序中的位置 更新uniform变量的值
     glUniform1i(glGetUniformLocation(m_Program, name.c_str()), (int)value);
 }
 

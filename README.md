@@ -288,3 +288,10 @@ vec4 color = vec4(0.1, 0.2, 0.3, 0.4);
 vec4 param0 = vec4(color.xyz, 0.5);
 vec4 param1 = vec4(color.yz, 0.3, 0.2);
 ```
+
+#### 10.6 uniform变量
+
+命名规则glUniform+{1|2|3|4}+{f|i|ui}
+
+- uniform变量包含多少个数字
+- uniform变量内数据类型

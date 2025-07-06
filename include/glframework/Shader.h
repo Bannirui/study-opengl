@@ -53,6 +53,7 @@ public:
     /**
      * 给shader设置uniform全局变量
      * 不同数据类型调用gl函数不一样 所以就给不同类型开放接口
+     * 在调用glUniform之前一定要先调用glUseProgram
      * @param name uniform变量名
      * @param value 要传给uniform全局变量的内容
      */
@@ -61,7 +62,7 @@ public:
     void setFloat(const std::string& name, float value) const;
     void setMat4(const std::string& name, glm::mat4& mat) const;
 
-public:
+private:
     // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader
     unsigned int m_Program;
 

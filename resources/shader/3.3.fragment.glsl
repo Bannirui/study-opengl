@@ -14,8 +14,11 @@ in vec3 color;
 // fragColor 变量名
 out vec4 fragColor;
 
+// 系统时间 呼吸效果
+uniform float systime;
+
 void main()
 {
     vec4 texColor = mix(texture(texture1, texPos), texture(texture2, texPos), 0.2f);
-    fragColor = texColor * vec4(color, 1.0f);
+    fragColor = texColor * vec4(color * (sin(systime) + 1.0) / 2.0, 1.0f);
 }
