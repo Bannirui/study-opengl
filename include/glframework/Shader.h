@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include "glframework/Core.h"
 #include <string>
-#include <glm/fwd.hpp>
 
 // OpenGL中万物都是3维 但是在显示器上是2维 OpenGL负责把3维坐标转换到2维像素点 这个工作由graphics pipeline负责
 // 分2部分
@@ -60,7 +58,7 @@ public:
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
-    void setMat4(const std::string& name, glm::mat4& mat) const;
+    void setMat4(const std::string& name, const float* values) const;
 
 private:
     // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader

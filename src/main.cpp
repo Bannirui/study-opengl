@@ -168,10 +168,10 @@ void render(Shader* shader)
     glBindVertexArray(vao);
     // 视图矩阵 世界空间->摄影机空间
     glm::mat4 view = camera.GetViewMatrix();
-    shader->setMat4("view", view);
+    shader->setMat4("view", glm::value_ptr(view));
     // 投影矩阵 摄影机空间->剪裁空间
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
-    shader->setMat4("projection", projection);
+    shader->setMat4("projection", glm::value_ptr(projection));
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
     glm::vec3 positions[] = {
@@ -192,7 +192,7 @@ void render(Shader* shader)
         model = glm::translate(model, positions[i]);
         float angle = 20.0f * i;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        shader->setMat4("model", model);
+        shader->setMat4("model", glm::value_ptr(model));
         // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
     }

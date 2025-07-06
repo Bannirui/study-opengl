@@ -32,7 +32,7 @@ void main()
     // 将顶点从模型空间转换到剪裁空间
     // projection view model是4*4矩阵 aPos是4维向量
     // aPos顶点本地坐标 gl_Position输出到光栅化阶段的顶点坐标
-    // 计算顺序是从右往左
+    // 计算顺序是从右往t commit工具栏左
     // model模型矩阵 模型->世界空间
     // view视图矩阵 世界空间->摄影机空间
     // projection投影矩阵 摄影机空间->剪裁空间
