@@ -17,15 +17,15 @@
 #include "glframework/Shader.h"
 #include "input/Input.h"
 
-const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // 相机坐标
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-bool firstMouse = true;
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+bool  firstMouse = true;
+float lastX      = SCR_WIDTH / 2.0f;
+float lastY      = SCR_HEIGHT / 2.0f;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -49,15 +49,15 @@ void prepareVAO(Shader* shader)
     // 顶点数据 交叉属性 放到一个VBO里面 用VAO告诉GPU属性信息
     // 立方体6个面 每个面1个矩形 1个矩形等于2个三角形 1个三角形3个顶点 那就总共需要36个顶点信息
     float vertices[] = {
-        // position XYZ       color RGB           texture坐标ST
-         0.5f, -0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        // position XYZ       color RGB            UV坐标
+        0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
     };
     unsigned int indices[] = {
         0, 1, 2,
@@ -105,40 +105,55 @@ void prepareVAO(Shader* shader)
 
     // 解绑OpenGL状态机的VAO插槽 最好不要一直保持着某个VAO的绑定状态
     glBindVertexArray(0);
+}
 
-    glGenTextures(2, texture_arr);
-    // 更新OpenGL插槽
-    glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+void prepareTexture(Shader* shader)
+{
+    // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load("resources/texture/container.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
+    // 创建纹理对象
+    glGenTextures(2, texture_arr);
+    int            width, height, nrChannels;
+    unsigned char* data = stbi_load("resources/texture/container.jpg", &width, &height, &nrChannels, STBI_rgb_alpha);
+    if (!data)
+    {
         std::cout << "Failed to load texture" << std::endl;
         assert(false);
     }
+    // 激活纹理单元
+    glActiveTexture(GL_TEXTURE0);
+    // 纹理对象绑定到OpenGL状态机插槽
+    // 将纹理对象绑定到纹理单元 OpenGL默认至少16个纹理单元 没有使用glActiveTexture()显式用指定纹理单元就默认使用0号纹理单元
+    glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
+    // 开辟显存 传输数据
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
-    // 更新OpenGL插槽
-    glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
+    // 纹理包裹 当UV坐标超出0 1怎么处理
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // 纹理过滤器
+    // 需要像素<图片像素 使用Nearest
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // 需要像素>图片像素 使用Linear
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    data = stbi_load("resources/texture/awesomeface.png", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
+
+    data = stbi_load("resources/texture/awesomeface.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+    if (!data)
+    {
         std::cout << "Failed to load texture" << std::endl;
         assert(false);
     }
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     // 在帧循环之前告诉OpenGL哪个shader程序用哪个全局变量 只调用一次
     shader->use();
     shader->setInt("texture1", 0);
@@ -146,12 +161,11 @@ void prepareVAO(Shader* shader)
     shader->end();
 }
 
-
 void render(Shader* shader)
 {
-    float curFrameTime = static_cast<float>(glfwGetTime());
-    deltaTime = curFrameTime - lastFrame;
-    lastFrame = curFrameTime;
+    auto curFrameTime = static_cast<float>(glfwGetTime());
+    deltaTime          = curFrameTime - lastFrame;
+    lastFrame          = curFrameTime;
 
     // 每一帧都要清屏 防止残留前一帧图像
     GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
@@ -170,28 +184,30 @@ void render(Shader* shader)
     glm::mat4 view = camera.GetViewMatrix();
     shader->setMat4("view", glm::value_ptr(view));
     // 投影矩阵 摄影机空间->剪裁空间
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(),
+                                            0.1f, 100.0f);
     shader->setMat4("projection", glm::value_ptr(projection));
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
     glm::vec3 positions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(2.0f, 5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
         glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f,  2.0f, -2.5f),
-        glm::vec3( 1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)
     };
-    for (unsigned int i = 0, sz=sizeof(positions); i < sz / sizeof(positions[0]); i++) {
+    for (unsigned int i = 0, sz = sizeof(positions); i < sz / sizeof(positions[0]); i++)
+    {
         // 模型矩阵 aPos模型->世界空间
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, positions[i]);
-        float angle = 20.0f * i;
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        auto model = glm::mat4(1.0f);
+        model           = glm::translate(model, positions[i]);
+        float angle     = 20.0f * i;
+        model           = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->setMat4("model", glm::value_ptr(model));
         // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
@@ -199,13 +215,14 @@ void render(Shader* shader)
     // 绘制完一帧解绑VAO防止状态误用
     glBindVertexArray(0);
     // 每一帧拿到系统时间告诉shader 达到呼吸效果
-    shader->setFloat("systime", glfwGetTime());
+    shader->setFloat("systime", static_cast<float>(glfwGetTime()));
     // 控制运动速率
     shader->setFloat("movSpeed", 4.0f);
     shader->end();
 }
 
-void processInput() {
+void processInput()
+{
     if (Input::isKeyPressed(GLFW_KEY_W)) camera.ProcessKeyboard(FORWARD, deltaTime);
     if (Input::isKeyPressed(GLFW_KEY_S)) camera.ProcessKeyboard(BACKWARD, deltaTime);
     if (Input::isKeyPressed(GLFW_KEY_A)) camera.ProcessKeyboard(LEFT, deltaTime);
@@ -225,6 +242,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     Shader* shader = prepareShader();
     prepareVAO(shader);
+    prepareTexture(shader);
     // 清理画布的时候清成啥样
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     // 窗体循环
