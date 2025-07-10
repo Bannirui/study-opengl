@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream>
 
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 
 #include "err_check.h"
 

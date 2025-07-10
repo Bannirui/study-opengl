@@ -5,7 +5,7 @@
 #pragma once
 
 #include <memory>
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 enum Camera_Movement {

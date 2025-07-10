@@ -4,7 +4,7 @@
 
 #include <iostream>
 // be sure to include GLAD before other header files that require OpenGL
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 

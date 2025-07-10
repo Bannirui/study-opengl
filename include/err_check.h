@@ -8,7 +8,7 @@
 #include <string>
 #include <assert.h>
 
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 // 调用opengl的api后检查异常
