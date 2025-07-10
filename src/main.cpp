@@ -93,10 +93,13 @@ void prepareVAO(Shader* shader)
 
     // VAO中加入VBO的属性信息
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    // 坐标
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    // 颜色
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    // UV坐标
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
@@ -156,16 +159,17 @@ void prepareTexture(Shader* shader)
 
     // 在帧循环之前告诉OpenGL哪个shader程序用哪个全局变量 只调用一次
     shader->use();
-    shader->setInt("texture1", 0);
-    shader->setInt("texture2", 1);
+    // 采样器sampler1采样0号纹理单元
+    shader->setInt("sampler1", 0);
+    shader->setInt("sampler2", 1);
     shader->end();
 }
 
 void render(Shader* shader)
 {
     auto curFrameTime = static_cast<float>(glfwGetTime());
-    deltaTime          = curFrameTime - lastFrame;
-    lastFrame          = curFrameTime;
+    deltaTime         = curFrameTime - lastFrame;
+    lastFrame         = curFrameTime;
 
     // 每一帧都要清屏 防止残留前一帧图像
     GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
@@ -204,10 +208,10 @@ void render(Shader* shader)
     for (unsigned int i = 0, sz = sizeof(positions); i < sz / sizeof(positions[0]); i++)
     {
         // 模型矩阵 aPos模型->世界空间
-        auto model = glm::mat4(1.0f);
-        model           = glm::translate(model, positions[i]);
-        float angle     = 20.0f * i;
-        model           = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        auto model  = glm::mat4(1.0f);
+        model       = glm::translate(model, positions[i]);
+        float angle = 20.0f * i;
+        model       = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->setMat4("model", glm::value_ptr(model));
         // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));

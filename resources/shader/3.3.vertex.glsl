@@ -12,10 +12,10 @@
 // 从VAO的0号位置拿到位置属性
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
-// 从VAO的2号位置拿到texture坐标
-layout (location = 2) in vec2 aTexPos;
+// 从VAO的2号位置拿到texture UV坐标
+layout (location = 2) in vec2 aUV;
 
-out vec2 texPos;
+out vec2 uv;
 out vec3 color;
 
 uniform mat4 model;
@@ -42,7 +42,7 @@ void main()
 //     float offsetX = sin(systime * movSpeed) * dx;
 //     gl_Position = vec4(aPos.x + offsetX, aPos.y, aPos.z, 1.0f);
 
-    texPos = aTexPos;
+    uv = aUV;
     // color往后传
     color = aColor;
 }
