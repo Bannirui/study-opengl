@@ -44,28 +44,14 @@ target_link_libraries(${PROJECT_NAME}
         PRIVATE stb
 )
 
-# 获取资源文件列表 递归获取所有resources子文件
-file(GLOB_RECURSE RESOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/*")
-# 目标拷贝目录
-set(RESOURCE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
-# 添加 目标运行目录
-set(RESOURCE_RUNTIME_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources")
-# 自定义命令 拷贝并生成哑文件用于触发依赖
+# 拷贝资源文件到构建目录和运行目录
 add_custom_command(
-        OUTPUT "${RESOURCE_OUTPUT_DIR}/.copied"
+        TARGET ${PROJECT_NAME} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_CURRENT_SOURCE_DIR}/resources"
-            "${RESOURCE_OUTPUT_DIR}"
+            "${CMAKE_CURRENT_BINARY_DIR}/resources"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${RESOURCE_OUTPUT_DIR}"
-            "${RESOURCE_RUNTIME_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E touch "${RESOURCE_OUTPUT_DIR}/.copied"
-        DEPENDS ${RESOURCE_FILES}
-        COMMENT "Copying updated resources to both build and runtime directories"
+            "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources"
+        COMMENT "Copying assets to build and runtime directories"
 )
-# 自定义目标 执行上面的命令
-add_custom_target(copy_resources ALL
-        DEPENDS "${RESOURCE_OUTPUT_DIR}/.copied"
-)
-# 添加依赖 确保拷贝指令在主程序构建前完成
-add_dependencies(${PROJECT_NAME} copy_resources)
