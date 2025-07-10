@@ -55,26 +55,33 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glad)
 # glad2没有现成的代码 用py生成glad代码
 set(GLAD_GENERATED_DIR "${CMAKE_BINARY_DIR}/generated/glad")
+set(GLAD_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/cmake/glad.cmake)
+set(GLAD_C_FILE "${GLAD_GENERATED_DIR}/src/glad.c")
+set(GLAD_H_FILE "${GLAD_GENERATED_DIR}/include/glad/glad.h")
 file(MAKE_DIRECTORY ${GLAD_GENERATED_DIR})
-add_custom_command(
-        OUTPUT
+# glad源码文件不存在 再执行生成
+if(NOT EXISTS ${GLAD_C_FILE} OR NOT EXISTS ${GLAD_H_FILE})
+    message(STATUS "Glad output not found, will generate with glad2")
+    add_custom_command(
+            OUTPUT
             ${GLAD_GENERATED_DIR}/src/glad.c
             ${GLAD_GENERATED_DIR}/include/glad/glad.h
-        COMMAND ${MY_PYTHON} -m glad
-          --generator c
-          --spec gl
-          --api gl=3.3
-          --profile core
-          --out-path ${GLAD_GENERATED_DIR}
-          --extensions="" # glad2没做隔离 会把所有函数都生成 禁用所有扩展 避免看到4.x的高版本gl函数
-        COMMENT "Generating glad loader with glad2"
-        VERBATIM
-)
+            COMMAND ${MY_PYTHON} -m glad
+            --generator c
+            --spec gl
+            --api gl=3.3
+            --profile core
+            --out-path ${GLAD_GENERATED_DIR}
+            --extensions="" # glad2没做隔离 会把所有函数都生成 禁用所有扩展 避免看到4.x的高版本gl函数
+            COMMENT "Generating glad loader with glad2"
+            VERBATIM
+    )
+else()
+    message(STATUS "Glad already generated, skipping generation")
+endif()
 # glad
 add_custom_target(glad-gen
-        DEPENDS
-        ${GLAD_GENERATED_DIR}/src/glad.c
-        ${GLAD_GENERATED_DIR}/include/glad/glad.h
+        DEPENDS ${GLAD_C_FILE} ${GLAD_H_FILE}
 )
 add_library(glad STATIC ${GLAD_GENERATED_DIR}/src/glad.c)
 target_include_directories(glad PUBLIC ${GLAD_GENERATED_DIR}/include)
