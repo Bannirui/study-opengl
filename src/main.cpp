@@ -4,7 +4,6 @@
 
 #include <iostream>
 
-#include <stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -16,6 +15,7 @@
 #include "application/Camera.h"
 #include "glframework/Shader.h"
 #include "input/Input.h"
+#include "glframework/Texture.h"
 
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -34,7 +34,8 @@ unsigned int vbo = 0;
 unsigned int vao = 0;
 unsigned int ebo = 0;
 // texture1 texture2
-unsigned int texture_arr[] = {0, 0};
+Texture* texture1 = nullptr;
+Texture* texture2 = nullptr;
 
 // 创建shader实例
 Shader* prepareShader()
@@ -50,28 +51,13 @@ void prepareVAO(Shader* shader)
     // 立方体6个面 每个面1个矩形 1个矩形等于2个三角形 1个三角形3个顶点 那就总共需要36个顶点信息
     float vertices[] = {
         // position XYZ       color RGB            UV坐标
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f,  -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.5f,  0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f,  -0.5f, 0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f, -0.5f, -0.5f, 0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
     };
     unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0,
-        4, 5, 6,
-        6, 7, 4,
-        0, 1, 5,
-        5, 4, 0,
-        3, 2, 6,
-        6, 7, 3,
-        1, 2, 6,
-        6, 5, 1,
-        0, 3, 7,
-        7, 4, 0,
+        0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 0, 1, 5, 5, 4, 0, 3, 2, 6, 6, 7, 3, 1, 2, 6, 6, 5, 1, 0, 3, 7, 7, 4, 0,
     };
     // 创建VBO
     glGenBuffers(1, &vbo);
@@ -112,57 +98,8 @@ void prepareVAO(Shader* shader)
 
 void prepareTexture(Shader* shader)
 {
-    // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
-    stbi_set_flip_vertically_on_load(true);
-    // 创建纹理对象
-    glGenTextures(2, texture_arr);
-    int            width, height, nrChannels;
-    unsigned char* data = stbi_load("resources/texture/container.jpg", &width, &height, &nrChannels, STBI_rgb_alpha);
-    if (!data)
-    {
-        std::cout << "Failed to load texture" << std::endl;
-        assert(false);
-    }
-    // 激活纹理单元
-    glActiveTexture(GL_TEXTURE0);
-    // 纹理对象绑定到OpenGL状态机插槽
-    // 将纹理对象绑定到纹理单元 OpenGL默认至少16个纹理单元 没有使用glActiveTexture()显式用指定纹理单元就默认使用0号纹理单元
-    glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
-    // 开辟显存 传输数据
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data);
-    // 纹理包裹 当UV坐标超出0 1怎么处理
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // 纹理过滤器
-    // 需要像素<图片像素 使用Nearest
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    // 需要像素>图片像素 使用Linear
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    data = stbi_load("resources/texture/awesomeface.png", &width, &height, &nrChannels, STBI_rgb_alpha);
-    if (!data)
-    {
-        std::cout << "Failed to load texture" << std::endl;
-        assert(false);
-    }
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // 在帧循环之前告诉OpenGL哪个shader程序用哪个全局变量 只调用一次
-    shader->use();
-    // 采样器sampler1采样0号纹理单元
-    shader->setInt("sampler1", 0);
-    shader->setInt("sampler2", 1);
-    shader->end();
+    texture1 = new Texture("resources/texture/container.jpg", 0);
+    texture2 = new Texture("resources/texture/awesomeface.png", 1);
 }
 
 void render(Shader* shader)
@@ -175,10 +112,6 @@ void render(Shader* shader)
     GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
     // 删除depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture_arr[0]);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture_arr[1]);
 
     // 告诉GPU接下来绘制用的shader程序是哪个
     shader->use();
@@ -188,23 +121,20 @@ void render(Shader* shader)
     glm::mat4 view = camera.GetViewMatrix();
     shader->setMat4("view", glm::value_ptr(view));
     // 投影矩阵 摄影机空间->剪裁空间
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(),
-                                            0.1f, 100.0f);
+    glm::mat4 projection =
+        glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
     shader->setMat4("projection", glm::value_ptr(projection));
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
-    glm::vec3 positions[] = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f, 2.0f, -2.5f),
-        glm::vec3(1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f)
-    };
+    glm::vec3 positions[] = {glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
+                             glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
+                             glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
+                             glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
+                             glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
+    // 采样器sampler1采样0号纹理单元
+    shader->setInt("sampler1", 0);
+    // 采样器sampler2采样1号纹理单元
+    shader->setInt("sampler2", 1);
     for (unsigned int i = 0, sz = sizeof(positions); i < sz / sizeof(positions[0]); i++)
     {
         // 模型矩阵 aPos模型->世界空间
@@ -260,6 +190,8 @@ int main()
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
+    delete texture1;
+    delete texture2;
     app->destroy();
     delete shader;
     return 0;
