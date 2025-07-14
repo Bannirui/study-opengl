@@ -22,7 +22,6 @@ Texture::Texture(const std::string& path, unsigned int unit) : m_Uint(unit)
     glBindTexture(GL_TEXTURE_2D, m_Texture);
     // 开辟显存 传输数据
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
     // 纹理包裹 当UV坐标超出0 1怎么处理
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -32,6 +31,7 @@ Texture::Texture(const std::string& path, unsigned int unit) : m_Uint(unit)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     // 需要像素>图片像素 使用Linear
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 Texture::~Texture()
@@ -45,3 +45,9 @@ void Texture::Bind()
     glActiveTexture(GL_TEXTURE0 + m_Uint);
     glBindTexture(GL_TEXTURE_2D, m_Texture);
 }
+
+int Texture::GetUnit()
+{
+    return m_Uint;
+}
+

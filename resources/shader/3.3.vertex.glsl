@@ -10,20 +10,18 @@
 // VBO中定义了n个顶点数据 就会起n个GPU的核执行VertexShader程序
 // 每个VertexShader都从VAO中拿对应属性 再根据属性描述到VBO中拿到顶点数据
 // 从VAO的0号位置拿到位置属性
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
-// 从VAO的2号位置拿到texture UV坐标
-layout (location = 2) in vec2 aUV;
-
-out vec2 uv;
-out vec3 color;
+layout (location = 0) in vec3 a_pos;
+// 从VAO的1号位置拿到texture UV坐标
+layout (location = 1) in vec2 a_uv;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-
 uniform float systime;
 uniform float movSpeed;
+
+out vec2 uv;
+out vec3 color;
 
 void main()
 {
@@ -36,13 +34,13 @@ void main()
     // model模型矩阵 模型->世界空间
     // view视图矩阵 世界空间->摄影机空间
     // projection投影矩阵 摄影机空间->剪裁空间
-    gl_Position = projection * view * model * vec4(aPos, 1.0f);
+    gl_Position = projection * view * model * vec4(a_pos, 1.0f);
 //     周期变化顶点的x坐标达到水平移动效果
 //     float dx = 0.5;
 //     float offsetX = sin(systime * movSpeed) * dx;
 //     gl_Position = vec4(aPos.x + offsetX, aPos.y, aPos.z, 1.0f);
 
-    uv = aUV;
+    uv = a_uv;
     // color往后传
-    color = aColor;
+    // color = a_color;
 }

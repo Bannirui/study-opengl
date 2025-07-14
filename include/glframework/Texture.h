@@ -20,10 +20,12 @@ class Texture
 
     void Bind();
 
+    int GetUnit();
+
    private:
     GLuint m_Texture{0};
     int    m_Width{0};
     int    m_Height{0};
     // 纹理单元
-    unsigned int m_Uint{0};
+    int m_Uint{0};
 };

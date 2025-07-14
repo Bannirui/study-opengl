@@ -45,20 +45,70 @@ Shader* prepareShader()
 }
 
 // 生成VAO
-void prepareVAO(Shader* shader)
+void prepareVAO()
 {
     // 顶点数据 交叉属性 放到一个VBO里面 用VAO告诉GPU属性信息
     // 立方体6个面 每个面1个矩形 1个矩形等于2个三角形 1个三角形3个顶点 那就总共需要36个顶点信息
+    // clang-format off
     float vertices[] = {
-        // position XYZ       color RGB            UV坐标
-        0.5f,  -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.5f,  0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        -0.5f, 0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        0.5f,  -0.5f, 0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f, -0.5f, -0.5f, 0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        // position XYZ       UV坐标
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
     unsigned int indices[] = {
-        0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 0, 1, 5, 5, 4, 0, 3, 2, 6, 6, 7, 3, 1, 2, 6, 6, 5, 1, 0, 3, 7, 7, 4, 0,
+        0, 1, 2,
+        3, 4, 5,
+        6, 7, 8,
+        9, 10, 11,
+        12, 13, 14,
+        15, 16, 17,
+        18, 19, 20,
+        21, 22, 23,
+        24, 25, 26,
+        27, 28, 29,
+        30, 31, 32,
+        33, 34, 35,
     };
+    // clang-format on
     // 创建VBO
     glGenBuffers(1, &vbo);
     // 绑定VBO到OpenGL当前VBO的插槽上 后面向OpenGL当前VBO插槽的操作就是间接在操作VBO
@@ -81,13 +131,10 @@ void prepareVAO(Shader* shader)
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // 坐标
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    // 颜色
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     // UV坐标
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
     // VAO中加入EBO的索引信息
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -96,7 +143,7 @@ void prepareVAO(Shader* shader)
     glBindVertexArray(0);
 }
 
-void prepareTexture(Shader* shader)
+void prepareTexture()
 {
     texture1 = new Texture("resources/texture/container.jpg", 0);
     texture2 = new Texture("resources/texture/awesomeface.png", 1);
@@ -132,9 +179,13 @@ void render(Shader* shader)
                              glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
                              glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
     // 采样器sampler1采样0号纹理单元
-    shader->setInt("sampler1", 0);
+    shader->setInt("sampler1", texture1->GetUnit());
     // 采样器sampler2采样1号纹理单元
-    shader->setInt("sampler2", 1);
+    shader->setInt("sampler2", texture2->GetUnit());
+    // 每一帧拿到系统时间告诉shader 达到呼吸效果
+    shader->setFloat("systime", static_cast<float>(glfwGetTime()));
+    // 控制运动速率
+    shader->setFloat("movSpeed", 4.0f);
     for (unsigned int i = 0, sz = sizeof(positions); i < sz / sizeof(positions[0]); i++)
     {
         // 模型矩阵 aPos模型->世界空间
@@ -148,10 +199,6 @@ void render(Shader* shader)
     }
     // 绘制完一帧解绑VAO防止状态误用
     glBindVertexArray(0);
-    // 每一帧拿到系统时间告诉shader 达到呼吸效果
-    shader->setFloat("systime", static_cast<float>(glfwGetTime()));
-    // 控制运动速率
-    shader->setFloat("movSpeed", 4.0f);
     shader->end();
 }
 
@@ -175,8 +222,8 @@ int main()
     // 开启deep testing
     glEnable(GL_DEPTH_TEST);
     Shader* shader = prepareShader();
-    prepareVAO(shader);
-    prepareTexture(shader);
+    prepareVAO();
+    prepareTexture();
     // 清理画布的时候清成啥样
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     // 窗体循环
@@ -192,7 +239,8 @@ int main()
     glDeleteBuffers(1, &ebo);
     delete texture1;
     delete texture2;
-    app->destroy();
     delete shader;
+
+    app->destroy();
     return 0;
 }

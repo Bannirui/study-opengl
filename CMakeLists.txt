@@ -9,6 +9,11 @@ if (USE_PROXY)
     set(CMAKE_DOWNLOAD_AGENT "curl")
 endif ()
 
+# 项目信息
+project(study-opengl
+        VERSION 1.0
+        LANGUAGES C CXX
+)
 # 平台判断并设置默认编译器 仅在未手动指定时生效
 if(NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED CMAKE_CXX_COMPILER)
     if(APPLE)
@@ -25,11 +30,7 @@ if(NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED CMAKE_CXX_COMPILER)
 else()
     message(STATUS "Using user-defined compiler: ${CMAKE_C_COMPILER}, ${CMAKE_CXX_COMPILER}")
 endif()
-# 项目信息
-project(study-opengl
-        VERSION 1.0
-        LANGUAGES C CXX
-)
+
 # c/cpp标准
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
