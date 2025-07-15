@@ -66,7 +66,10 @@ if(NOT EXISTS ${GLAD_C_FILE} OR NOT EXISTS ${GLAD_H_FILE})
             OUTPUT
             ${GLAD_GENERATED_DIR}/src/glad.c
             ${GLAD_GENERATED_DIR}/include/glad/glad.h
-            COMMAND ${MY_PYTHON} -m glad
+            COMMAND ${CMAKE_COMMAND} -E env
+            http_proxy=http://127.0.0.1:7890
+            https_proxy=http://127.0.0.1:7890
+            ${MY_PYTHON} -m glad
             --generator c
             --spec gl
             --api gl=3.3
