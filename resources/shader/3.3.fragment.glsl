@@ -21,9 +21,6 @@ out vec4 fragColor;
 void main()
 {
     // texture是内置函数 uv发给采样器sampler请求 返回的是四维数据
-    vec4 textureColor1 = texture(sampler1, uv);
-    vec4 textureColor2 = texture(sampler2, uv);
-    // 混合 权重是第2个参数人权重
-    vec4 texColor = mix(textureColor1, textureColor2, 0.2f);
-    fragColor = texColor * vec4(0.1f, 0.2f, 0.7f, 1.0f);
+    // 混合 权重是第2个参数的权重
+    fragColor = mix(texture(sampler1, uv), texture(sampler2, uv), 0.4f);
 }

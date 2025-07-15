@@ -160,6 +160,8 @@ void render(Shader* shader)
     // 删除depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    texture1->Bind();
+    texture2->Bind();
     // 告诉GPU接下来绘制用的shader程序是哪个
     shader->use();
     // 告诉GPU绘制图形用的VAO
