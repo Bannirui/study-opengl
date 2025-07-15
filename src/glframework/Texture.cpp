@@ -5,13 +5,19 @@
 #include "glframework/Texture.h"
 
 #include <stb_image.h>
+#include <iostream>
 
 Texture::Texture(const std::string& path, unsigned int unit) : m_Uint(unit)
 {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
     int            nrChannels;
-    unsigned char* data = stbi_load(path.c_str(), &m_Width, &m_Height, &nrChannels, STBI_rgb_alpha);
+    unsigned char* data = stbi_load(path.c_str(), &m_Width, &m_Height, &nrChannels, STBI_default);
+    if (!data)
+    {
+        std::cout << "ERROR::TEXTURE::fail to read picture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
     // 创建纹理对象
     glGenTextures(1, &m_Texture);
     // 激活纹理单元
