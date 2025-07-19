@@ -423,3 +423,8 @@ glm::mat4 transform = glm::scale(glm::mat(1.0f), glm::vec3(0.5f,0.5f,1.0f));
 transform = glm::translate(transform, glm::vec3(1.0f,0.0f,0.0f));
 ```
 虽然平移指定x方向将1，但是因为先进行了缩放0.5，所以平移受到了缩放影响，实际平移是0.5
+
+### 15 投影
+
+- 正交投影Orthographic Projection垂直正交向幕布投影 更直观展现物体在某投影平面的位置关系 无法看到物体之间远小近大的关系
+- 透视投影Perspective Projection假设场景中有一个摄像头 场景当中所有物体都汇聚到摄像头的镜头点上 从而呈现出图像
