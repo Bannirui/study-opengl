@@ -15,7 +15,7 @@ class Texture
      * @param path 图片路径
      * @param unit 要绑到哪个纹理单元
      */
-    Texture(const std::string& path, unsigned int unit);
+    Texture(const std::string& path, int unit);
     ~Texture();
 
     void Bind();

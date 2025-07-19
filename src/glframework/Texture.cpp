@@ -7,7 +7,7 @@
 #include <stb_image.h>
 #include <iostream>
 
-Texture::Texture(const std::string& path, unsigned int unit) : m_Uint(unit)
+Texture::Texture(const std::string& path, int unit) : m_Uint(unit)
 {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);

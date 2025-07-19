@@ -99,6 +99,7 @@ void Shader::setFloat(const std::string& name, float value) const
 
 void Shader::setMat4(const std::string& name, const float* values) const
 {
+    // transpose 是否对传进去的数据进行转置 opengl中矩阵存储方式是列存储 glm中矩阵的存储方式是列存储 所以不需要转置
     glUniformMatrix4fv(glGetUniformLocation(m_Program, name.c_str()), 1, GL_FALSE, values);
 }
 
