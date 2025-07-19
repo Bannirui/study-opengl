@@ -176,6 +176,7 @@ void render(Shader* shader)
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
     // clang-format off
+    // 平移变换 xyz3个轴的平移 用来通过translate生成平移矩阵
     glm::vec3 positions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(2.0f, 5.0f, -15.0f),
@@ -202,6 +203,7 @@ void render(Shader* shader)
         // 模型矩阵 aPos模型->世界空间
         // 初始化单位矩阵
         auto model  = glm::mat4(1.0f);
+        // translate平移变换
         model       = glm::translate(model, positions[i]);
         float angle = 20.0f * i;
         // rotate生成旋转矩阵
