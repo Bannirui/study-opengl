@@ -22,16 +22,17 @@ const float PITCH       = 0.0f;
 const float SPEED       = 2.5f;
 const float SENSITIVITY = 0.1f;
 // 透视投影时y轴视张角
-const float ZOOM        = 45.0f;
+const float ZOOM = 45.0f;
 
 class Camera
 {
-   public:
+public:
     // 摄像机位置
-    glm::vec3 m_Position;
-    glm::vec3 Front;
-    glm::vec3 Up;
-    glm::vec3 Right;
+    glm::vec3 m_Position{0.0f, 0.0f, 1.0f};
+    // 摄像机的3个向量
+    glm::vec3 m_Front;
+    glm::vec3 m_Up{0.0f, 1.0f, 0.0f};
+    glm::vec3 m_Right{1.0f, 0.0f, 0.0f};
     glm::vec3 WorldUp;
     float     Yaw;
     float     Pitch;
@@ -39,7 +40,7 @@ class Camera
     float     MouseSensitivity;
     float     m_Zoom;
 
-   public:
+public:
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
            float yaw = YAW, float pitch = PITCH);
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
@@ -49,6 +50,8 @@ class Camera
     void      ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
     void      ProcessMouseScroll(float yOffset);
 
-   private:
+    virtual glm::mat4 GetProjection() = 0;
+
+private:
     void updateCameraVectors();
 };

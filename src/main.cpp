@@ -13,6 +13,7 @@
 #include "err_check.h"
 #include "application/Application.h"
 #include "application/Camera.h"
+#include "application/PerspectiveCamera.h"
 #include "glframework/Shader.h"
 #include "input/Input.h"
 #include "glframework/Texture.h"
