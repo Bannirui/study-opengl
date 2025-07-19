@@ -168,11 +168,11 @@ void render(Shader* shader)
     glBindVertexArray(vao);
     // 视图矩阵 世界空间->摄影机空间
     glm::mat4 view = camera.GetViewMatrix();
-    shader->setMat4("view", glm::value_ptr(view));
+    shader->setMat4("u_view", glm::value_ptr(view));
     // 投影矩阵 摄影机空间->剪裁空间
     glm::mat4 projection =
         glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
-    shader->setMat4("projection", glm::value_ptr(projection));
+    shader->setMat4("u_projection", glm::value_ptr(projection));
     // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
     // clang-format off
@@ -190,13 +190,13 @@ void render(Shader* shader)
     };
     // clang-format on
     // 采样器sampler1采样0号纹理单元
-    shader->setInt("sampler1", texture1->GetUnit());
+    shader->setInt("u_sampler1", texture1->GetUnit());
     // 采样器sampler2采样1号纹理单元
-    shader->setInt("sampler2", texture2->GetUnit());
+    shader->setInt("u_sampler2", texture2->GetUnit());
     // 每一帧拿到系统时间告诉shader 达到呼吸效果
-    shader->setFloat("systime", static_cast<float>(glfwGetTime()));
+    shader->setFloat("u_systime", static_cast<float>(glfwGetTime()));
     // 控制运动速率
-    shader->setFloat("movSpeed", 4.0f);
+    shader->setFloat("u_movSpeed", 4.0f);
     for (unsigned int i = 0, sz = sizeof(positions); i < sz / sizeof(positions[0]); i++)
     {
         // 模型矩阵 aPos模型->世界空间
@@ -204,7 +204,7 @@ void render(Shader* shader)
         model       = glm::translate(model, positions[i]);
         float angle = 20.0f * i;
         model       = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        shader->setMat4("model", glm::value_ptr(model));
+        shader->setMat4("u_model", glm::value_ptr(model));
         // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
     }
