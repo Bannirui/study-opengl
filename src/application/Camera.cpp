@@ -8,7 +8,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw , float pitch )
-    : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+    : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM)
 {
     m_Position = position;
     WorldUp = up;
@@ -18,7 +18,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw , float pitch )
 }
 
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
-    :Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+    :Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM)
 {
     m_Position = glm::vec3(posX, posY, posZ);
     WorldUp = glm::vec3(upX, upY, upZ);
@@ -59,9 +59,9 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, GLboolean constr
 }
 
 void Camera::ProcessMouseScroll(float yOffset) {
-    Zoom -= (float)yOffset;
-    if (Zoom < 1.0f) Zoom = 1.0f;
-    if (Zoom > 45.0f) Zoom = 45.0f;
+    m_Zoom -= (float)yOffset;
+    if (m_Zoom < 1.0f) m_Zoom = 1.0f;
+    if (m_Zoom > 45.0f) m_Zoom = 45.0f;
 }
 
 void Camera::updateCameraVectors() {

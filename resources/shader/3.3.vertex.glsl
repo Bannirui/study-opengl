@@ -7,7 +7,7 @@ layout (location = 1) in vec2 a_uv;
 uniform mat4 u_model;
 // 摄像机矩阵 转换成摄像机坐标系
 uniform mat4 u_view;
-// 投影矩阵 将摄像机坐标转换为NDC坐标
+// 透视投影矩阵 将摄像机坐标转换为剪裁坐标
 uniform mat4 u_projection;
 uniform float u_systime;
 uniform float u_movSpeed;

@@ -169,9 +169,14 @@ void render(Shader* shader)
     // 视图矩阵 世界空间->摄影机空间
     glm::mat4 view = camera.GetViewMatrix();
     shader->setMat4("u_view", glm::value_ptr(view));
-    // 投影矩阵 摄影机空间->剪裁空间
+    // 透视投影矩阵 摄影机空间->剪裁空间
+    // fovy 在y轴方向的视张角
+    // aspect 近平面的横纵百分比
+    // near 近平面距离
+    // far 远平面距离
     glm::mat4 projection =
-        glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
+        glm::perspective(glm::radians(camera.m_Zoom),
+                         static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()), 0.1f, 100.0f);
     shader->setMat4("u_projection", glm::value_ptr(projection));
     // 多个立方体的位置
     // clang-format off
@@ -201,13 +206,13 @@ void render(Shader* shader)
     {
         // 模型矩阵 aPos模型->世界空间
         // 初始化单位矩阵
-        auto model  = glm::mat4(1.0f);
+        auto model = glm::mat4(1.0f);
         // translate平移变换 基于的变化是单位矩阵 此时世界坐标系和本地坐标系重合 基于本地坐标系进行平移
         model       = glm::translate(model, positions[i]);
         float angle = 20.0f * i;
         // rotate生成旋转矩阵 叠加变换 基于平移变换之后的本地坐标系进行旋转变换
         // angle接收的参数是弧度 不是角度 glm::radians函数将角度转化为弧度
-        model       = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->setMat4("u_model", glm::value_ptr(model));
         // 向GPU发送绘制指令
         GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
