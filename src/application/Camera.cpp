@@ -10,7 +10,7 @@
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw , float pitch )
     : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
-    Position = position;
+    m_Position = position;
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
@@ -20,7 +20,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw , float pitch )
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
     :Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
-    Position = glm::vec3(posX, posY, posZ);
+    m_Position = glm::vec3(posX, posY, posZ);
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
     Pitch = pitch;
@@ -31,15 +31,19 @@ Camera::~Camera() {
 }
 
 glm::mat4 Camera::GetViewMatrix() {
-    return glm::lookAt(Position, Position + Front, Up);
+    // 生成一个viewMatrix
+    // eye 的那个前摄像机所在的位置
+    // center 当前摄像机看向的那个点
+    // up 穹顶向量
+    return glm::lookAt(m_Position, m_Position + Front, Up);
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
     float velocity = MovementSpeed * deltaTime;
-    if (direction == FORWARD) Position += Front * velocity;
-    if (direction == BACKWARD) Position -= Front * velocity;
-    if (direction == LEFT) Position -= Right * velocity;
-    if (direction == RIGHT) Position += Right * velocity;
+    if (direction == FORWARD) m_Position += Front * velocity;
+    if (direction == BACKWARD) m_Position -= Front * velocity;
+    if (direction == LEFT) m_Position -= Right * velocity;
+    if (direction == RIGHT) m_Position += Right * velocity;
 }
 
 void Camera::ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch) {

@@ -3,8 +3,11 @@
 layout (location = 0) in vec3 a_pos;
 layout (location = 1) in vec2 a_uv;
 
+// 把顶点转换为世界坐标系
 uniform mat4 u_model;
+// 摄像机矩阵 转换成摄像机坐标系
 uniform mat4 u_view;
+// 投影矩阵
 uniform mat4 u_projection;
 uniform float u_systime;
 uniform float u_movSpeed;
