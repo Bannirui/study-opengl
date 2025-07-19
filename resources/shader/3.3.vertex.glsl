@@ -9,8 +9,6 @@ uniform mat4 u_model;
 uniform mat4 u_view;
 // 透视投影矩阵 将摄像机坐标转换为剪裁坐标
 uniform mat4 u_projection;
-uniform float u_systime;
-uniform float u_movSpeed;
 
 out vec2 uv;
 out vec3 color;

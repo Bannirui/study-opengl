@@ -13,6 +13,8 @@
 #include "err_check.h"
 #include "application/Application.h"
 #include "application/Camera.h"
+#include "application/CameraController.h"
+#include "application/GameCameraController.h"
 #include "application/PerspectiveCamera.h"
 #include "glframework/Shader.h"
 #include "input/Input.h"
@@ -20,13 +22,6 @@
 
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-// 相机坐标
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-
-bool  firstMouse = true;
-float lastX      = SCR_WIDTH / 2.0f;
-float lastY      = SCR_HEIGHT / 2.0f;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -38,11 +33,22 @@ unsigned int ebo = 0;
 Texture* texture1 = nullptr;
 Texture* texture2 = nullptr;
 
-// 创建shader实例
-Shader* prepareShader()
+Shader*               shader           = nullptr;
+Camera*               camera           = nullptr;
+GameCameraController* cameraController = nullptr;
+
+void prepareCamera()
 {
-    Shader* shader = new Shader("resources/shader/3.3.vertex.glsl", "resources/shader/3.3.fragment.glsl");
-    return shader;
+    camera = new PerspectiveCamera(static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()));
+    cameraController = new GameCameraController(camera);
+    cameraController->SetSensitivity(0.4f);
+    cameraController->SetSpeed(0.1f);
+}
+
+// 创建shader实例
+void prepareShader()
+{
+    shader = new Shader("resources/shader/3.3.vertex.glsl", "resources/shader/3.3.fragment.glsl");
 }
 
 // 生成VAO
@@ -150,7 +156,7 @@ void prepareTexture()
     texture2 = new Texture("resources/texture/awesomeface.png", 1);
 }
 
-void render(Shader* shader)
+void render()
 {
     auto curFrameTime = static_cast<float>(glfwGetTime());
     deltaTime         = curFrameTime - lastFrame;
@@ -168,16 +174,14 @@ void render(Shader* shader)
     // 告诉GPU绘制图形用的VAO
     glBindVertexArray(vao);
     // 视图矩阵 世界空间->摄影机空间
-    glm::mat4 view = camera.GetViewMatrix();
+    auto view = camera->GetViewMatrix();
     shader->setMat4("u_view", glm::value_ptr(view));
     // 透视投影矩阵 摄影机空间->剪裁空间
     // fovy 在y轴方向的视张角
     // aspect 近平面的横纵百分比
     // near 近平面距离
     // far 远平面距离
-    glm::mat4 projection =
-        glm::perspective(glm::radians(camera.m_Zoom),
-                         static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()), 0.1f, 100.0f);
+    auto projection = camera->GetProjectionMatrix();
     shader->setMat4("u_projection", glm::value_ptr(projection));
     // 多个立方体的位置
     // clang-format off
@@ -199,10 +203,6 @@ void render(Shader* shader)
     shader->setInt("u_sampler1", texture1->GetUnit());
     // 采样器sampler2采样1号纹理单元
     shader->setInt("u_sampler2", texture2->GetUnit());
-    // 每一帧拿到系统时间告诉shader 达到呼吸效果
-    shader->setFloat("u_systime", static_cast<float>(glfwGetTime()));
-    // 控制运动速率
-    shader->setFloat("u_movSpeed", 4.0f);
     for (unsigned int i = 0, sz = sizeof(positions); i < sz / sizeof(positions[0]); i++)
     {
         // 模型矩阵 aPos模型->世界空间
@@ -223,14 +223,6 @@ void render(Shader* shader)
     shader->end();
 }
 
-void processInput()
-{
-    if (Input::isKeyPressed(GLFW_KEY_W)) camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (Input::isKeyPressed(GLFW_KEY_S)) camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (Input::isKeyPressed(GLFW_KEY_A)) camera.ProcessKeyboard(LEFT, deltaTime);
-    if (Input::isKeyPressed(GLFW_KEY_D)) camera.ProcessKeyboard(RIGHT, deltaTime);
-}
-
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -239,20 +231,23 @@ int main()
     app->setKeyboardCallback(keyboard_callback);
     app->setCursorPosCallback(cursor_position_callback);
     app->setScrollCallback(mouse_scroll_callback);
+    app->setMouseBtnCallback(mouse_btn_callback);
+
+    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    // 清理画布的时候清成啥样
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    prepareCamera();
 
     // 开启deep testing
     glEnable(GL_DEPTH_TEST);
-    Shader* shader = prepareShader();
+    prepareShader();
     prepareVAO();
     prepareTexture();
-    // 清理画布的时候清成啥样
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     // 窗体循环
     while (app->update())
     {
-        // 键盘状态
-        processInput();
-        render(shader);
+        cameraController->OnUpdate();
+        render();
     }
     // 回收资源
     glDeleteVertexArrays(1, &vao);

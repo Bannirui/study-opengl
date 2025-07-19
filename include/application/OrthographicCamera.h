@@ -12,7 +12,8 @@ public:
     OrthographicCamera(float l, float r, float t, float b, float n, float f);
     ~OrthographicCamera() = default;
 
-    glm::mat4 GetProjection() override;
+    glm::mat4 GetProjectionMatrix() override;
+    void      scale(float scale) override;
 
 private:
     // 正交盒子
@@ -20,6 +21,6 @@ private:
     float m_Right{0.0f};
     float m_Top{0.0f};
     float m_Bottom{0.0f};
-    float m_Near{0.0f};
-    float m_Far{0.0f};
+
+    float m_Scale{0.0f};
 };

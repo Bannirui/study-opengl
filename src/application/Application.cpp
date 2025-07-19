@@ -10,8 +10,8 @@
 #include "input/Input.h"
 
 // 初始化静态变量
-Application* Application::s_Instance = nullptr;
-bool Application::s_shouldClose = false;
+Application* Application::s_Instance    = nullptr;
+bool         Application::s_shouldClose = false;
 
 Application* Application::getInstance()
 {
@@ -19,19 +19,13 @@ Application* Application::getInstance()
     return s_Instance;
 }
 
-Application::Application()
-{
+Application::Application() {}
 
-}
-
-Application::~Application()
-{
-
-}
+Application::~Application() {}
 
 bool Application::init(const uint32_t& width, const uint32_t& height)
 {
-    m_Width = width;
+    m_Width  = width;
     m_Height = height;
     // 初始化GLFW的基本环境 OpenGL的版本是3.3
     glfwInit();
@@ -46,21 +40,24 @@ bool Application::init(const uint32_t& width, const uint32_t& height)
 #endif
     // 创建窗体对象
     GLFWwindow* window = glfwCreateWindow(m_Width, m_Height, "LearnOpenGL", nullptr, nullptr);
-    if (!window) {
+    if (!window)
+    {
         return false;
     }
     m_Window = window;
     // 窗体对象设置给opengl绘制
     glfwMakeContextCurrent(window);
     // 使用glad加载当前opengl版本的所有函数
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
         return false;
     }
     // 对glfw窗体事件监听
     glfwSetFramebufferSizeCallback(m_Window, framebufferSizeCallback);
     glfwSetKeyCallback(m_Window, keyboardCallback);
     glfwSetCursorPosCallback(m_Window, mousePosCallback);
-    glfwSetScrollCallback(m_Window, Application::mouseScrollCallback);
+    glfwSetScrollCallback(m_Window, mouseScrollCallback);
+    glfwSetMouseButtonCallback(window, mouseBtnCallback);
 
     // 把Application单例的实例放到glfw的window中 以后想要Application就从window中拿
     glfwSetWindowUserPointer(m_Window, this);
@@ -98,20 +95,32 @@ void Application::keyboardCallback(GLFWwindow* window, int key, int scancode, in
     Application* self = (Application*)glfwGetWindowUserPointer(window);
     if (self->m_KeyboardCallback) self->m_KeyboardCallback(key, scancode, action, mods);
 }
-void Application::mousePosCallback(GLFWwindow *window, double x, double y) {
+void Application::mousePosCallback(GLFWwindow* window, double x, double y)
+{
     Application* self = (Application*)glfwGetWindowUserPointer(window);
     if (self->m_MousePosCallback) self->m_MousePosCallback(x, y);
 }
-void Application::mouseScrollCallback(GLFWwindow *window, double x, double y) {
+void Application::mouseScrollCallback(GLFWwindow* window, double x, double y)
+{
     Application* self = (Application*)glfwGetWindowUserPointer(window);
     if (self->m_MouseScrollCallback) self->m_MouseScrollCallback(y);
 }
+void Application::mouseBtnCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    Application* self = (Application*)glfwGetWindowUserPointer(window);
+    if (self->m_MouseBtnCallback) self->m_MouseBtnCallback(button, action, mods);
+}
 
-void Application::processInput() {
+void Application::processInput()
+{
     // todo
 }
-void Application::setShouldClose(bool flag) {
+void Application::setShouldClose(bool flag)
+{
     s_shouldClose = flag;
 }
 
-
+void Application::GetMousePos(double* x, double* y)
+{
+    glfwGetCursorPos(m_Window, x, y);
+}

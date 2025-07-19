@@ -8,14 +8,6 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-enum Camera_Movement
-{
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT,
-};
-
 // 默认值
 const float YAW         = -90.0f;
 const float PITCH       = 0.0f;
@@ -33,25 +25,16 @@ public:
     glm::vec3 m_Front;
     glm::vec3 m_Up{0.0f, 1.0f, 0.0f};
     glm::vec3 m_Right{1.0f, 0.0f, 0.0f};
-    glm::vec3 WorldUp;
-    float     Yaw;
-    float     Pitch;
-    float     MovementSpeed;
-    float     MouseSensitivity;
-    float     m_Zoom;
+
+    float m_Near;
+    float m_Far;
 
 public:
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-           float yaw = YAW, float pitch = PITCH);
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
-    ~Camera();
+    Camera();
+    virtual ~Camera();
+
     glm::mat4 GetViewMatrix();
-    void      ProcessKeyboard(Camera_Movement direction, float deltaTime);
-    void      ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
-    void      ProcessMouseScroll(float yOffset);
 
-    virtual glm::mat4 GetProjection() = 0;
-
-private:
-    void updateCameraVectors();
+    virtual glm::mat4 GetProjectionMatrix() = 0;
+    virtual void      scale(float scale)    = 0;
 };
