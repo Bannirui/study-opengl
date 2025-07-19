@@ -409,3 +409,17 @@ glsl内置了函数dFdx与dFdy 对栅格的某一个属性求偏导数
    sina    cosa   0   0
     0       0     1   0
     0       0     0   1
+   
+### 14 坐标系
+
+- 本地坐标系 local coordinate 是固定在物体中心点上的坐标系 用来表示物体前后左右上下
+- 世界坐标系 world coordinate 三根周表示整个世界的东西南北上下
+
+glm的旋转变换永远以本地坐标系的中心点为基准
+
+glm平移变换永远以缩放为基准
+```c++
+glm::mat4 transform = glm::scale(glm::mat(1.0f), glm::vec3(0.5f,0.5f,1.0f));
+transform = glm::translate(transform, glm::vec3(1.0f,0.0f,0.0f));
+```
+虽然平移指定x方向将1，但是因为先进行了缩放0.5，所以平移受到了缩放影响，实际平移是0.5

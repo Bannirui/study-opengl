@@ -203,10 +203,10 @@ void render(Shader* shader)
         // 模型矩阵 aPos模型->世界空间
         // 初始化单位矩阵
         auto model  = glm::mat4(1.0f);
-        // translate平移变换
+        // translate平移变换 基于的变化是单位矩阵 此时世界坐标系和本地坐标系重合 基于本地坐标系进行平移
         model       = glm::translate(model, positions[i]);
         float angle = 20.0f * i;
-        // rotate生成旋转矩阵
+        // rotate生成旋转矩阵 叠加变换 基于平移变换之后的本地坐标系进行旋转变换
         // angle接收的参数是弧度 不是角度 glm::radians函数将角度转化为弧度
         model       = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->setMat4("u_model", glm::value_ptr(model));
