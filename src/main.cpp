@@ -164,11 +164,9 @@ void render()
 
     // 每一帧都要清屏 防止残留前一帧图像
     GL_CALL_AND_CHECK_ERR(glClear(GL_COLOR_BUFFER_BIT));
-    // 删除depth buffer
+    // 清理的时候也要清理深度缓存
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    texture1->Bind();
-    texture2->Bind();
     // 告诉GPU接下来绘制用的shader程序是哪个
     shader->use();
     // 告诉GPU绘制图形用的VAO
@@ -176,11 +174,6 @@ void render()
     // 视图矩阵 世界空间->摄影机空间
     auto view = camera->GetViewMatrix();
     shader->setMat4("u_view", glm::value_ptr(view));
-    // 透视投影矩阵 摄影机空间->剪裁空间
-    // fovy 在y轴方向的视张角
-    // aspect 近平面的横纵百分比
-    // near 近平面距离
-    // far 远平面距离
     auto projection = camera->GetProjectionMatrix();
     shader->setMat4("u_projection", glm::value_ptr(projection));
     // 多个立方体的位置
@@ -200,8 +193,10 @@ void render()
     };
     // clang-format on
     // 采样器sampler1采样0号纹理单元
+    texture1->Bind();
     shader->setInt("u_sampler1", texture1->GetUnit());
     // 采样器sampler2采样1号纹理单元
+    texture2->Bind();
     shader->setInt("u_sampler2", texture2->GetUnit());
     for (unsigned int i = 0, sz = sizeof(positions); i < sz / sizeof(positions[0]); i++)
     {
@@ -236,10 +231,11 @@ int main()
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
     // 清理画布的时候清成啥样
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    prepareCamera();
-
-    // 开启deep testing
+    // 开启deep testing 不开启深度缓存的话 后绘制的会覆盖先绘制的
     glEnable(GL_DEPTH_TEST);
+    // 设置深度测试方法
+    glDepthFunc(GL_LESS);
+    prepareCamera();
     prepareShader();
     prepareVAO();
     prepareTexture();
@@ -256,6 +252,8 @@ int main()
     delete texture1;
     delete texture2;
     delete shader;
+    delete camera;
+    delete cameraController;
 
     app->destroy();
     return 0;

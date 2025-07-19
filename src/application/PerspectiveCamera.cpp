@@ -21,6 +21,11 @@ PerspectiveCamera::PerspectiveCamera(float fovy, float aspect, float near, float
 
 glm::mat4 PerspectiveCamera::GetProjectionMatrix()
 {
+    // 透视投影矩阵 摄影机空间->剪裁空间
+    // fovy 在y轴方向的视张角
+    // aspect 近平面的横纵百分比
+    // near 近平面距离
+    // far 远平面距离
     return glm::perspective(glm::radians(m_Fovy), m_Aspect, m_Near, m_Far);
 }
 
