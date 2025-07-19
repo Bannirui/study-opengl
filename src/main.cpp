@@ -173,7 +173,6 @@ void render(Shader* shader)
     glm::mat4 projection =
         glm::perspective(glm::radians(camera.Zoom), (float)app->getWidth() / (float)app->getHeight(), 0.1f, 100.0f);
     shader->setMat4("u_projection", glm::value_ptr(projection));
-    // 开辟uniform全局变量给vertex shader
     // 多个立方体的位置
     // clang-format off
     // 平移变换 xyz3个轴的平移 用来通过translate生成平移矩阵

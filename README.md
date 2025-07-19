@@ -428,3 +428,7 @@ transform = glm::translate(transform, glm::vec3(1.0f,0.0f,0.0f));
 
 - 正交投影Orthographic Projection垂直正交向幕布投影 更直观展现物体在某投影平面的位置关系 无法看到物体之间远小近大的关系
 - 透视投影Perspective Projection假设场景中有一个摄像头 场景当中所有物体都汇聚到摄像头的镜头点上 从而呈现出图像
+
+- ModelTransform 模型变换 模型坐标经过一系列变换称为模型变换矩阵Model Matrix 最终确定了每个顶点的世界坐标位置
+- ViewTransform 视图变化 将顶点坐标从世界坐标系转换到摄像机坐标系的矩阵 称为视图变换举证View Matrix
+- Projection Transform 投影变换 将顶点坐标从摄像机坐标系转换到NDC坐标系的矩阵称为正交投影变换举证Orthographic Projection Matrix
