@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "application/PerspectiveCamera.h"
+#include "../../../include/application/camera/PerspectiveCamera.h"
 
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <glm/ext/matrix_clip_space.hpp>

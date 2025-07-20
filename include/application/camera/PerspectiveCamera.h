@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "application/Camera.h"
+#include "Camera.h"
 
 // 默认视角
 const float c_FOVY = 45.0f;

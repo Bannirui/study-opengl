@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "application/CameraController.h"
+#include "CameraController.h"
 
 class GameCameraController : public CameraController
 {

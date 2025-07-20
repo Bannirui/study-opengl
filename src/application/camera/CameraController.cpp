@@ -2,10 +2,11 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "application/CameraController.h"
+#include "application/camera/CameraController.h"
 
-#include "GLFW/glfw3.h"
-#include "glm/gtc/quaternion.hpp"
+#include <GLFW/glfw3.h>
+#include <glm/gtc/quaternion.hpp>
+
 CameraController::CameraController(Camera* camera)
 {
     m_CameraPtr = camera;

@@ -2,7 +2,7 @@
 // Created by rui ding on 2025/7/1.
 //
 
-#include "application/Camera.h"
+#include "../../../include/application/camera/Camera.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>

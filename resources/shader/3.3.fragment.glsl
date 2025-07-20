@@ -6,8 +6,6 @@ in vec2 uv;
 uniform sampler2D sampler1;
 uniform sampler2D sampler2;
 
-uniform float systime;
-
 out vec4 fragColor;
 
 void main()

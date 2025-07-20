@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "application/Camera.h"
+#include "Camera.h"
 
 class OrthographicCamera : public Camera
 {

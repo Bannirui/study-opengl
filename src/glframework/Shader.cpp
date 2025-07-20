@@ -14,7 +14,7 @@
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
-    std::string   vertexCode,  fragmentCode;
+    std::string   vertexCode, fragmentCode;
     std::ifstream vShaderFile, fShaderFile;
     // 确保ifstream可以抛出异常
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -66,9 +66,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     glDeleteShader(fragment);
 }
 
-Shader::~Shader()
-{
-}
+Shader::~Shader() {}
 
 void Shader::use()
 {
@@ -112,13 +110,11 @@ void Shader::checkCompileErrors(unsigned int shader, ShaderType type)
         case vs_compile:
         case fs_compile:
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-            if (!success)
-                glGetShaderInfoLog(shader, 1024, nullptr, errInfo);
+            if (!success) glGetShaderInfoLog(shader, 1024, nullptr, errInfo);
             break;
         case program_link:
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
-            if (!success)
-                glGetProgramInfoLog(shader, 1024, nullptr, errInfo);
+            if (!success) glGetProgramInfoLog(shader, 1024, nullptr, errInfo);
         default:
             break;
     }
