@@ -40,6 +40,6 @@ void CameraController::OnKey(int key, int action, int mods)
 {
     // 过滤repeat情况
     if (action == GLFW_REPEAT) return;
-    m_KeyPressedMap[key] = action == GLFW_PRESS;
+    m_KeyPressedMap[key] = (action == GLFW_PRESS);
 }
 void CameraController::OnUpdate() {}

@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "../../../include/application/camera/PerspectiveCamera.h"
+#include "application/camera/PerspectiveCamera.h"
 
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -31,5 +31,6 @@ glm::mat4 PerspectiveCamera::GetProjectionMatrix()
 
 void PerspectiveCamera::scale(float scale)
 {
-    m_Position += m_Front * scale;
+    auto front = glm::cross(m_Up, m_Right);
+    m_Position += (front * scale);
 }

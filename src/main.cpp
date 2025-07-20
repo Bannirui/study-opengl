@@ -43,7 +43,7 @@ void keyboard_callback(int key, int scancode, int action, int mods)
     std::cout << "键盘事件 键位" << static_cast<char>(key) << ", 操作" << action << ", 有没有ctrl/shift功能键" << mods
               << std::endl;
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) Application::setShouldClose(true);
-    cameraCtl->OnKey(key, scancode, action);
+    cameraCtl->OnKey(key, action, mods);
 }
 
 void cursor_position_callback(double x, double y)
@@ -70,7 +70,7 @@ void mouse_btn_callback(int button, int action, int mods)
 void prepareCamera()
 {
     camera    = new PerspectiveCamera(static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()));
-    camera->m_Position = glm::vec3(2.0f, -4.0f, 10.0f);
+    camera->m_Position = glm::vec3(0.0f, 0.0f, 3.0f);
     cameraCtl = new GameCameraController(camera);
     cameraCtl->SetSensitivity(0.4f);
     cameraCtl->SetSpeed(0.1f);
@@ -90,7 +90,7 @@ void prepareTexture()
 
 void prepareVAO()
 {
-    geometry = Geometry::CreateBox(3.0f);
+    geometry = Geometry::CreateBox(1.0f);
 }
 
 void render()

@@ -22,7 +22,6 @@ public:
     // 摄像机位置
     glm::vec3 m_Position{0.0f, 0.0f, 5.0f};
     // 摄像机的3个向量
-    glm::vec3 m_Front{0.0f, 0.0f, -1.0f};
     glm::vec3 m_Up{0.0f, 1.0f, 0.0f};
     glm::vec3 m_Right{1.0f, 0.0f, 0.0f};
 

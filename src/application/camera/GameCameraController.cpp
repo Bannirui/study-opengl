@@ -27,7 +27,7 @@ void GameCameraController::OnUpdate()
 {
     // 最终移动方向
     glm::vec3 direction(0.0f);
-    auto      front = m_CameraPtr->m_Front;
+    auto      front = glm::cross(m_CameraPtr->m_Up, m_CameraPtr->m_Right);
     auto      right = m_CameraPtr->m_Right;
     if (m_KeyPressedMap[GLFW_KEY_W]) direction += front;
     if (m_KeyPressedMap[GLFW_KEY_S]) direction -= front;

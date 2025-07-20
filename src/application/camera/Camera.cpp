@@ -16,5 +16,7 @@ glm::mat4 Camera::GetViewMatrix()
     // eye 摄像机所在的位置
     // center 当前摄像机看向的那个点
     // up 穹顶向量
-    return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+    auto front  = glm::cross(m_Up, m_Right);
+    auto center = m_Position + front;
+    return glm::lookAt(m_Position, center, m_Up);
 }
