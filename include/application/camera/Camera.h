@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <memory>
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 // 默认值

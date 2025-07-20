@@ -69,9 +69,9 @@ void mouse_btn_callback(int button, int action, int mods)
 }
 void prepareCamera()
 {
-    camera    = new PerspectiveCamera(static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()));
-    camera->m_Position = glm::vec3(0.0f, 0.0f, 3.0f);
-    cameraCtl = new GameCameraController(camera);
+    camera = new PerspectiveCamera(static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()));
+    camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
+    cameraCtl          = new GameCameraController(camera);
     cameraCtl->SetSensitivity(0.4f);
     cameraCtl->SetSpeed(0.1f);
 }
@@ -90,7 +90,7 @@ void prepareTexture()
 
 void prepareVAO()
 {
-    geometry = Geometry::CreateBox(1.0f);
+    geometry = new GeoBox;
 }
 
 void render()
