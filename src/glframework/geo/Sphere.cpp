@@ -47,7 +47,7 @@ Sphere::Sphere(float radius)
             float v = 1.0 - (float)i / (float)numLatLines;
             uvs.push_back(u);
             uvs.push_back(v);
-            // 法线方向没有问题 法线的长度不为1
+            // 顶点坐标(x,y,z) 法线就是(0,0,0)到顶点 但是此时不是归一的法线向量 在fs中使用的时候要先归一化
             normals.push_back(x);
             normals.push_back(y);
             normals.push_back(z);
