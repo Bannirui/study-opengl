@@ -12,7 +12,9 @@
 #include "application/camera/Camera.h"
 #include "application/camera/CameraController.h"
 #include "application/camera/GameCameraController.h"
+#include "application/camera/OrthographicCamera.h"
 #include "application/camera/PerspectiveCamera.h"
+#include "application/camera/TrackballCameraController.h"
 #include "glframework/Geometry.h"
 #include "glframework/Shader.h"
 #include "glframework/Texture.h"
@@ -27,7 +29,7 @@ Texture* texture2 = nullptr;
 
 Shader*               shader    = nullptr;
 Camera*               camera    = nullptr;
-GameCameraController* cameraCtl = nullptr;
+CameraController* cameraCtl = nullptr;
 
 void framebuffer_size_callback(int width, int height)
 {
@@ -72,8 +74,6 @@ void prepareCamera()
     camera = new PerspectiveCamera(static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()));
     camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
     cameraCtl          = new GameCameraController(camera);
-    cameraCtl->SetSensitivity(0.4f);
-    cameraCtl->SetSpeed(0.1f);
 }
 
 // 创建shader实例

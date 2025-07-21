@@ -37,7 +37,7 @@ void GameCameraController::OnUpdate()
     if (glm::length(direction) != 0)
     {
         direction = glm::normalize(direction);
-        m_CameraPtr->m_Position += direction * m_Speed;
+        m_CameraPtr->m_Position += direction * m_ScaleSpeed;
     }
 }
 void GameCameraController::pitch(float angle)
@@ -49,12 +49,14 @@ void GameCameraController::pitch(float angle)
         return;
     }
     // 在game情况下 pitch不会影响position
+    // 相机前后转动就是绕着x轴转动
     auto mat          = glm::rotate(glm::mat4(1.0f), glm::radians(angle), m_CameraPtr->m_Right);
     m_CameraPtr->m_Up = mat * glm::vec4(m_CameraPtr->m_Up, 0.0f);
 }
 void GameCameraController::yaw(float angle)
 {
-    auto mat             = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+    // 相机左右转动就是绕着z轴转动
+    auto mat             = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
     m_CameraPtr->m_Up    = mat * glm::vec4(m_CameraPtr->m_Up, 0.0f);
     m_CameraPtr->m_Right = mat * glm::vec4(m_CameraPtr->m_Right, 0.0f);
 }

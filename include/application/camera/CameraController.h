@@ -44,6 +44,12 @@ public:
     void SetScaleSpeed(float speed) { m_ScaleSpeed = speed; }
 
 protected:
+    // 相机前后转动 绕着x轴
+    virtual void pitch(float angle) {};
+    // 相机左右转动 绕着z轴
+    virtual void yaw(float angle) {};
+
+protected:
     // 鼠标左键被按下
     bool m_LeftButtonPressed = false;
     // 鼠标中键被按下

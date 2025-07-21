@@ -15,10 +15,6 @@ public:
     void OnCursor(double x, double y) override;
     void OnScroll(float yOffset) override;
 
-private:
-    void pitch(float angle);
-    void yaw(float angle);
-
-private:
-    float m_MoveSpeed{0.005f};
+    void pitch(float angle) override;
+    void yaw(float angle) override;
 };

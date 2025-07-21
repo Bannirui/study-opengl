@@ -2,24 +2,22 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "../../../include/application/camera/TrackballCameraController.h"
+#include "application/camera/TrackballCameraController.h"
 
 #include <glm/gtx/transform.hpp>
 
 TrackballCameraController::TrackballCameraController(Camera* camera) : CameraController(camera) {}
 void TrackballCameraController::OnCursor(double x, double y)
 {
+    float dx = (x - m_CurX) * m_Sensitivity;
+    float dy = (y - m_CurY) * m_Sensitivity;
     if (m_LeftButtonPressed)
     {
-        float dx = (x - m_CurX) * m_Sensitivity;
-        float dy = (y - m_CurY) * m_Sensitivity;
         pitch(-dy);
         yaw(-dx);
     }
     else if (m_MidButtonPressed)
     {
-        float dx = (x - m_CurX) * m_Sensitivity;
-        float dy = (y - m_CurY) * m_Sensitivity;
         m_CameraPtr->m_Position += m_CameraPtr->m_Up * dy;
         m_CameraPtr->m_Position -= m_CameraPtr->m_Right * dx;
     }
@@ -32,14 +30,14 @@ void TrackballCameraController::OnScroll(float yOffset)
 }
 void TrackballCameraController::pitch(float angle)
 {
-    // 绕着right向量旋转
+    // 相机前后转动绕着right向量 x轴旋转
     auto mat                = glm::rotate(glm::mat4(1.0f), glm::radians(angle), m_CameraPtr->m_Right);
     m_CameraPtr->m_Up       = mat * glm::vec4(m_CameraPtr->m_Up, 0.0f);
     m_CameraPtr->m_Position = mat * glm::vec4(m_CameraPtr->m_Position, 0.0f);
 }
 void TrackballCameraController::yaw(float angle)
 {
-    // 绕着世界坐标系y轴旋转
+    // 相机左右转动绕着世界坐标系y轴旋转
     auto mat                = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
     m_CameraPtr->m_Up       = mat * glm::vec4(m_CameraPtr->m_Up, 0.0f);
     m_CameraPtr->m_Right    = mat * glm::vec4(m_CameraPtr->m_Right, 0.0f);
