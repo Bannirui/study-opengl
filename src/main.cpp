@@ -27,8 +27,8 @@ Geometry* geometry = nullptr;
 Texture* texture1 = nullptr;
 Texture* texture2 = nullptr;
 
-Shader*               shader    = nullptr;
-Camera*               camera    = nullptr;
+Shader*           shader    = nullptr;
+Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
 
 void framebuffer_size_callback(int width, int height)

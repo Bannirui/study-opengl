@@ -8,10 +8,16 @@
 
 enum class VertexAttr
 {
+    // xyz坐标
     Position = 1 << 0,
+    // 法线
     Normal   = 1 << 1,
+    // uv坐标
     TexCoord = 1 << 2,
+    // 颜色
     Color    = 1 << 3,
+    // 切线
+    Tangent  = 1 << 4,
 };
 inline VertexAttr operator|(VertexAttr a, VertexAttr b)
 {
@@ -55,4 +61,14 @@ public:
      * @param sz 正方体边长
      */
     explicit GeoBox(float sz = 1.0f);
+};
+
+// 球体
+class GeoSphere : public Geometry
+{
+public:
+    /**
+     * @param radius 半径
+     */
+    explicit GeoSphere(float radius = 1.0f);
 };
