@@ -9,15 +9,17 @@
 TrackballCameraController::TrackballCameraController(Camera* camera) : CameraController(camera) {}
 void TrackballCameraController::OnCursor(double x, double y)
 {
-    float dx = (x - m_CurX) * m_Sensitivity;
-    float dy = (y - m_CurY) * m_Sensitivity;
     if (m_LeftButtonPressed)
     {
+        float dx = (x - m_CurX) * m_Sensitivity;
+        float dy = (y - m_CurY) * m_Sensitivity;
         pitch(-dy);
         yaw(-dx);
     }
     else if (m_MidButtonPressed)
     {
+        float dx = (x - m_CurX) * m_MovSpeed;
+        float dy = (y - m_CurY) * m_MovSpeed;
         m_CameraPtr->m_Position += m_CameraPtr->m_Up * dy;
         m_CameraPtr->m_Position -= m_CameraPtr->m_Right * dx;
     }

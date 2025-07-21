@@ -4,7 +4,6 @@
 
 #include "application/camera/CameraController.h"
 
-#include <iostream>
 #include <GLFW/glfw3.h>
 
 CameraController::CameraController(Camera* camera)
@@ -14,7 +13,7 @@ CameraController::CameraController(Camera* camera)
 void CameraController::OnMouse(int button, int action, int mods, double x, double y)
 {
     // 鼠标是被按下还是抬起
-    bool pressed = button == GLFW_PRESS;
+    bool pressed = (action == GLFW_PRESS);
     if (pressed)
     {
         m_CurX = static_cast<float>(x);

@@ -119,6 +119,11 @@ void Shader::setFloat(const std::string& name, float value) const
     glUniform1f(glGetUniformLocation(m_Program, name.c_str()), value);
 }
 
+void Shader::setFloatVec3(const std::string& name, const glm::vec3 value) const
+{
+    glUniform3fv(glGetUniformLocation(m_Program, name.c_str()), 1, &value[0]);
+}
+
 void Shader::setMat4(const std::string& name, const float* values) const
 {
     // transpose 是否对传进去的数据进行转置 opengl中矩阵存储方式是列存储 glm中矩阵的存储方式是列存储 所以不需要转置

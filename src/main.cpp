@@ -25,6 +25,12 @@
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// 平行光
+// 光照向的方向
+glm::vec3 lightDirection = glm::vec3(-0.4f, -1.4f, -1.9f);
+// 光强
+glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
 Geometry* geometry = nullptr;
 Texture*  texture  = nullptr;
 
@@ -75,13 +81,13 @@ void prepareCamera()
 {
     camera = new PerspectiveCamera(static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()));
     camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
-    cameraCtl          = new GameCameraController(camera);
+    cameraCtl          = new TrackballCameraController(camera);
 }
 
 // 创建shader实例
 void prepareShader()
 {
-    shader = new Shader("resources/shader/box.glsl");
+    shader = new Shader("resources/shader/sphere.glsl");
 }
 
 void prepareTexture()
@@ -113,6 +119,9 @@ void render()
     // 初始化单位矩阵
     auto model = glm::mat4(1.0f);
     shader->setMat4("u_model", glm::value_ptr(model));
+    // 光源参数
+    shader->setFloatVec3("u_lightDirection", lightDirection);
+    shader->setFloatVec3("u_lightColor", lightColor);
     // 绑定当前VAO
     glBindVertexArray(geometry->GetVAO());
     // 向GPU发送绘制指令

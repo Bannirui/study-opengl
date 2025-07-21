@@ -68,4 +68,6 @@ protected:
     Camera* m_CameraPtr{nullptr};
     // 相机缩放速度
     float m_ScaleSpeed = 0.2f;
+    // 移动速度
+    float m_MovSpeed = 1.0f;
 };

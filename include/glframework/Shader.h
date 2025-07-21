@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "glm/vec3.hpp"
+
 #include <string>
 #include <unordered_map>
 
@@ -61,7 +63,10 @@ public:
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
+    void setFloatVec3(const std::string& name, const glm::vec3 value) const;
+    // 4*4方阵
     void setMat4(const std::string& name, const float* values) const;
+
 
 private:
     /**

@@ -7,7 +7,6 @@
 #include <glm/gtx/transform.hpp>
 #include <GLFW/glfw3.h>
 
-#include <iostream>
 GameCameraController::GameCameraController(Camera* camera) : CameraController(camera) {}
 void GameCameraController::OnCursor(double x, double y)
 {
@@ -38,7 +37,7 @@ void GameCameraController::OnUpdate()
     if (glm::length(direction) != 0)
     {
         direction = glm::normalize(direction);
-        m_CameraPtr->m_Position += direction * m_ScaleSpeed;
+        m_CameraPtr->m_Position += direction * m_MovSpeed;
     }
 }
 void GameCameraController::pitch(float angle)
