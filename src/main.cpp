@@ -15,17 +15,18 @@
 #include "application/camera/OrthographicCamera.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
-#include "glframework/Geometry.h"
+#include "glframework/geo/Geometry.h"
+#include "glframework/geo/Box.h"
 #include "glframework/Shader.h"
 #include "glframework/Texture.h"
+#include "glframework/geo/Plane.h"
+#include "glframework/geo/Sphere.h"
 
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 Geometry* geometry = nullptr;
-// texture1 texture2
-Texture* texture1 = nullptr;
-Texture* texture2 = nullptr;
+Texture*  texture  = nullptr;
 
 Shader*           shader    = nullptr;
 Camera*           camera    = nullptr;
@@ -64,9 +65,10 @@ void mouse_scroll_callback(double yoffset)
 }
 void mouse_btn_callback(int button, int action, int mods)
 {
-    std::cout << "button=" << button << ", action=" << action << ", mods=" << mods << std::endl;
     double x, y;
     app->GetMousePos(&x, &y);
+    std::cout << "button=" << button << ", action=" << action << ", mods=" << mods << ", x=" << x << ", y=" << y
+              << std::endl;
     cameraCtl->OnMouse(button, action, mods, x, y);
 }
 void prepareCamera()
@@ -84,13 +86,12 @@ void prepareShader()
 
 void prepareTexture()
 {
-    texture1 = new Texture("resources/texture/container.jpg", 0);
-    texture2 = new Texture("resources/texture/awesomeface.png", 1);
+    texture = new Texture("resources/texture/2k_earth_daymap.jpg", 0);
 }
 
 void prepareVAO()
 {
-    geometry = new GeoBox;
+    geometry = new Sphere;
 }
 
 void render()
@@ -106,11 +107,8 @@ void render()
     auto projection = camera->GetProjectionMatrix();
     shader->setMat4("u_projection", glm::value_ptr(projection));
     // 采样器sampler1采样0号纹理单元
-    texture1->Bind();
-    shader->setInt("u_sampler1", texture1->GetUnit());
-    // 采样器sampler2采样1号纹理单元
-    texture2->Bind();
-    shader->setInt("u_sampler2", texture2->GetUnit());
+    texture->Bind();
+    shader->setInt("u_sampler", texture->GetUnit());
     // 模型矩阵 aPos模型->世界空间
     // 初始化单位矩阵
     auto model = glm::mat4(1.0f);

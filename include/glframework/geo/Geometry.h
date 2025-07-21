@@ -11,13 +11,13 @@ enum class VertexAttr
     // xyz坐标
     Position = 1 << 0,
     // 法线
-    Normal   = 1 << 1,
+    Normal = 1 << 1,
     // uv坐标
     TexCoord = 1 << 2,
     // 颜色
-    Color    = 1 << 3,
+    Color = 1 << 3,
     // 切线
-    Tangent  = 1 << 4,
+    Tangent = 1 << 4,
 };
 inline VertexAttr operator|(VertexAttr a, VertexAttr b)
 {
@@ -37,10 +37,10 @@ public:
 protected:
     /**
      * @param vertices vbo
-     * @param vertSz sizeof
+     * @param vertSz 多少个byte
      * @param layout vertice属性可能不光只有顶点坐标 可能还有uv坐标或者其他的 用枚举位运算标识顶点属性信息类型
      * @param indices ebo
-     * @param indexSz sizeof
+     * @param indexSz 多少个byte
      */
     void setupBuffers(const void* vertices, size_t vertSz, VertexLayout layout, const uint32_t* indices,
                       size_t indexSz);
@@ -51,24 +51,4 @@ protected:
     GLuint m_EBO{0};
     // EBO的索引数量
     uint32_t m_IndicesCnt{0};
-};
-
-// 正方体
-class GeoBox : public Geometry
-{
-public:
-    /**
-     * @param sz 正方体边长
-     */
-    explicit GeoBox(float sz = 1.0f);
-};
-
-// 球体
-class GeoSphere : public Geometry
-{
-public:
-    /**
-     * @param radius 半径
-     */
-    explicit GeoSphere(float radius = 1.0f);
 };

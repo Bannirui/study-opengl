@@ -1,143 +1,18 @@
 //
-// Created by dingrui on 25-7-20.
+// Created by dingrui on 25-7-21.
 //
-
-#include "glframework/Geometry.h"
+#include "glframework/geo/Sphere.h"
 
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/glm.hpp>
+
 #include <vector>
 
-Geometry::~Geometry()
-{
-    if (m_VAO != 0) glDeleteVertexArrays(1, &m_VAO);
-    if (m_VBO != 0) glDeleteBuffers(1, &m_VBO);
-    if (m_EBO != 0) glDeleteBuffers(1, &m_EBO);
-}
+#if __linux__
+#include <cmath>
+#endif
 
-void Geometry::setupBuffers(const void* vertices, size_t vertSz, VertexLayout layout, const uint32_t* indices,
-                            size_t indexSz)
-{
-    glGenBuffers(1, &m_VBO);
-    glGenBuffers(1, &m_EBO);
-    glGenVertexArrays(1, &m_VAO);
-
-    glBindVertexArray(m_VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertSz, vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSz, indices, GL_STATIC_DRAW);
-
-    size_t stride = 0;
-    // xyz
-    if (layout & static_cast<uint32_t>(VertexAttr::Position)) stride += 3 * sizeof(float);
-    // 法线
-    if (layout & static_cast<uint32_t>(VertexAttr::Normal)) stride += 3 * sizeof(float);
-    // uv
-    if (layout & static_cast<uint32_t>(VertexAttr::TexCoord)) stride += 2 * sizeof(float);
-    // 颜色
-    if (layout & static_cast<uint32_t>(VertexAttr::Color)) stride += 3 * sizeof(float);
-    // 切线
-    if (layout & static_cast<uint32_t>(VertexAttr::Tangent)) stride += 3 * sizeof(float);
-    size_t offset = 0;
-    GLuint index  = 0;
-    // xyz
-    if (layout & static_cast<uint32_t>(VertexAttr::Position))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    // 法线
-    if (layout & static_cast<uint32_t>(VertexAttr::Normal))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    // uv
-    if (layout & static_cast<uint32_t>(VertexAttr::TexCoord))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 2, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 2 * sizeof(float);
-        index++;
-    }
-    // 颜色
-    if (layout & static_cast<uint32_t>(VertexAttr::Color))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    // 切线
-    if (layout & static_cast<uint32_t>(VertexAttr::Tangent))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    m_IndicesCnt = indexSz / sizeof(unsigned int);
-    // 解绑VAO
-    glBindVertexArray(0);
-}
-
-GeoBox::GeoBox(float sz)
-{
-    float half = sz / 2.0f;
-    // clang-format off
-    float vertices[] = {
-        // xyz                uv
-        // Front face
-        -half, -half,  half,  0.0f,  0.0f,
-         half, -half,  half,  1.0f,  0.0f,
-         half,  half,  half,  1.0f,  1.0f,
-        -half,  half,  half,  0.0f,  1.0f,
-        // Back face
-        -half, -half, -half,  0.0f,  0.0f,
-        -half,  half, -half,  1.0f,  0.0f,
-         half,  half, -half,  1.0f,  1.0f,
-         half, -half, -half,  0.0f,  1.0f,
-        // Top face
-        -half,  half,  half,  0.0f,  0.0f,
-         half,  half,  half,  1.0f,  0.0f,
-         half,  half, -half,  1.0f,  1.0f,
-        -half,  half, -half,  0.0f,  1.0f,
-        // Bottom face
-        -half, -half, -half,  0.0f,  0.0f,
-         half, -half, -half,  1.0f,  0.0f,
-         half, -half,  half,  1.0f,  1.0f,
-        -half, -half,  half,  0.0f,  1.0f,
-        // Right face
-         half, -half,  half,  0.0f,  0.0f,
-         half, -half, -half,  1.0f,  0.0f,
-         half,  half, -half,  1.0f,  1.0f,
-         half,  half,  half,  0.0f,  1.0f,
-        // Left face
-        -half, -half, -half,  0.0f,  0.0f,
-        -half, -half,  half,  1.0f,  0.0f,
-        -half,  half,  half,  1.0f,  1.0f,
-        -half,  half, -half,  0.0f,  1.0f,
-    };
-    unsigned int indices[] = {
-        0,  1,  2,  2,  3,  0,   // Front face
-        4,  5,  6,  6,  7,  4,   // Back face
-        8,  9,  10, 10, 11, 8,   // Top face
-        12, 13, 14, 14, 15, 12,  // Bottom face
-        16, 17, 18, 18, 19, 16,  // Right face
-        20, 21, 22, 22, 23, 20   // Left face
-    };
-    // clang-format on
-    setupBuffers(vertices, sizeof(vertices), static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord),
-                 indices, sizeof(indices));
-}
-GeoSphere::GeoSphere(float radius)
+Sphere::Sphere(float radius)
 {
     // xyz坐标
     std::vector<GLfloat> positions{};
@@ -161,7 +36,7 @@ GeoSphere::GeoSphere(float radius)
             float phi   = i * glm::pi<float>() / numLatLines;
             float theta = j * 2 * glm::pi<float>() / numLongLines;
             // 定点坐标
-            float y = radius * cos(phi);
+            float y = radius * std::cos(phi);
             float x = radius * sin(phi) * cos(theta);
             float z = radius * sin(phi) * sin(theta);
             positions.push_back(x);
@@ -230,7 +105,7 @@ GeoSphere::GeoSphere(float radius)
         tangent.z = f * (duv1.y * e0.z - duv0.y * e1.z);
         tangent   = glm::normalize(tangent);
 
-        // 5 针对本三角形的三个顶点的normal，使tangent正交化(三个不同的tangent）
+        // 针对本三角形的三个顶点的normal 使tangent正交化(三个不同的tangent）
         auto normal0 = glm::normalize(glm::vec3(normals[idx0 * 3], normals[idx0 * 3 + 1], normals[idx0 * 3 + 2]));
         auto normal1 = glm::normalize(glm::vec3(normals[idx1 * 3], normals[idx1 * 3 + 1], normals[idx1 * 3 + 2]));
         auto normal2 = glm::normalize(glm::vec3(normals[idx2 * 3], normals[idx2 * 3 + 1], normals[idx2 * 3 + 2]));
