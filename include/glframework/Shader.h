@@ -5,6 +5,9 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
+
+#include <glad/glad.h>
 
 // OpenGL中万物都是3维 但是在显示器上是2维 OpenGL负责把3维坐标转换到2维像素点 这个工作由graphics pipeline负责
 // 分2部分
@@ -39,15 +42,15 @@ class Shader
 public:
     /**
      * 读取vs程序和fs程序编译链接成shader program
-     * @param vertexPath vs程序的文件路径
-     * @param fragmentPath fs程序的文件路径
+     * @param path程序的文件路径
      */
-    Shader(const char* vertexPath, const char* fragmentPath);
-    virtual ~Shader();
+    Shader(const std::string& path);
     // 告诉GPU接下来绘制图形使用的Shader程序是谁
-    void use();
+    virtual ~Shader();
+
+    void Bind();
     // 结束使用program shader use和end成对使用
-    void end();
+    void Unbind();
     /**
      * 给shader设置uniform全局变量
      * 不同数据类型调用gl函数不一样 所以就给不同类型开放接口
@@ -59,6 +62,20 @@ public:
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
     void setMat4(const std::string& name, const float* values) const;
+
+private:
+    /**
+     * @param vertexSrc vs程序
+     * @param fragmentSrc fs程序
+     */
+    Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
+    std::string ReadFile(const std::string& filepath);
+    /**
+     * @param source vs fs在同一个文件的源码
+     * @return vs和fs源码
+     */
+    std::unordered_map<GLenum, std::string> preProcess(const std::string& source);
+    void compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 
 private:
     // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader

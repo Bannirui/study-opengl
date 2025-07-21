@@ -79,7 +79,7 @@ void prepareCamera()
 // 创建shader实例
 void prepareShader()
 {
-    shader = new Shader("resources/shader/3.3.vertex.glsl", "resources/shader/3.3.fragment.glsl");
+    shader = new Shader("resources/shader/box.glsl");
 }
 
 void prepareTexture()
@@ -99,7 +99,7 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // 告诉GPU接下来绘制用的shader程序是哪个 綁定shader 更新uniform
-    shader->use();
+    shader->Bind();
     // 视图矩阵 世界空间->摄影机空间
     auto view = camera->GetViewMatrix();
     shader->setMat4("u_view", glm::value_ptr(view));
@@ -121,7 +121,7 @@ void render()
     GL_CALL_AND_CHECK_ERR(glDrawElements(GL_TRIANGLES, geometry->GetIndicesCnt(), GL_UNSIGNED_INT, 0));
     // 绘制完一帧解绑VAO防止状态误用
     glBindVertexArray(0);
-    shader->end();
+    shader->Unbind();
 }
 
 void prepareState()

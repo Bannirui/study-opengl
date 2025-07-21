@@ -201,7 +201,7 @@ GeoSphere::GeoSphere(float radius)
     // 切线
     tangents.resize(positions.size());
     // 以三角形为单位进行indices的遍历
-    for (int i = 0; i < indices.size(); i += 3)
+    for (long unsigned int i = 0; i < indices.size(); i += 3)
     {
         // 取出当前三角形的三个顶点的索引
         int idx0 = indices[i];
@@ -253,7 +253,7 @@ GeoSphere::GeoSphere(float radius)
         tangents[idx2 * 3 + 2] += tangent2.z;
     }
     // 对每个顶点的最终tangent累加值进行normalize
-    for (int i = 0; i < tangents.size(); i += 3)
+    for (long unsigned int i = 0; i < tangents.size(); i += 3)
     {
         glm::vec3 tangent = glm::vec3(tangents[i], tangents[i + 1], tangents[i + 2]);
         tangent           = glm::normalize(tangent);

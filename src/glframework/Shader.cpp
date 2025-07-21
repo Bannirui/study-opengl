@@ -7,12 +7,33 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
-#include <glad/glad.h>
+#include <cstring>
+#include <array>
+#include <vector>
 
 #include "err_check.h"
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+static GLenum ShaderTypeFromString(const std::string& type)
+{
+    if (type == "vertex") return GL_VERTEX_SHADER;
+    if (type == "fragment" || type == "pixel") return GL_FRAGMENT_SHADER;
+    return 0;
+}
+
+Shader::Shader(const std::string& path)
+{
+    std::string source        = ReadFile(path);
+    auto        shaderSources = preProcess(source);
+    compile(shaderSources);
+    // 从shader源码文件名中提取名字
+    auto lastSlash = path.find_last_of("/\\");
+    lastSlash      = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+    auto lastDot   = path.rfind('.');
+    auto count     = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
+    auto name      = path.substr(lastSlash, count);
+    (void)name;
+}
+Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
     std::string   vertexCode, fragmentCode;
     std::ifstream vShaderFile, fShaderFile;
@@ -66,14 +87,17 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     glDeleteShader(fragment);
 }
 
-Shader::~Shader() {}
+Shader::~Shader()
+{
+    glDeleteProgram(m_Program);
+}
 
-void Shader::use()
+void Shader::Bind()
 {
     GL_CALL_AND_CHECK_ERR(glUseProgram(m_Program));
 }
 
-void Shader::end()
+void Shader::Unbind()
 {
     // 解绑
     GL_CALL_AND_CHECK_ERR(glUseProgram(0));
@@ -121,4 +145,89 @@ void Shader::checkCompileErrors(unsigned int shader, ShaderType type)
     if (success) return;
     std::cout << "ERROR::SHADER_ERROR of type: " << type << "\n" << errInfo << std::endl;
     assert(false);
+}
+std::string Shader::ReadFile(const std::string& filepath)
+{
+    std::string   result;
+    std::ifstream in(filepath, std::ios::in | std::ios::binary);
+    if (in)
+    {
+        in.seekg(0, std::ios::end);
+        result.resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&result[0], result.size());
+        in.close();
+    }
+    return result;
+}
+std::unordered_map<GLenum, std::string> Shader::preProcess(const std::string& source)
+{
+    std::unordered_map<GLenum, std::string> shaderSources;
+    const char*                             typeToken       = "#type";
+    size_t                                  typeTokenLength = strlen(typeToken);
+    size_t                                  pos             = source.find(typeToken, 0);
+    while (pos != std::string::npos)
+    {
+        size_t eol = source.find_first_of("\r\n", pos);
+        size_t      begin = pos + typeTokenLength + 1;
+        std::string type  = source.substr(begin, eol - begin);
+        size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+        pos = source.find(typeToken, nextLinePos);
+        shaderSources[ShaderTypeFromString(type)] =
+            (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
+    }
+    return shaderSources;
+}
+
+void Shader::compile(const std::unordered_map<GLenum, std::string>& shaderSources)
+{
+    GLuint program = glCreateProgram();
+    std::array<GLenum, 2> glShaderIDs;
+    int                   glShaderIDIndex = 0;
+    for (auto& kv : shaderSources)
+    {
+        GLenum             type   = kv.first;
+        const std::string& source = kv.second;
+        // 创建shader对象
+        GLuint        shader  = glCreateShader(type);
+        const GLchar* srcCStr = source.c_str();
+        // 源码给shader对象
+        glShaderSource(shader, 1, &srcCStr, 0);
+        // 编译shader
+        glCompileShader(shader);
+        // 检查编译结果
+        GLint isCompiled = 0;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+        if (isCompiled == GL_FALSE)
+        {
+            GLint maxLength = 0;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+            std::vector<GLchar> infoLog(maxLength);
+            glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+            glDeleteShader(shader);
+            break;
+        }
+        glAttachShader(program, shader);
+        glShaderIDs[glShaderIDIndex++] = shader;
+    }
+    m_Program = program;
+    // 链接成shader program
+    glLinkProgram(program);
+    GLint isLinked = 0;
+    glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
+    if (isLinked == GL_FALSE)
+    {
+        GLint maxLength = 0;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+        std::vector<GLchar> infoLog(maxLength);
+        glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+        glDeleteProgram(program);
+        for (auto id : glShaderIDs) glDeleteShader(id);
+        return;
+    }
+    for (auto id : glShaderIDs)
+    {
+        glDetachShader(program, id);
+        glDeleteShader(id);
+    }
 }
