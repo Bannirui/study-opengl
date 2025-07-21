@@ -160,6 +160,6 @@ Sphere::Sphere(float radius)
     // 数据灌到gl状态机
     setupBuffers(vertices.data(), sizeof(GLfloat) * vertices.size(),
                  static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal |
-                                           VertexAttr ::TexCoord | VertexAttr::Tangent),
+                                           VertexAttr::Tangent),
                  indices.data(), sizeof(GLuint) * indices.size());
 }

@@ -10,12 +10,12 @@ enum class VertexAttr
 {
     // xyz坐标
     Position = 1 << 0,
-    // 法线
-    Normal = 1 << 1,
     // uv坐标
-    TexCoord = 1 << 2,
+    TexCoord = 1 << 1,
     // 颜色
-    Color = 1 << 3,
+    Color = 1 << 2,
+    // 法线
+    Normal = 1 << 3,
     // 切线
     Tangent = 1 << 4,
 };

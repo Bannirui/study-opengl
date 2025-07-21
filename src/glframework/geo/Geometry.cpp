@@ -33,26 +33,18 @@ void Geometry::setupBuffers(const void* vertices, size_t vertSz, VertexLayout la
     size_t stride = 0;
     // xyz
     if (layout & static_cast<uint32_t>(VertexAttr::Position)) stride += 3 * sizeof(float);
-    // 法线
-    if (layout & static_cast<uint32_t>(VertexAttr::Normal)) stride += 3 * sizeof(float);
     // uv
     if (layout & static_cast<uint32_t>(VertexAttr::TexCoord)) stride += 2 * sizeof(float);
     // 颜色
     if (layout & static_cast<uint32_t>(VertexAttr::Color)) stride += 3 * sizeof(float);
+    // 法线
+    if (layout & static_cast<uint32_t>(VertexAttr::Normal)) stride += 3 * sizeof(float);
     // 切线
     if (layout & static_cast<uint32_t>(VertexAttr::Tangent)) stride += 3 * sizeof(float);
     size_t offset = 0;
     GLuint index  = 0;
     // xyz
     if (layout & static_cast<uint32_t>(VertexAttr::Position))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    // 法线
-    if (layout & static_cast<uint32_t>(VertexAttr::Normal))
     {
         glEnableVertexAttribArray(index);
         glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
@@ -69,6 +61,14 @@ void Geometry::setupBuffers(const void* vertices, size_t vertSz, VertexLayout la
     }
     // 颜色
     if (layout & static_cast<uint32_t>(VertexAttr::Color))
+    {
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
+        offset += 3 * sizeof(float);
+        index++;
+    }
+    // 法线
+    if (layout & static_cast<uint32_t>(VertexAttr::Normal))
     {
         glEnableVertexAttribArray(index);
         glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);

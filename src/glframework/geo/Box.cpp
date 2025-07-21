@@ -8,37 +8,37 @@ Box::Box(float sz)
     float half = sz / 2.0f;
     // clang-format off
     float vertices[] = {
-        // xyz                uv
+        // xyz                uv            法线
         // Front face
-        -half, -half,  half,  0.0f,  0.0f,
-         half, -half,  half,  1.0f,  0.0f,
-         half,  half,  half,  1.0f,  1.0f,
-        -half,  half,  half,  0.0f,  1.0f,
+        -half, -half,  half,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         half, -half,  half,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         half,  half,  half,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+        -half,  half,  half,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
         // Back face
-        -half, -half, -half,  0.0f,  0.0f,
-        -half,  half, -half,  1.0f,  0.0f,
-         half,  half, -half,  1.0f,  1.0f,
-         half, -half, -half,  0.0f,  1.0f,
+        -half, -half, -half,  0.0f,  0.0f,  0.0f,  0.0f, -1.0f,
+        -half,  half, -half,  1.0f,  0.0f,  0.0f,  0.0f, -1.0f,
+         half,  half, -half,  1.0f,  1.0f,  0.0f,  0.0f, -1.0f,
+         half, -half, -half,  0.0f,  1.0f,  0.0f,  0.0f, -1.0f,
         // Top face
-        -half,  half,  half,  0.0f,  0.0f,
-         half,  half,  half,  1.0f,  0.0f,
-         half,  half, -half,  1.0f,  1.0f,
-        -half,  half, -half,  0.0f,  1.0f,
+        -half,  half,  half,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+         half,  half,  half,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+         half,  half, -half,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+        -half,  half, -half,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
         // Bottom face
-        -half, -half, -half,  0.0f,  0.0f,
-         half, -half, -half,  1.0f,  0.0f,
-         half, -half,  half,  1.0f,  1.0f,
-        -half, -half,  half,  0.0f,  1.0f,
+        -half, -half, -half,  0.0f,  0.0f,  0.0f, -1.0f,  0.0f,
+         half, -half, -half,  1.0f,  0.0f,  0.0f, -1.0f,  0.0f,
+         half, -half,  half,  1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
+        -half, -half,  half,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f,
         // Right face
-         half, -half,  half,  0.0f,  0.0f,
-         half, -half, -half,  1.0f,  0.0f,
-         half,  half, -half,  1.0f,  1.0f,
-         half,  half,  half,  0.0f,  1.0f,
+         half, -half,  half,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+         half, -half, -half,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+         half,  half, -half,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
+         half,  half,  half,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,
         // Left face
-        -half, -half, -half,  0.0f,  0.0f,
-        -half, -half,  half,  1.0f,  0.0f,
-        -half,  half,  half,  1.0f,  1.0f,
-        -half,  half, -half,  0.0f,  1.0f,
+        -half, -half, -half,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+        -half, -half,  half,  1.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+        -half,  half,  half,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
+        -half,  half, -half,  0.0f,  1.0f, -1.0f,  0.0f,  0.0f,
     };
     uint32_t indices[] = {
         0,  1,  2,  2,  3,  0,   // Front face
@@ -49,6 +49,7 @@ Box::Box(float sz)
         20, 21, 22, 22, 23, 20   // Left face
     };
     // clang-format on
-    setupBuffers(vertices, sizeof(vertices), static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord),
-                 indices, sizeof(indices));
+    setupBuffers(vertices, sizeof(vertices),
+                 static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal), indices,
+                 sizeof(indices));
 }
