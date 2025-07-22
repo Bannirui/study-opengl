@@ -15,12 +15,15 @@
 #include "application/camera/OrthographicCamera.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
+#include "glframework/Mesh.h"
 #include "glframework/geo/Geometry.h"
 #include "glframework/geo/Box.h"
 #include "glframework/Shader.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Plane.h"
 #include "glframework/geo/Sphere.h"
+#include "glframework/material/Material.h"
+#include "glframework/material/PhoneMaterial.h"
 
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -84,6 +87,18 @@ void mouse_btn_callback(int button, int action, int mods)
     std::cout << "button=" << button << ", action=" << action << ", mods=" << mods << ", x=" << x << ", y=" << y
               << std::endl;
     cameraCtl->OnMouse(button, action, mods, x, y);
+}
+
+void prepare()
+{
+    // 创建geometry
+    auto geometry = new Sphere;
+    // 创建材质
+    auto material       = new PhoneMaterial;
+    material->m_shiness = 32.0f;
+    material->m_diffuse = new Texture("resources/texture/2k_earth_daymap.jpg", 0);
+    // 创建mesh
+    auto mesh = new Mesh(geometry, material);
 }
 void prepareCamera()
 {

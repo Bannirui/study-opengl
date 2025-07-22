@@ -12,7 +12,7 @@ class PhoneMaterial : public Material
 {
 public:
     PhoneMaterial();
-    ~PhoneMaterial() = default;
+    ~PhoneMaterial();
 
 public:
     // 漫反射和环境光都用贴图颜色
