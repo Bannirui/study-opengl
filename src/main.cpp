@@ -122,6 +122,8 @@ void render()
     // 光源参数
     shader->setFloatVec3("u_lightDirection", lightDirection);
     shader->setFloatVec3("u_lightColor", lightColor);
+    // 相机位置
+    shader->setFloatVec3("u_cameraPos", camera->m_Position);
     // 绑定当前VAO
     glBindVertexArray(geometry->GetVAO());
     // 向GPU发送绘制指令

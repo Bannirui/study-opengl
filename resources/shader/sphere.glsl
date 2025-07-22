@@ -23,8 +23,8 @@ out vec3 worldPos;
 
 void main()
 {
-    vec4 transformPos = u_model * vec4(a_pos, 1.0f);
     // 世界坐标
+    vec4 transformPos = u_model * vec4(a_pos, 1.0f);
     worldPos = transformPos.xyz;
     // 剪裁坐标
     gl_Position = u_projection * u_view * transformPos;
@@ -47,6 +47,8 @@ uniform sampler2D u_sampler;
 // 光源参数
 uniform vec3 u_lightDirection;
 uniform vec3 u_lightColor;
+// 相机位置
+uniform vec3 u_cameraPos;
 
 out vec4 fragColor;
 
@@ -59,6 +61,15 @@ void main()
     vec3 lightDirN = normalize(u_lightDirection);
     // 计算漫反射 过滤负数 保证输出在0到1之间 得到的是平行光跟法线夹角的cos cos角度越大值越小 最终物体颜色越小
     float diffuse = clamp(dot(-lightDirN, normalN), 0.0f, 1.0f);
-    vec3 finalColor = u_lightColor * diffuse * objColor;
+    vec3 diffuseColor = u_lightColor * diffuse * objColor;
+    // 镜面反射
+    vec3 lightReflect = normalize(reflect(lightDirN, normalN));
+    // 视线向量
+    vec3 viewDir = normalize(worldPos - u_cameraPos);
+    viewDir = clamp(-viewDir, 0.0f, 1.0f);
+    // 反射方向跟目光方向夹角的cos 夹角越大 看到的反射高光越弱
+    float specular = clamp(dot(lightReflect, -viewDir) ,0.0f, 1.0f);
+    vec3 specularColor = u_lightColor * specular;
+    vec3 finalColor = diffuseColor + specularColor;
     fragColor = vec4(finalColor, 1.0f);
 }
