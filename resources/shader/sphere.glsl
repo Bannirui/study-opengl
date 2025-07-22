@@ -67,9 +67,14 @@ void main()
     // 视线向量
     vec3 viewDir = normalize(worldPos - u_cameraPos);
     viewDir = clamp(-viewDir, 0.0f, 1.0f);
+    // 光照和法线夹角的cos值
+    float cosVal = dot(-lightDirN, normalN);
+    // step函数 cosVal小于0就用0 大于0就用1.0 下面把flag作用到反射高光上0就达到了过滤效果
+    float flag = step(0.0, cosVal);
+    // 从光照北面看物体高光的剔除 光线照射和法线夹角钝角就是背面情况 此时cos<0
     // 反射方向跟目光方向夹角的cos 夹角越大 看到的反射高光越弱
-    float specular = clamp(dot(lightReflect, -viewDir) ,0.0f, 1.0f);
-    vec3 specularColor = u_lightColor * specular;
+    float specular = max(dot(lightReflect, -viewDir) ,0.0f);
+    vec3 specularColor = u_lightColor * specular * flag;
     vec3 finalColor = diffuseColor + specularColor;
     fragColor = vec4(finalColor, 1.0f);
 }
