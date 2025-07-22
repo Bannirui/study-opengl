@@ -4,4 +4,7 @@
 
 #include "glframework/material/PhoneMaterial.h"
 
-PhoneMaterial::PhoneMaterial() : m_type(MaterialType::PhoneMaterial) {}
+PhoneMaterial::PhoneMaterial()
+{
+    m_type = MaterialType::PhoneMaterial;
+}
