@@ -64,9 +64,10 @@ public:
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
     void setFloatVec3(const std::string& name, const glm::vec3 value) const;
+    // 3*3方阵
+    void setMat3(const std::string& name, const float* values) const;
     // 4*4方阵
     void setMat4(const std::string& name, const float* values) const;
-
 
 private:
     /**
@@ -80,7 +81,7 @@ private:
      * @return vs和fs源码
      */
     std::unordered_map<GLenum, std::string> preProcess(const std::string& source);
-    void compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+    void                                    compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 
 private:
     // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader

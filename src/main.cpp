@@ -27,6 +27,8 @@ const unsigned int SCR_HEIGHT = 600;
 
 // 模型矩阵初始化为单位矩阵 缩放平移旋转作用在它身上
 glm::mat4 model = glm::mat4(1.0f);
+// 法线矩阵 在shader中计算法线矩阵的话对于GPU而言性能不友好 所以由CPU计算好直接传过去
+glm::mat3 normalMatrix = glm::mat4(1.0f);
 // 平行光
 // 光照向的方向
 glm::vec3 lightDirection = glm::vec3(-1.0f, 0.0f, -1.0f);
@@ -115,6 +117,8 @@ void render()
     shader->Bind();
     // 模型矩阵 aPos模型->世界空间
     shader->setMat4("u_model", glm::value_ptr(model));
+    // 模型矩阵
+    shader->setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
     // 视图矩阵 世界空间->摄影机空间
     auto view = camera->GetViewMatrix();
     shader->setMat4("u_view", glm::value_ptr(view));
@@ -150,7 +154,10 @@ void prepareState()
 }
 void doTransform()
 {
- model = glm::rotate(model, 0.01f, glm::vec3(-0.1f, 1.0f, 0.0f));
+    // model matrix
+    model = glm::rotate(model, 0.01f, glm::vec3(-0.1f, 1.0f, 0.0f));
+    // normal matrix
+    normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
 }
 
 int main()
