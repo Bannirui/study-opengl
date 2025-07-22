@@ -87,7 +87,7 @@ void prepareCamera()
 // 创建shader实例
 void prepareShader()
 {
-    shader = new Shader("resources/shader/sphere.glsl");
+    shader = new Shader("resources/shader/my_shader.glsl");
 }
 
 void prepareTexture()

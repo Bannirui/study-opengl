@@ -74,6 +74,8 @@ void main()
     // 从光照北面看物体高光的剔除 光线照射和法线夹角钝角就是背面情况 此时cos<0
     // 反射方向跟目光方向夹角的cos 夹角越大 看到的反射高光越弱
     float specular = max(dot(lightReflect, -viewDir) ,0.0f);
+    // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
+    specular = pow(specular, 32);
     vec3 specularColor = u_lightColor * specular * flag;
     vec3 finalColor = diffuseColor + specularColor;
     fragColor = vec4(finalColor, 1.0f);
