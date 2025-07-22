@@ -29,7 +29,11 @@ void main()
     // 剪裁坐标
     gl_Position = u_projection * u_view * transformPos;
     uv = a_uv;
-    normal = a_normal;
+    // 法线不能直接传给fs 在发生变换的时候要把变换作用到法线上 根据model矩阵求出法线矩阵
+    // 法线矩阵=(model矩阵的逆矩阵)转置
+    mat3 normalMatrix = transpose(inverse(mat3(u_model)));
+    // 经过法线矩阵作用之后的法线
+    normal = normalMatrix * a_normal;
 }
 
 #type fragment

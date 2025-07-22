@@ -25,9 +25,11 @@
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// 模型矩阵初始化为单位矩阵 缩放平移旋转作用在它身上
+glm::mat4 model = glm::mat4(1.0f);
 // 平行光
 // 光照向的方向
-glm::vec3 lightDirection = glm::vec3(-0.4f, -1.4f, -1.9f);
+glm::vec3 lightDirection = glm::vec3(-1.0f, 0.0f, -1.0f);
 // 光强
 glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 // 高光反射强度
@@ -111,6 +113,8 @@ void render()
 
     // 告诉GPU接下来绘制用的shader程序是哪个 綁定shader 更新uniform
     shader->Bind();
+    // 模型矩阵 aPos模型->世界空间
+    shader->setMat4("u_model", glm::value_ptr(model));
     // 视图矩阵 世界空间->摄影机空间
     auto view = camera->GetViewMatrix();
     shader->setMat4("u_view", glm::value_ptr(view));
@@ -119,10 +123,6 @@ void render()
     // 采样器sampler1采样0号纹理单元
     texture->Bind();
     shader->setInt("u_sampler", texture->GetUnit());
-    // 模型矩阵 aPos模型->世界空间
-    // 初始化单位矩阵
-    auto model = glm::mat4(1.0f);
-    shader->setMat4("u_model", glm::value_ptr(model));
     // 光源参数
     shader->setFloatVec3("u_lightDirection", lightDirection);
     shader->setFloatVec3("u_lightColor", lightColor);
@@ -147,6 +147,10 @@ void prepareState()
     glEnable(GL_DEPTH_TEST);
     // 设置深度测试方法
     glDepthFunc(GL_LESS);
+}
+void doTransform()
+{
+ model = glm::rotate(model, 0.01f, glm::vec3(-0.1f, 1.0f, 0.0f));
 }
 
 int main()
@@ -173,6 +177,7 @@ int main()
     // 窗体循环
     while (app->update())
     {
+        doTransform();
         cameraCtl->OnUpdate();
         render();
     }
