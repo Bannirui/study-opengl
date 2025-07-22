@@ -30,6 +30,8 @@ const unsigned int SCR_HEIGHT = 600;
 glm::vec3 lightDirection = glm::vec3(-0.4f, -1.4f, -1.9f);
 // 光强
 glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+// 高光反射强度
+constexpr float c_specularIntensity = 0.4f;
 
 Geometry* geometry = nullptr;
 Texture*  texture  = nullptr;
@@ -124,6 +126,7 @@ void render()
     shader->setFloatVec3("u_lightColor", lightColor);
     // 相机位置
     shader->setFloatVec3("u_cameraPos", camera->m_Position);
+    shader->setFloat("u_specularIntensity", c_specularIntensity);
     // 绑定当前VAO
     glBindVertexArray(geometry->GetVAO());
     // 向GPU发送绘制指令

@@ -49,6 +49,8 @@ uniform vec3 u_lightDirection;
 uniform vec3 u_lightColor;
 // 相机位置
 uniform vec3 u_cameraPos;
+// 控制高光反射强度
+uniform float u_specularIntensity;
 
 out vec4 fragColor;
 
@@ -76,7 +78,7 @@ void main()
     float specular = max(dot(lightReflect, -viewDir) ,0.0f);
     // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
     specular = pow(specular, 32);
-    vec3 specularColor = u_lightColor * specular * flag;
+    vec3 specularColor = u_lightColor * specular * flag * u_specularIntensity;
     vec3 finalColor = diffuseColor + specularColor;
     fragColor = vec4(finalColor, 1.0f);
 }
