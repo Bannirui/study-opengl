@@ -32,6 +32,8 @@ glm::vec3 lightDirection = glm::vec3(-0.4f, -1.4f, -1.9f);
 glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 // 高光反射强度
 constexpr float c_specularIntensity = 0.4f;
+// 环境光
+glm::vec3 ambientColor = glm::vec3(0.2f, 0.2f, 0.2f);
 
 Geometry* geometry = nullptr;
 Texture*  texture  = nullptr;
@@ -126,7 +128,10 @@ void render()
     shader->setFloatVec3("u_lightColor", lightColor);
     // 相机位置
     shader->setFloatVec3("u_cameraPos", camera->m_Position);
+    // 高光反射强度
     shader->setFloat("u_specularIntensity", c_specularIntensity);
+    // 环境光
+    shader->setFloatVec3("u_ambientColor", ambientColor);
     // 绑定当前VAO
     glBindVertexArray(geometry->GetVAO());
     // 向GPU发送绘制指令

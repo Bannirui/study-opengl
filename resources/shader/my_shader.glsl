@@ -51,19 +51,21 @@ uniform vec3 u_lightColor;
 uniform vec3 u_cameraPos;
 // 控制高光反射强度
 uniform float u_specularIntensity;
+// 环境光
+uniform vec3 u_ambientColor;
 
 out vec4 fragColor;
 
 void main()
 {
     // 采样
-    vec3 objColor = texture(u_sampler, uv).rgb;
+    vec3 objectColor = texture(u_sampler, uv).rgb;
     // 法线向量归一
     vec3 normalN = normalize(normal);
     vec3 lightDirN = normalize(u_lightDirection);
     // 计算漫反射 过滤负数 保证输出在0到1之间 得到的是平行光跟法线夹角的cos cos角度越大值越小 最终物体颜色越小
     float diffuse = clamp(dot(-lightDirN, normalN), 0.0f, 1.0f);
-    vec3 diffuseColor = u_lightColor * diffuse * objColor;
+    vec3 diffuseColor = u_lightColor * diffuse * objectColor;
     // 镜面反射
     vec3 lightReflect = normalize(reflect(lightDirN, normalN));
     // 视线向量
@@ -79,6 +81,8 @@ void main()
     // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
     specular = pow(specular, 32);
     vec3 specularColor = u_lightColor * specular * flag * u_specularIntensity;
-    vec3 finalColor = diffuseColor + specularColor;
+    // 为了避免光照背面的死黑 添加环境光
+    vec3 ambientColor = objectColor * u_ambientColor;
+    vec3 finalColor = diffuseColor + specularColor + ambientColor;
     fragColor = vec4(finalColor, 1.0f);
 }
