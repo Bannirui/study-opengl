@@ -1,7 +1,9 @@
 # study-opengl
 study OpenGL and make note
 
-[关于项目代码组织结构](./doc/ProjStructure.md)
+- [关于项目代码组织结构](./doc/ProjStructure.md)
+- ![关于代码架构](./doc/img/1753204446.png)
+- ![渲染器设计](./doc/img/1753204651.png)
 
 ### 1 NDC(Normalized Device Coordinate)
 
