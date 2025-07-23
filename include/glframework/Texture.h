@@ -10,7 +10,7 @@
 
 class Texture
 {
-   public:
+public:
     /**
      * @param path 图片路径
      * @param unit 要绑到哪个纹理单元
@@ -19,10 +19,12 @@ class Texture
     ~Texture();
 
     void Bind();
+    /**
+     * @return 纹理对象绑定的纹理单元是哪个
+     */
+    int GetUnit() const;
 
-    int GetUnit();
-
-   private:
+private:
     GLuint m_Texture{0};
     int    m_Width{0};
     int    m_Height{0};

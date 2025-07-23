@@ -58,6 +58,8 @@ uniform vec3 u_cameraPos;
 uniform float u_specularIntensity;
 // 环境光
 uniform vec3 u_ambientColor;
+// 控制光斑大小
+uniform float u_shiness;
 
 out vec4 fragColor;
 
@@ -84,7 +86,7 @@ void main()
     // 反射方向跟目光方向夹角的cos 夹角越大 看到的反射高光越弱
     float specular = max(dot(lightReflect, -viewDir) ,0.0f);
     // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
-    specular = pow(specular, 32);
+    specular = pow(specular, u_shiness);
     vec3 specularColor = u_lightColor * specular * flag * u_specularIntensity;
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
