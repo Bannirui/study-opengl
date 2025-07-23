@@ -24,8 +24,8 @@
 #include "glframework/material/PhoneMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
-const unsigned int SCR_WIDTH  = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH  = 1600;
+const unsigned int SCR_HEIGHT = 800;
 
 Renderer*          renderer = nullptr;
 std::vector<Mesh*> meshes{};
@@ -81,12 +81,21 @@ void prepare()
     // 创建geometry
     auto geometry = new Sphere;
     // 创建材质
-    auto material       = new PhoneMaterial;
-    material->m_shiness = 32.0f;
-    material->m_diffuse = new Texture("resources/texture/2k_earth_daymap.jpg", 0);
+    auto earth       = new PhoneMaterial;
+    earth->m_shiness = 32.0f;
+    earth->m_diffuse = new Texture("resources/texture/2k_earth_daymap.jpg", 0);
+    auto ball        = new PhoneMaterial;
+    ball->m_shiness  = 32.0f;
+    ball->m_diffuse  = new Texture("resources/texture/container.jpg", 1);
     // 创建mesh
-    auto mesh = new Mesh(geometry, material);
-    meshes.push_back(mesh);
+    auto earth_mesh = new Mesh(geometry, earth);
+    earth_mesh->SetPosition(glm::vec3(0.5f, 0.0f, 0.0f));
+
+    auto ball_mesh = new Mesh(geometry, ball);
+    ball_mesh->SetPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
+
+    meshes.push_back(earth_mesh);
+    meshes.push_back(ball_mesh);
     // 平行光
     directional_light = new DirectionalLight();
     // 环境光
@@ -121,6 +130,9 @@ int main()
     // 窗体循环
     while (app->update())
     {
+        // 地球旋转
+        meshes[0]->SetRotationX(0.1f);
+        meshes[0]->SetRotationY(1.0f);
         cameraCtl->OnUpdate();
         renderer->render(meshes, camera, directional_light, ambient_light);
     }
