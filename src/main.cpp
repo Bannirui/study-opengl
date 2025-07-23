@@ -99,6 +99,7 @@ void prepare()
     material->m_diffuse = new Texture("resources/texture/2k_earth_daymap.jpg", 0);
     // 创建mesh
     auto mesh = new Mesh(geometry, material);
+    (void)mesh;
 }
 void prepareCamera()
 {
