@@ -50,13 +50,15 @@ include(${CMAKE_SOURCE_DIR}/cmake/stb.cmake)
 file(GLOB_RECURSE srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE hdrs "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 
-set(my_exec_targets ball)
+set(my_exec_targets ball box)
 
 foreach(target IN LISTS my_exec_targets)
     # 添加头文件的目的仅仅是为了让IDEA识别到 新建文件的时候添加索引
     add_executable(${target} ${target}.cpp ${srcs} ${hdrs})
     target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_link_libraries(${target} PRIVATE glad glfw stb glm)
+    # 构建时触发资源文件复制
+    add_dependencies(${target} copy_resources)
 endforeach()
 
 # 向项目添加全局的预编译宏
@@ -72,7 +74,7 @@ elseif(WIN32)
 endif()
 
 # 拷贝资源文件到构建目录和运行目录
-add_custom_target(
+add_custom_target(copy_resources
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_CURRENT_SOURCE_DIR}/resources"
             "${CMAKE_CURRENT_BINARY_DIR}/resources"
