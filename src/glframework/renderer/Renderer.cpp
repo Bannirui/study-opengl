@@ -50,6 +50,9 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 curMaterial->m_diffuse->Bind();
                 // diffuse贴图 将纹理采样器跟纹理单元绑定
                 shader->setInt("u_sampler", curMaterial->m_diffuse->GetUnit());
+                // 高光蒙版贴图
+                curMaterial->m_specularMask->Bind();
+                shader->setInt("u_specularMaskSampler", curMaterial->m_specularMask->GetUnit());
                 // 模型变换矩阵 aPos模型->世界空间
                 shader->setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
                 // 视图矩阵 世界空间->摄影机空间

@@ -19,6 +19,8 @@ public:
     ~Mesh() = default;
 
 public:
+    // 形状
     Geometry* m_geometry{nullptr};
+    // 材质
     Material* m_material{nullptr};
 };

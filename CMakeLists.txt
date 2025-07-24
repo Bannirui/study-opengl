@@ -57,6 +57,13 @@ foreach(target IN LISTS my_exec_targets)
     add_executable(${target} ${target}.cpp ${srcs} ${hdrs})
     target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_link_libraries(${target} PRIVATE glad glfw stb glm)
+
+    if(UNIX)
+        target_link_libraries(${target} PRIVATE dl)
+    elseif(WIN32)
+        target_link_libraries(${target} PRIVATE opengl32)
+    endif()
+
     # 构建时触发资源文件复制
     add_dependencies(${target} copy_resources)
 endforeach()
@@ -67,10 +74,6 @@ add_definitions(-DDEBUG)
 if (APPLE)
     # OpenGL的API在mac上被弃用了 防止编译器warn
     add_definitions(-DGL_SILENCE_DEPRECATION)
-elseif(UNIX)
-    target_link_libraries(${PROJECT_NAME} PRIVATE dl)
-elseif(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE opengl32)
 endif()
 
 # 拷贝资源文件到构建目录和运行目录

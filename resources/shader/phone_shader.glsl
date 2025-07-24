@@ -47,8 +47,10 @@ in vec3 normal;
 // 世界坐标
 in vec3 worldPos;
 
-// 采样器
+// 采样器 diffuse贴图
 uniform sampler2D u_sampler;
+// 采样器 高光蒙版采样器
+uniform sampler2D u_specularMaskSampler;
 // 光源参数
 uniform vec3 u_lightDirection;
 uniform vec3 u_lightColor;
@@ -87,7 +89,9 @@ void main()
     float specular = max(dot(lightReflect, -viewDir) ,0.0f);
     // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
     specular = pow(specular, u_shiness);
-    vec3 specularColor = u_lightColor * specular * flag * u_specularIntensity;
+    // 对高光蒙版贴图采样 用R通道作为高光比例
+    float specularMask = texture(u_specularMaskSampler, uv).r;
+    vec3 specularColor = u_lightColor * specular * flag * u_specularIntensity * specularMask;
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
     vec3 finalColor = diffuseColor + specularColor + ambientColor;

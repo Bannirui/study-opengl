@@ -14,4 +14,5 @@ PhoneMaterial::PhoneMaterial()
 PhoneMaterial::~PhoneMaterial()
 {
     delete m_diffuse;
+    delete m_specularMask;
 }

@@ -80,13 +80,13 @@ void prepare()
     // 创建geometry
     auto geometry = new Box();
     // 创建材质
-    auto wall       = new PhoneMaterial;
-    wall->m_shiness = 32.0f;
-    wall->m_diffuse = new Texture("resources/texture/wall.jpg", 0);
-    wall->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
+    auto wood            = new PhoneMaterial;
+    wood->m_shiness      = 32.0f;
+    wood->m_diffuse      = new Texture("resources/texture/box.png", 0);
+    wood->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
     // 创建mesh
-    auto box_mesh = new Mesh(geometry, wall);
-    box_mesh->SetPosition(glm::vec3(0.5f, 0.0f, 0.0f));
+    auto box_mesh = new Mesh(geometry, wood);
+    box_mesh->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
     meshes.push_back(box_mesh);
     // 平行光
@@ -102,6 +102,7 @@ void prepareCamera()
     cameraCtl          = new TrackballCameraController(camera);
 }
 
+// 高光蒙版
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
