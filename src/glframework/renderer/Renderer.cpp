@@ -16,16 +16,18 @@
 
 Renderer::Renderer()
 {
-    m_phoneShader = new Shader("resources/shader/phone_shader.glsl");
-    m_whiteShader = new Shader("resources/shader/white_shader.glsl");
+    m_phoneShader      = new Shader("resources/shader/phone_shader.glsl");
+    m_whiteShader      = new Shader("resources/shader/white_shader.glsl");
+    m_pointLightShader = new Shader("resources/shader/point_light_shader.glsl");
 }
 Renderer::~Renderer()
 {
     delete m_phoneShader;
     delete m_whiteShader;
+    delete m_pointLightShader;
 }
 void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
-                      AmbientLight* ambientLight)
+                      PointLight* pointLight, AmbientLight* ambientLight)
 {
     // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话 后绘制的会覆盖先绘制的
     glEnable(GL_DEPTH_TEST);
@@ -46,6 +48,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
         switch (material->m_type)
         {
             case MaterialType::PhoneMaterial:
+            case MaterialType::PointLightMaterial:
             {
                 PhoneMaterial* curMaterial = (PhoneMaterial*)material;
                 if (curMaterial->m_diffuse)
@@ -69,7 +72,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 // normal matrix
                 auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh->GetModelMatrix())));
                 shader->setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
-                // 光源参数
+                // 平行光
                 if (directionalLight)
                 {
                     shader->setFloatVec3("u_lightDirection", directionalLight->m_direction);
@@ -77,9 +80,20 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                     // 高光反射强度
                     shader->setFloat("u_specularIntensity", directionalLight->m_specularIntensity);
                 }
+                // 点光
+                if (pointLight)
+                {
+                    shader->setFloatVec3("u_lightPos", pointLight->GetPosition());
+                    shader->setFloatVec3("u_lightColor", pointLight->m_color);
+                    // 高光反射强度
+                    shader->setFloat("u_specularIntensity", pointLight->m_specularIntensity);
+                    shader->setFloat("u_k2", pointLight->m_k2);
+                    shader->setFloat("u_k1", pointLight->m_k1);
+                    shader->setFloat("u_kc", pointLight->m_kc);
+                }
+                // 环境光
                 if (ambientLight)
                 {
-                    // 环境光
                     shader->setFloatVec3("u_ambientColor", ambientLight->m_color);
                 }
                 // 控制高光反射光斑大小
@@ -118,6 +132,9 @@ Shader* Renderer::getShader(const MaterialType type) const
             break;
         case MaterialType::WhiteMaterial:
             ret = m_whiteShader;
+            break;
+        case MaterialType::PointLightMaterial:
+            ret = m_pointLightShader;
             break;
         default:
             break;

@@ -8,6 +8,7 @@
 
 class Texture;
 
+// 平行光
 class PhoneMaterial : public Material
 {
 public:

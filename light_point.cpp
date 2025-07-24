@@ -23,6 +23,7 @@
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/material/Material.h"
 #include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/PointLightMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
@@ -32,11 +33,13 @@ const unsigned int SCR_HEIGHT = 800;
 Renderer* renderer = nullptr;
 // 渲染列表
 std::vector<Mesh*> meshes{};
-DirectionalLight*  directional_light = nullptr;
-AmbientLight*      ambient_light     = nullptr;
+PointLight*        point_light   = nullptr;
+AmbientLight*      ambient_light = nullptr;
 
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
+
+Mesh* meshWhite = nullptr;
 
 void framebuffer_size_callback(int width, int height)
 {
@@ -83,23 +86,26 @@ void prepare()
     renderer = new Renderer();
     // 箱子
     auto geometryBox            = new Box();
-    auto materialBox            = new PhoneMaterial();
+    auto materialBox            = new PointLightMaterial();
     materialBox->m_shiness      = 32.0f;
     materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
     materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
     auto meshBox                = new Mesh(geometryBox, materialBox);
     meshes.push_back(meshBox);
     // 白色物体
-    auto geometryWhite = new Sphere(0.5f);
+    auto geometryWhite = new Sphere(0.1f);
     auto materialWhite = new WhiteMaterial();
-    auto meshWhite     = new Mesh(geometryWhite, materialWhite);
-    meshWhite->SetPosition(glm::vec3(1.5f, 1.0f, 1.0f));
+    meshWhite          = new Mesh(geometryWhite, materialWhite);
+    meshWhite->SetPosition(glm::vec3(1.5f, 0.0f, 0.0f));
     meshes.push_back(meshWhite);
     // 光线
-    directional_light              = new DirectionalLight();
-    directional_light->m_direction = glm::vec3(-1.0f, 0.0f, -1.0f);
-    ambient_light                  = new AmbientLight();
-    ambient_light->m_color         = glm::vec3(0.2f);
+    point_light = new PointLight();
+    point_light->SetPosition(meshWhite->GetPosition());
+    point_light->m_k2      = 0.017f;
+    point_light->m_k1      = 0.07f;
+    point_light->m_kc      = 1.0f;
+    ambient_light          = new AmbientLight();
+    ambient_light->m_color = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
@@ -108,6 +114,13 @@ void prepareCamera()
     cameraCtl          = new TrackballCameraController(camera);
 }
 
+// 点光跟着白球的位置 让白球运动起来 点光位置就会变化
+void meshWhiteTransform()
+{
+    float xPos = glm::sin(glfwGetTime()) + 2.0f;
+    meshWhite->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+    point_light->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+}
 // 点光源
 int main()
 {
@@ -130,16 +143,14 @@ int main()
     // 窗体循环
     while (app->update())
     {
-        // 地球旋转
-        meshes[0]->SetRotationX(0.1f);
-        meshes[0]->SetRotationY(1.0f);
         cameraCtl->OnUpdate();
-        renderer->render(meshes, camera, directional_light, ambient_light);
+        meshWhiteTransform();
+        renderer->render(meshes, camera, nullptr, point_light, ambient_light);
     }
     // 回收资源
     app->destroy();
     delete renderer;
-    delete directional_light;
+    delete point_light;
     delete ambient_light;
     delete camera;
     delete cameraCtl;

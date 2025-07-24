@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "glframework/Core.h"
-
 /**
  * 材质描述了物体表面如何与光发生反应
  * <ul>
@@ -25,6 +23,8 @@ enum class MaterialType
     PhoneMaterial,
     // 纯白 用于点光
     WhiteMaterial,
+    // 点光
+    PointLightMaterial,
 };
 
 class Material

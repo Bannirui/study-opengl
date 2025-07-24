@@ -132,7 +132,7 @@ int main()
         meshes[0]->SetRotationX(0.1f);
         meshes[0]->SetRotationY(1.0f);
         cameraCtl->OnUpdate();
-        renderer->render(meshes, camera, directional_light, ambient_light);
+        renderer->render(meshes, camera, directional_light, nullptr, ambient_light);
     }
     // 回收资源
     app->destroy();

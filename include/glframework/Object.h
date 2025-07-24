@@ -13,7 +13,8 @@ public:
     Object()  = default;
     ~Object() = default;
 
-    void SetPosition(glm::vec3 pos);
+    glm::vec3 GetPosition() const { return m_position; }
+    void      SetPosition(glm::vec3 pos);
 
     // 增量旋转 在上一次基础上再旋转多少度
     void SetRotationX(float angle);
