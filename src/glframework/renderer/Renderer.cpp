@@ -17,10 +17,12 @@
 Renderer::Renderer()
 {
     m_phoneShader = new Shader("resources/shader/phone_shader.glsl");
+    m_whiteShader = new Shader("resources/shader/white_shader.glsl");
 }
 Renderer::~Renderer()
 {
     delete m_phoneShader;
+    delete m_whiteShader;
 }
 void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
                       AmbientLight* ambientLight)
@@ -46,13 +48,19 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
             case MaterialType::PhoneMaterial:
             {
                 PhoneMaterial* curMaterial = (PhoneMaterial*)material;
-                // 将纹理对象跟纹理单元绑定
-                curMaterial->m_diffuse->Bind();
-                // diffuse贴图 将纹理采样器跟纹理单元绑定
-                shader->setInt("u_sampler", curMaterial->m_diffuse->GetUnit());
+                if (curMaterial->m_diffuse)
+                {
+                    // 将纹理对象跟纹理单元绑定
+                    curMaterial->m_diffuse->Bind();
+                    // diffuse贴图 将纹理采样器跟纹理单元绑定
+                    shader->setInt("u_sampler", curMaterial->m_diffuse->GetUnit());
+                }
                 // 高光蒙版贴图
-                curMaterial->m_specularMask->Bind();
-                shader->setInt("u_specularMaskSampler", curMaterial->m_specularMask->GetUnit());
+                if (curMaterial->m_specularMask)
+                {
+                    curMaterial->m_specularMask->Bind();
+                    shader->setInt("u_specularMaskSampler", curMaterial->m_specularMask->GetUnit());
+                }
                 // 模型变换矩阵 aPos模型->世界空间
                 shader->setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
                 // 视图矩阵 世界空间->摄影机空间
@@ -62,16 +70,30 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh->GetModelMatrix())));
                 shader->setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
                 // 光源参数
-                shader->setFloatVec3("u_lightDirection", directionalLight->m_direction);
-                shader->setFloatVec3("u_lightColor", directionalLight->m_color);
-                // 高光反射强度
-                shader->setFloat("u_specularIntensity", directionalLight->m_specularIntensity);
-                // 环境光
-                shader->setFloatVec3("u_ambientColor", ambientLight->m_color);
+                if (directionalLight)
+                {
+                    shader->setFloatVec3("u_lightDirection", directionalLight->m_direction);
+                    shader->setFloatVec3("u_lightColor", directionalLight->m_color);
+                    // 高光反射强度
+                    shader->setFloat("u_specularIntensity", directionalLight->m_specularIntensity);
+                }
+                if (ambientLight)
+                {
+                    // 环境光
+                    shader->setFloatVec3("u_ambientColor", ambientLight->m_color);
+                }
                 // 控制高光反射光斑大小
                 shader->setFloat("u_shiness", curMaterial->m_shiness);
                 // 相机位置
                 shader->setFloatVec3("u_cameraPos", camera->m_Position);
+            }
+            break;
+            case MaterialType::WhiteMaterial:
+            {
+                // mvp变换矩阵
+                shader->setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
+                shader->setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
+                shader->setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
             }
             break;
             default:
@@ -86,13 +108,16 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
         shader->Unbind();
     }
 }
-Shader* Renderer::getShader(MaterialType type) const
+Shader* Renderer::getShader(const MaterialType type) const
 {
     Shader* ret = nullptr;
     switch (type)
     {
         case MaterialType::PhoneMaterial:
             ret = m_phoneShader;
+            break;
+        case MaterialType::WhiteMaterial:
+            ret = m_whiteShader;
             break;
         default:
             break;

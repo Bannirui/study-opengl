@@ -23,6 +23,8 @@ enum class MaterialType
 {
     // 冯氏光照模型
     PhoneMaterial,
+    // 纯白 用于点光
+    WhiteMaterial,
 };
 
 class Material

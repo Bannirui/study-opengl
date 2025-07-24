@@ -18,7 +18,7 @@ public:
     Texture(const std::string& path, int unit);
     ~Texture();
 
-    void Bind();
+    void Bind() const;
     /**
      * @return 纹理对象绑定的纹理单元是哪个
      */

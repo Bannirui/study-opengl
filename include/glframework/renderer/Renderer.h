@@ -38,10 +38,12 @@ private:
      * @param type 材质类型
      * @return 适配的shader
      */
-    Shader* getShader(MaterialType type) const;
+    Shader* getShader(const MaterialType type) const;
 
 private:
     // 生成多种不同的shader 根据材质类型挑选合适的shader
     // 冯氏光照shader
     Shader* m_phoneShader{nullptr};
+    // 纯白色渲染
+    Shader* m_whiteShader{nullptr};
 };

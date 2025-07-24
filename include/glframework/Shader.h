@@ -4,12 +4,11 @@
 
 #pragma once
 
-#include "glm/vec3.hpp"
-
 #include <string>
 #include <unordered_map>
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 // OpenGL中万物都是3维 但是在显示器上是2维 OpenGL负责把3维坐标转换到2维像素点 这个工作由graphics pipeline负责
 // 分2部分

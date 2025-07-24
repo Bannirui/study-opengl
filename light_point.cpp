@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "err_check.h"
 #include "application/Application.h"
@@ -16,17 +17,20 @@
 #include "glframework/Mesh.h"
 #include "glframework/geo/Geometry.h"
 #include "glframework/Texture.h"
+#include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/material/Material.h"
 #include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-Renderer*          renderer = nullptr;
+Renderer* renderer = nullptr;
+// 渲染列表
 std::vector<Mesh*> meshes{};
 DirectionalLight*  directional_light = nullptr;
 AmbientLight*      ambient_light     = nullptr;
@@ -77,28 +81,25 @@ void mouse_btn_callback(int button, int action, int mods)
 void prepare()
 {
     renderer = new Renderer();
-    // 创建geometry
-    auto geometry = new Sphere;
-    // 创建材质
-    auto earth       = new PhoneMaterial;
-    earth->m_shiness = 32.0f;
-    earth->m_diffuse = new Texture("resources/texture/earth.jpg", 0);
-    // 创建mesh
-    auto earth_mesh = new Mesh(geometry, earth);
-    earth_mesh->SetPosition(glm::vec3(0.5f, 0.0f, 0.0f));
-    meshes.push_back(earth_mesh);
-
-    auto ball       = new PhoneMaterial;
-    ball->m_shiness = 32.0f;
-    ball->m_diffuse = new Texture("resources/texture/wall.jpg", 1);
-    auto ball_mesh  = new Mesh(geometry, ball);
-    ball_mesh->SetPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
-    meshes.push_back(ball_mesh);
-    // 平行光
-    directional_light = new DirectionalLight();
-    // 环境光
-    ambient_light          = new AmbientLight();
-    ambient_light->m_color = glm::vec3(0.1f);
+    // 箱子
+    auto geometryBox            = new Box();
+    auto materialBox            = new PhoneMaterial();
+    materialBox->m_shiness      = 32.0f;
+    materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
+    materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
+    auto meshBox                = new Mesh(geometryBox, materialBox);
+    meshes.push_back(meshBox);
+    // 白色物体
+    auto geometryWhite = new Sphere(0.5f);
+    auto materialWhite = new WhiteMaterial();
+    auto meshWhite     = new Mesh(geometryWhite, materialWhite);
+    meshWhite->SetPosition(glm::vec3(1.5f, 1.0f, 1.0f));
+    meshes.push_back(meshWhite);
+    // 光线
+    directional_light              = new DirectionalLight();
+    directional_light->m_direction = glm::vec3(-1.0f, 0.0f, -1.0f);
+    ambient_light                  = new AmbientLight();
+    ambient_light->m_color         = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
@@ -107,6 +108,7 @@ void prepareCamera()
     cameraCtl          = new TrackballCameraController(camera);
 }
 
+// 点光源
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
