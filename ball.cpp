@@ -83,10 +83,10 @@ void prepare()
     // 创建材质
     auto earth       = new PhoneMaterial;
     earth->m_shiness = 32.0f;
-    earth->m_diffuse = new Texture("resources/texture/2k_earth_daymap.jpg", 0);
+    earth->m_diffuse = new Texture("resources/texture/earth.jpg", 0);
     auto ball        = new PhoneMaterial;
     ball->m_shiness  = 32.0f;
-    ball->m_diffuse  = new Texture("resources/texture/container.jpg", 1);
+    ball->m_diffuse  = new Texture("resources/texture/wall.jpg", 1);
     // 创建mesh
     auto earth_mesh = new Mesh(geometry, earth);
     earth_mesh->SetPosition(glm::vec3(0.5f, 0.0f, 0.0f));
