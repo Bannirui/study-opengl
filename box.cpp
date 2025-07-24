@@ -131,5 +131,10 @@ int main()
     }
     // 回收资源
     app->destroy();
+    delete renderer;
+    delete directional_light;
+    delete ambient_light;
+    delete camera;
+    delete cameraCtl;
     return 0;
 }
