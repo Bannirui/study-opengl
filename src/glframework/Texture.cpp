@@ -31,7 +31,8 @@ Texture::Texture(const std::string& path, int unit) : m_Uint(unit)
     // 开辟显存 传输数据
     // level mipmap的层级 如果这个api调用的时候level传入了非0的值 就意味着默认要开启opengl的mipmap功能
     // 就一定要传给opengl图片大小一直到1*1大小 如果没有一直传入图片 就会报错
-    GL_CALL_AND_CHECK_ERR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+    GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
+    GL_CALL_AND_CHECK_ERR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, data));
     // 启用opengl的mipmap功能 给gl状态机插槽GL_TEXTURE_2D上的图片生成mipmap
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);

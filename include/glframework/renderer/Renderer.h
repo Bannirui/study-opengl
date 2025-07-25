@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "glframework/Core.h"
 #include "glframework/light/PointLight.h"
 
 class Mesh;
@@ -32,7 +31,7 @@ public:
      * @param ambientLight 环境光
      */
     void render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
-                PointLight* pointLight, AmbientLight* ambientLight);
+                PointLight* pointLight, AmbientLight* ambientLight) const;
 
 private:
     /**

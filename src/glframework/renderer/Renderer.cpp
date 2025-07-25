@@ -27,7 +27,7 @@ Renderer::~Renderer()
     delete m_pointLightShader;
 }
 void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
-                      PointLight* pointLight, AmbientLight* ambientLight)
+                      PointLight* pointLight, AmbientLight* ambientLight) const
 {
     // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话 后绘制的会覆盖先绘制的
     glEnable(GL_DEPTH_TEST);

@@ -87,13 +87,12 @@ void prepare()
     // 创建mesh
     auto box_mesh = new Mesh(geometry, wood);
     box_mesh->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-
     meshes.push_back(box_mesh);
     // 平行光
     directional_light = new DirectionalLight();
     // 环境光
     ambient_light          = new AmbientLight();
-    ambient_light->m_color = glm::vec3(0.1f);
+    ambient_light->m_color = glm::vec3(0.15f);
 }
 void prepareCamera()
 {
