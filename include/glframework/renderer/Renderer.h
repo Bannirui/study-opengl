@@ -32,14 +32,6 @@ public:
     // 探照光
     void render(const std::vector<Mesh*>& meshes, Camera* camera, AmbientLight* ambientLight,
                 SpotLight* spotLight) const;
-
-private:
-    /**
-     * 根据不同材质类型选择不同的Shader
-     * @param type 材质类型
-     * @return 适配的shader
-     */
-    Shader* getShader(const MaterialType type) const;
     /**
      * 每次调用都会渲染一帧
      * @param meshes 要渲染的物体对象
@@ -51,6 +43,14 @@ private:
      */
     void render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
                 PointLight* pointLight, AmbientLight* ambientLight, SpotLight* spotLight) const;
+
+private:
+    /**
+     * 根据不同材质类型选择不同的Shader
+     * @param type 材质类型
+     * @return 适配的shader
+     */
+    Shader* getShader(const MaterialType type) const;
 
 private:
     // 生成多种不同的shader 根据材质类型挑选合适的shader

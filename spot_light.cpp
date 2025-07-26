@@ -19,6 +19,8 @@
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
+#include "glframework/light/DirectionalLight.h"
+#include "glframework/light/PointLight.h"
 #include "glframework/light/SpotLight.h"
 #include "glframework/material/PhoneMaterial.h"
 #include "glframework/material/SpotLightMaterial.h"
@@ -31,8 +33,10 @@ const unsigned int SCR_HEIGHT = 800;
 Renderer* renderer = nullptr;
 // 渲染列表
 std::vector<Mesh*> meshes{};
-SpotLight*         spot_light    = nullptr;
-AmbientLight*      ambient_light = nullptr;
+DirectionalLight*  directionalLight = nullptr;
+SpotLight*         spot_light       = nullptr;
+AmbientLight*      ambient_light    = nullptr;
+PointLight*        point_light      = nullptr;
 
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
@@ -101,6 +105,17 @@ void prepare()
     spot_light->m_innerAngle = 15.0f;
     spot_light->m_outerAngle = 30.0f;
     spot_light->SetPosition(meshWhite->GetPosition());
+
+    directionalLight              = new DirectionalLight();
+    directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    point_light = new PointLight();
+    point_light->SetPosition(glm::vec3(0.0f, 0.0f, 1.5f));
+    point_light->m_specularIntensity = 0.5f;
+    point_light->m_k2                = 0.017f;
+    point_light->m_k1                = 0.07f;
+    point_light->m_kc                = 1.0f;
+
     // 探照灯跟白色物体在x正轴上 让灯看向x轴的负方向
     ambient_light          = new AmbientLight();
     ambient_light->m_color = glm::vec3(0.2f);
@@ -143,7 +158,7 @@ int main()
     {
         cameraCtl->OnUpdate();
         meshWhiteTransform();
-        renderer->render(meshes, camera, ambient_light, spot_light);
+        renderer->render(meshes, camera, directionalLight, point_light, ambient_light, spot_light);
     }
     // 回收资源
     app->destroy();

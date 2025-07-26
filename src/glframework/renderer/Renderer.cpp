@@ -96,21 +96,21 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 // 平行光
                 if (directionalLight)
                 {
-                    shader->setFloatVec3("u_lightDirection", directionalLight->m_direction);
-                    shader->setFloatVec3("u_lightColor", directionalLight->m_color);
+                    shader->setFloatVec3("u_directionalLight.direction", directionalLight->m_direction);
+                    shader->setFloatVec3("u_directionalLight.color", directionalLight->m_color);
                     // 高光反射强度
-                    shader->setFloat("u_specularIntensity", directionalLight->m_specularIntensity);
+                    shader->setFloat("u_directionalLight.specularIntensity", directionalLight->m_specularIntensity);
                 }
                 // 点光
                 if (pointLight)
                 {
-                    shader->setFloatVec3("u_lightPos", pointLight->GetPosition());
-                    shader->setFloatVec3("u_lightColor", pointLight->m_color);
+                    shader->setFloatVec3("u_pointLight.pos", pointLight->GetPosition());
+                    shader->setFloatVec3("u_pointLight.color", pointLight->m_color);
                     // 高光反射强度
-                    shader->setFloat("u_specularIntensity", pointLight->m_specularIntensity);
-                    shader->setFloat("u_k2", pointLight->m_k2);
-                    shader->setFloat("u_k1", pointLight->m_k1);
-                    shader->setFloat("u_kc", pointLight->m_kc);
+                    shader->setFloat("u_pointLight.specularIntensity", pointLight->m_specularIntensity);
+                    shader->setFloat(".u_pointLight.k2", pointLight->m_k2);
+                    shader->setFloat("u_pointLight.k1", pointLight->m_k1);
+                    shader->setFloat("u_pointLight.kc", pointLight->m_kc);
                 }
                 // 聚光灯
                 if (spotLight)

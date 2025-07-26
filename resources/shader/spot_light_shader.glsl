@@ -73,6 +73,7 @@ struct SpotLight {
     // 高光反射强度
     float specularIntensity;
 };
+
 // uv坐标
 in vec2 uv;
 // 法线
@@ -91,6 +92,8 @@ uniform vec3 u_ambientColor;
 // 控制光斑大小
 uniform float u_shiness;
 uniform SpotLight u_spotLight;
+uniform DirectionalLight u_directionalLight;
+uniform PointLight u_pointLight;
 
 out vec4 fragColor;
 
@@ -134,7 +137,7 @@ vec3 calSpecular(vec3 lightDir, vec3 color, vec3 normal, vec3 viewDir, float int
 }
 
 /**
- * 计算探照灯光源通用数据
+ * 计算探照灯光源
  * @param light 探照灯
  * @param normal 法线归一向量
  * @param viewDir 视线归一向量
@@ -156,6 +159,46 @@ vec3 calSpotLight(SpotLight light, vec3 normal, vec3 viewDir) {
     return (diffuseColor+specularColor)*intensity;
 }
 
+/**
+ * 计算平行光源
+ * @param light 平行灯
+ * @param normal 法线归一向量
+ * @param viewDir 视线归一向量
+ */
+vec3 calDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
+    // 采样
+    vec3 objectColor = texture(u_sampler, uv).rgb;
+    // 光源照射方向
+    vec3 lightDir = normalize(light.direction);
+    // diffuse
+    vec3 diffuseColor = calDiffuse(objectColor, lightDir, light.color, normal);
+    // specular
+    vec3 specularColor = calSpecular(lightDir, light.color, normal, viewDir, light.specularIntensity);
+    return diffuseColor+specularColor;
+}
+
+/**
+ * 计算点光源
+ * @param light 点光源
+ * @param normal 法线归一向量
+ * @param viewDir 视线归一向量
+ */
+vec3 calPointLight(PointLight light, vec3 normal, vec3 viewDir) {
+    // 采样
+    vec3 objectColor = texture(u_sampler, uv).rgb;
+    // 光源照射方向
+    vec3 lightDir = normalize(worldPos - light.pos);
+    // 光源和像素之间距离
+    float dist = length(worldPos - light.pos);
+    // 点光源衰减
+    float attenuation = 1.0/(light.k2*dist*dist + light.k1*dist + light.kc);
+    // diffuse
+    vec3 diffuseColor = calDiffuse(objectColor, lightDir, light.color, normal);
+    // specular
+    vec3 specularColor = calSpecular(lightDir, light.color, normal, viewDir, light.specularIntensity);
+    return (diffuseColor+specularColor)*attenuation;
+}
+
 void main()
 {
     vec3 ret = vec3(0.0f, 0.0f, 0.0f);
@@ -170,6 +213,8 @@ void main()
     vec3 viewDirN = normalize(worldPos - u_cameraPos);
     vec3 targetDirN = normalize(u_spotLight.targetDirection);
     ret += calSpotLight(u_spotLight, normalN, viewDirN);
+    ret += calDirectionalLight(u_directionalLight, normalN, viewDirN);
+    ret += calPointLight(u_pointLight, normalN, viewDirN);
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
     vec3 finalColor = ret + ambientColor;
