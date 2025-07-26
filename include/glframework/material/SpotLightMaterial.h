@@ -14,5 +14,5 @@ class SpotLightMaterial : public PhoneMaterial
 {
 public:
     SpotLightMaterial() { m_type = MaterialType::SpotLightMaterial; }
-    ~SpotLightMaterial();
+    ~SpotLightMaterial() override {}
 };

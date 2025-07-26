@@ -11,5 +11,5 @@ class WhiteMaterial : public Material
 {
 public:
     WhiteMaterial();
-    ~WhiteMaterial();
+    ~WhiteMaterial() override;
 };

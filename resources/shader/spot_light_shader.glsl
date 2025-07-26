@@ -40,7 +40,39 @@ void main()
 
 #type fragment
 #version 330 core
-
+// 平行光
+struct DirectionalLight {
+    // 照射方向
+    vec3 direction;
+    // 光源的颜色
+    vec3 color;
+    // 高光反射强度
+    float specularIntensity;
+};
+// 点光源
+struct PointLight {
+    vec3 pos;
+    vec3 color;
+    float specularIntensity;
+    // 衰减系数
+    float k2;
+    float k1;
+    float kc;
+};
+// 探照光
+struct SpotLight {
+    // 光源位置
+    vec3 pos;
+    // 光照向的方向
+    vec3 targetDirection;
+    // 光源的颜色强度
+    vec3 color;
+    // 用两个可视角度范围控制过渡 避免边缘锐化
+    float innerCos;
+    float outerCos;
+    // 高光反射强度
+    float specularIntensity;
+};
 // uv坐标
 in vec2 uv;
 // 法线
@@ -58,44 +90,9 @@ uniform vec3 u_cameraPos;
 uniform vec3 u_ambientColor;
 // 控制光斑大小
 uniform float u_shiness;
+uniform SpotLight u_spotLight;
 
 out vec4 fragColor;
-
-// 平行光
-struct DirectionalLight {
-    // 照射方向
-    vec3 direction;
-    // 光源的颜色
-    vec3 color;
-    // 高光反射强度
-    float specularIntensity;
-};
-// 点光源
-struct PointLight {
-    vec3 pos;
-    vec3 color;
-    float specularIntensity;
-
-    float k2;
-    float k2;
-    float kc;
-};
-// 探照光
-struct SpotLight {
-    // 光源位置
-    vec3 pos;
-    // 光照向的方向
-    vec3 targetDirection;
-    // 光源的颜色强度
-    vec3 color;
-    // 用两个可视角度范围控制过渡 避免边缘锐化
-    float innerCos;
-    float outerCos;
-    // 高光反射强度
-    float specularIntensity;
-};
-
-uniform SpotLight u_spotLight;
 
 /**
  * 计算漫反射光照 光打到物体上反射的颜色
@@ -132,7 +129,7 @@ vec3 calSpecular(vec3 lightDir, vec3 color, vec3 normal, vec3 viewDir, float int
     specular = pow(specular, u_shiness);
     // 对高光蒙版贴图采样 用R通道作为高光比例
     // float specularMask = texture(u_specularMaskSampler, uv).r;
-    vec3 specularColor = lightColor * specular * flag * intensity;
+    vec3 specularColor = color * specular * flag * intensity;
     return specularColor;
 }
 
@@ -148,7 +145,7 @@ void main()
     vec3 lightDirN = normalize(worldPos - u_spotLight.pos);
     // 视线向量
     vec3 viewDir = normalize(worldPos - u_cameraPos);
-    vec3 targetDirN = normalize(u_targetDirection);
+    vec3 targetDirN = normalize(u_spotLight.targetDirection);
 
     // 探照灯的照射范围 spot light可视范围 gl中用的是弧度
     // cosTheta>cosVisible也就是theat<u_spotAngle时候才是可视的 这种方式太锐化 用两个角度来过渡
@@ -158,6 +155,6 @@ void main()
     ret += calSpecular(lightDirN, u_spotLight.color, normalN, viewDir, u_spotLight.specularIntensity);
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
-    vec3 finalColor = (diffuseColor + specularColor) * spotLightIntensity + ambientColor;
-    fragColor = vec4(ret, 1.0f);
+    vec3 finalColor = ret * spotLightIntensity + ambientColor;
+    fragColor = vec4(finalColor, 1.0f);
 }

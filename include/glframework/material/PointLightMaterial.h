@@ -14,5 +14,5 @@ class PointLightMaterial : public PhoneMaterial
 {
 public:
     PointLightMaterial() { m_type = MaterialType::PointLightMaterial; }
-    ~PointLightMaterial();
+    ~PointLightMaterial() override {};
 };

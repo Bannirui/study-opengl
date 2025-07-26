@@ -45,7 +45,7 @@ void framebuffer_size_callback(int width, int height)
     // 视口 设置窗口中opengl负责渲染的区域
     // x y将相对窗口左下角的起始位置
     // width height渲染区域的长度 高度
-    glViewport(0, 0, width, height);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, width, height));
 }
 
 void keyboard_callback(int key, int scancode, int action, int mods)
@@ -131,9 +131,9 @@ int main()
     app->setScrollCallback(mouse_scroll_callback);
     app->setMouseBtnCallback(mouse_btn_callback);
 
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT));
     // 清理画布的时候清成啥样
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 
     prepareCamera();
     prepare();
