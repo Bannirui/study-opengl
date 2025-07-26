@@ -21,7 +21,7 @@
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
-#include "glframework/light/PointLight.h"
+#include "glframework/light/SpotLight.h"
 #include "glframework/material/Material.h"
 #include "glframework/material/PhoneMaterial.h"
 #include "glframework/material/PointLightMaterial.h"
@@ -34,7 +34,7 @@ const unsigned int SCR_HEIGHT = 800;
 Renderer* renderer = nullptr;
 // 渲染列表
 std::vector<Mesh*> meshes{};
-PointLight*        point_light   = nullptr;
+SpotLight*         spot_light    = nullptr;
 AmbientLight*      ambient_light = nullptr;
 
 Camera*           camera    = nullptr;
@@ -97,16 +97,16 @@ void prepare()
     auto geometryWhite = new Sphere(0.1f);
     auto materialWhite = new WhiteMaterial();
     meshWhite          = new Mesh(geometryWhite, materialWhite);
-    meshWhite->SetPosition(glm::vec3(1.5f, 0.0f, 0.0f));
+    meshWhite->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
     meshes.push_back(meshWhite);
     // 光线
-    point_light = new PointLight();
-    point_light->SetPosition(meshWhite->GetPosition());
-    point_light->m_k2      = 0.017f;
-    point_light->m_k1      = 0.07f;
-    point_light->m_kc      = 1.0f;
-    ambient_light          = new AmbientLight();
-    ambient_light->m_color = glm::vec3(0.2f);
+    spot_light = new SpotLight();
+    spot_light->SetPosition(meshWhite->GetPosition());
+    // 探照灯跟白色物体在x正轴上 让灯看向x轴的负方向
+    spot_light->m_targetDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
+    spot_light->m_spotAngle       = 30.0f;
+    ambient_light                 = new AmbientLight();
+    ambient_light->m_color        = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
@@ -120,9 +120,9 @@ void meshWhiteTransform()
 {
     float xPos = glm::sin(glfwGetTime()) + 2.0f;
     meshWhite->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
-    point_light->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+    spot_light->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
 }
-// 点光源
+// 聚光灯
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -146,12 +146,12 @@ int main()
     {
         cameraCtl->OnUpdate();
         meshWhiteTransform();
-        renderer->render(meshes, camera, point_light, ambient_light);
+        renderer->render(meshes, camera, ambient_light, spot_light);
     }
     // 回收资源
     app->destroy();
     delete renderer;
-    delete point_light;
+    delete spot_light;
     delete ambient_light;
     delete camera;
     delete cameraCtl;

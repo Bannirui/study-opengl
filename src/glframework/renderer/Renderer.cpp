@@ -11,6 +11,8 @@
 #include "glframework/geo/Geometry.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
+#include "glframework/light/PointLight.h"
+#include "glframework/light/SpotLight.h"
 #include "glframework/material/Material.h"
 #include "glframework/material/PhoneMaterial.h"
 
@@ -19,15 +21,32 @@ Renderer::Renderer()
     m_phoneShader      = new Shader("resources/shader/phone_shader.glsl");
     m_whiteShader      = new Shader("resources/shader/white_shader.glsl");
     m_pointLightShader = new Shader("resources/shader/point_light_shader.glsl");
+    m_spotLightShader  = new Shader("resources/shader/spot_light_shader.glsl");
 }
 Renderer::~Renderer()
 {
     delete m_phoneShader;
     delete m_whiteShader;
     delete m_pointLightShader;
+    delete m_spotLightShader;
 }
 void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
-                      PointLight* pointLight, AmbientLight* ambientLight) const
+                      AmbientLight* ambientLight) const
+{
+    render(meshes, camera, directionalLight, nullptr, ambientLight, nullptr);
+}
+void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, PointLight* pointLight,
+                      AmbientLight* ambientLight) const
+{
+    render(meshes, camera, nullptr, pointLight, ambientLight, nullptr);
+}
+void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, AmbientLight* ambientLight,
+                      SpotLight* spotLight) const
+{
+    render(meshes, camera, nullptr, nullptr, ambientLight, spotLight);
+}
+void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
+                      PointLight* pointLight, AmbientLight* ambientLight, SpotLight* spotLight) const
 {
     // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话 后绘制的会覆盖先绘制的
     glEnable(GL_DEPTH_TEST);
@@ -49,6 +68,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
         {
             case MaterialType::PhoneMaterial:
             case MaterialType::PointLightMaterial:
+            case MaterialType::SpotLightMaterial:
             {
                 PhoneMaterial* curMaterial = (PhoneMaterial*)material;
                 if (curMaterial->m_diffuse)
@@ -90,6 +110,15 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                     shader->setFloat("u_k2", pointLight->m_k2);
                     shader->setFloat("u_k1", pointLight->m_k1);
                     shader->setFloat("u_kc", pointLight->m_kc);
+                }
+                // 聚光灯
+                if (spotLight)
+                {
+                    shader->setFloatVec3("u_lightPos", spotLight->GetPosition());
+                    shader->setFloatVec3("u_lightColor", spotLight->m_color);
+                    shader->setFloat("u_specularIntensity", spotLight->m_specularIntensity);
+                    shader->setFloatVec3("u_targetDirection", spotLight->m_targetDirection);
+                    shader->setFloat("u_spotAngle", glm::radians(spotLight->m_spotAngle));
                 }
                 // 环境光
                 if (ambientLight)
@@ -135,6 +164,9 @@ Shader* Renderer::getShader(const MaterialType type) const
             break;
         case MaterialType::PointLightMaterial:
             ret = m_pointLightShader;
+            break;
+        case MaterialType::SpotLightMaterial:
+            ret = m_spotLightShader;
             break;
         default:
             break;
