@@ -18,17 +18,13 @@
 
 Renderer::Renderer()
 {
-    m_phoneShader      = new Shader("resources/shader/phone_shader.glsl");
-    m_whiteShader      = new Shader("resources/shader/white_shader.glsl");
-    m_pointLightShader = new Shader("resources/shader/point_light_shader.glsl");
-    m_spotLightShader  = new Shader("resources/shader/spot_light_shader.glsl");
+    m_phoneShader = new Shader("resources/shader/phone_shader.glsl");
+    m_whiteShader = new Shader("resources/shader/white_shader.glsl");
 }
 Renderer::~Renderer()
 {
     delete m_phoneShader;
     delete m_whiteShader;
-    delete m_pointLightShader;
-    delete m_spotLightShader;
 }
 void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
                       AmbientLight* ambientLight) const
@@ -68,8 +64,6 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
         switch (material->m_type)
         {
             case MaterialType::PhoneMaterial:
-            case MaterialType::PointLightMaterial:
-            case MaterialType::SpotLightMaterial:
             {
                 PhoneMaterial* curMaterial = (PhoneMaterial*)material;
                 if (curMaterial->m_diffuse)
@@ -96,6 +90,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 // 平行光
                 if (directionalLight)
                 {
+                    shader->setBool("u_activeDirectionalLight", true);
                     shader->setFloatVec3("u_directionalLight.direction", directionalLight->m_direction);
                     shader->setFloatVec3("u_directionalLight.color", directionalLight->m_color);
                     // 高光反射强度
@@ -104,6 +99,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 // 点光
                 if (pointLight)
                 {
+                    shader->setBool("u_activePointLight", true);
                     shader->setFloatVec3("u_pointLight.pos", pointLight->GetPosition());
                     shader->setFloatVec3("u_pointLight.color", pointLight->m_color);
                     // 高光反射强度
@@ -115,6 +111,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 // 聚光灯
                 if (spotLight)
                 {
+                    shader->setBool("u_activeSpotLight", true);
                     shader->setFloatVec3("u_spotLight.pos", spotLight->GetPosition());
                     shader->setFloatVec3("u_spotLight.targetDirection", spotLight->m_targetDirection);
                     shader->setFloatVec3("u_spotLight.color", spotLight->m_color);
@@ -163,12 +160,6 @@ Shader* Renderer::getShader(const MaterialType type) const
             break;
         case MaterialType::WhiteMaterial:
             ret = m_whiteShader;
-            break;
-        case MaterialType::PointLightMaterial:
-            ret = m_pointLightShader;
-            break;
-        case MaterialType::SpotLightMaterial:
-            ret = m_spotLightShader;
             break;
         default:
             break;

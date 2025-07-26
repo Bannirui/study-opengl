@@ -50,7 +50,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/stb.cmake)
 file(GLOB_RECURSE srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE hdrs "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 
-set(my_exec_targets ball box point_light spot_light)
+set(my_exec_targets earth box point_light spot_light)
 
 foreach(target IN LISTS my_exec_targets)
     # 添加头文件的目的仅仅是为了让IDEA识别到 新建文件的时候添加索引

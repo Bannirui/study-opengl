@@ -13,5 +13,6 @@ public:
     ~DirectionalLight() override = default;
 
 public:
+    // 光照向的方向
     glm::vec3 m_direction{-1.0f};
 };

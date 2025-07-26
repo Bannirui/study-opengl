@@ -19,9 +19,10 @@
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
+#include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
+#include "glframework/light/SpotLight.h"
 #include "glframework/material/PhoneMaterial.h"
-#include "glframework/material/PointLightMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
@@ -31,8 +32,8 @@ const unsigned int SCR_HEIGHT = 800;
 Renderer* renderer = nullptr;
 // 渲染列表
 std::vector<Mesh*> meshes{};
-PointLight*        point_light   = nullptr;
 AmbientLight*      ambient_light = nullptr;
+PointLight*        point_light   = nullptr;
 
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
@@ -45,7 +46,7 @@ void framebuffer_size_callback(int width, int height)
     // 视口 设置窗口中opengl负责渲染的区域
     // x y将相对窗口左下角的起始位置
     // width height渲染区域的长度 高度
-    glViewport(0, 0, width, height);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, width, height));
 }
 
 void keyboard_callback(int key, int scancode, int action, int mods)
@@ -84,7 +85,7 @@ void prepare()
     renderer = new Renderer();
     // 箱子
     auto geometryBox            = new Box();
-    auto materialBox            = new PointLightMaterial();
+    auto materialBox            = new PhoneMaterial();
     materialBox->m_shiness      = 32.0f;
     materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
     materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
@@ -94,14 +95,12 @@ void prepare()
     auto geometryWhite = new Sphere(0.1f);
     auto materialWhite = new WhiteMaterial();
     meshWhite          = new Mesh(geometryWhite, materialWhite);
-    meshWhite->SetPosition(glm::vec3(1.5f, 0.0f, 0.0f));
+    meshWhite->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
     meshes.push_back(meshWhite);
     // 光线
     point_light = new PointLight();
     point_light->SetPosition(meshWhite->GetPosition());
-    point_light->m_k2      = 0.017f;
-    point_light->m_k1      = 0.07f;
-    point_light->m_kc      = 1.0f;
+
     ambient_light          = new AmbientLight();
     ambient_light->m_color = glm::vec3(0.2f);
 }
@@ -117,9 +116,9 @@ void meshWhiteTransform()
 {
     float xPos = glm::sin(glfwGetTime()) + 2.0f;
     meshWhite->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
-    point_light->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+    point_light->SetPosition(meshWhite->GetPosition());
 }
-// 点光源
+// 点光
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -131,9 +130,9 @@ int main()
     app->setScrollCallback(mouse_scroll_callback);
     app->setMouseBtnCallback(mouse_btn_callback);
 
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT));
     // 清理画布的时候清成啥样
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 
     prepareCamera();
     prepare();

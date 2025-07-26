@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "err_check.h"
 #include "application/Application.h"
@@ -14,22 +15,25 @@
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
 #include "glframework/Mesh.h"
-#include "glframework/geo/Geometry.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
+#include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
-#include "glframework/material/Material.h"
+#include "glframework/light/PointLight.h"
+#include "glframework/light/SpotLight.h"
 #include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-Renderer*          renderer = nullptr;
+Renderer* renderer = nullptr;
+// 渲染列表
 std::vector<Mesh*> meshes{};
-DirectionalLight*  directional_light = nullptr;
-AmbientLight*      ambient_light     = nullptr;
+DirectionalLight*  directionalLight = nullptr;
+AmbientLight*      ambient_light    = nullptr;
 
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
@@ -40,7 +44,7 @@ void framebuffer_size_callback(int width, int height)
     // 视口 设置窗口中opengl负责渲染的区域
     // x y将相对窗口左下角的起始位置
     // width height渲染区域的长度 高度
-    glViewport(0, 0, width, height);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, width, height));
 }
 
 void keyboard_callback(int key, int scancode, int action, int mods)
@@ -77,22 +81,20 @@ void mouse_btn_callback(int button, int action, int mods)
 void prepare()
 {
     renderer = new Renderer();
-    // 创建geometry
-    auto geometry = new Box();
-    // 创建材质
-    auto wood            = new PhoneMaterial;
-    wood->m_shiness      = 32.0f;
-    wood->m_diffuse      = new Texture("resources/texture/box.png", 0);
-    wood->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
-    // 创建mesh
-    auto box_mesh = new Mesh(geometry, wood);
-    box_mesh->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    meshes.push_back(box_mesh);
-    // 平行光
-    directional_light = new DirectionalLight();
-    // 环境光
+    // 箱子
+    auto geometryBox            = new Box();
+    auto materialBox            = new PhoneMaterial();
+    materialBox->m_shiness      = 32.0f;
+    materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
+    materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
+    auto meshBox                = new Mesh(geometryBox, materialBox);
+    meshes.push_back(meshBox);
+    // 光线
+    directionalLight              = new DirectionalLight();
+    directionalLight->m_direction = glm::vec3(-1.0f, 0.0f, 0.0f);
+
     ambient_light          = new AmbientLight();
-    ambient_light->m_color = glm::vec3(0.15f);
+    ambient_light->m_color = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
@@ -101,7 +103,6 @@ void prepareCamera()
     cameraCtl          = new TrackballCameraController(camera);
 }
 
-// 高光蒙版
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -113,9 +114,9 @@ int main()
     app->setScrollCallback(mouse_scroll_callback);
     app->setMouseBtnCallback(mouse_btn_callback);
 
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT));
     // 清理画布的时候清成啥样
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 
     prepareCamera();
     prepare();
@@ -123,16 +124,16 @@ int main()
     // 窗体循环
     while (app->update())
     {
-        // 旋转
-        meshes[0]->SetRotationX(0.1f);
-        meshes[0]->SetRotationY(1.0f);
         cameraCtl->OnUpdate();
-        renderer->render(meshes, camera, directional_light, ambient_light);
+        meshes[0]->SetRotationX(0.1f);
+        meshes[0]->SetRotationY(0.05f);
+        meshes[0]->SetRotationZ(0.01f);
+        renderer->render(meshes, camera, directionalLight, ambient_light);
     }
     // 回收资源
     app->destroy();
     delete renderer;
-    delete directional_light;
+    delete directionalLight;
     delete ambient_light;
     delete camera;
     delete cameraCtl;

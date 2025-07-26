@@ -14,22 +14,26 @@
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
 #include "glframework/Mesh.h"
-#include "glframework/geo/Geometry.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
-#include "glframework/material/Material.h"
+#include "glframework/light/PointLight.h"
+#include "glframework/light/SpotLight.h"
 #include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-Renderer*          renderer = nullptr;
+Renderer* renderer = nullptr;
+// 渲染列表
 std::vector<Mesh*> meshes{};
-DirectionalLight*  directional_light = nullptr;
-AmbientLight*      ambient_light     = nullptr;
+DirectionalLight*  directionalLight = nullptr;
+SpotLight*         spot_light       = nullptr;
+AmbientLight*      ambient_light    = nullptr;
+PointLight*        point_light      = nullptr;
 
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
@@ -40,7 +44,7 @@ void framebuffer_size_callback(int width, int height)
     // 视口 设置窗口中opengl负责渲染的区域
     // x y将相对窗口左下角的起始位置
     // width height渲染区域的长度 高度
-    glViewport(0, 0, width, height);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, width, height));
 }
 
 void keyboard_callback(int key, int scancode, int action, int mods)
@@ -77,28 +81,27 @@ void mouse_btn_callback(int button, int action, int mods)
 void prepare()
 {
     renderer = new Renderer();
-    // 创建geometry
-    auto geometry = new Sphere;
-    // 创建材质
-    auto earth       = new PhoneMaterial;
-    earth->m_shiness = 32.0f;
-    earth->m_diffuse = new Texture("resources/texture/earth.jpg", 0);
-    // 创建mesh
-    auto earth_mesh = new Mesh(geometry, earth);
-    earth_mesh->SetPosition(glm::vec3(0.5f, 0.0f, 0.0f));
-    meshes.push_back(earth_mesh);
+    // ball
+    auto geometryBall       = new Sphere();
+    auto materialBall       = new PhoneMaterial();
+    materialBall->m_shiness = 10.0f;
+    materialBall->m_diffuse = new Texture("resources/texture/wall.jpg", 0);
+    auto meshBall           = new Mesh(geometryBall, materialBall);
+    meshes.push_back(meshBall);
+    // earth
+    auto geoEarth            = new Sphere(1.0f);
+    auto materialEarth       = new PhoneMaterial();
+    materialEarth->m_shiness = 16.0f;
+    materialEarth->m_diffuse = new Texture("resources/texture/earth.jpg", 1);
+    auto meshEarth           = new Mesh(geoEarth, materialEarth);
+    meshEarth->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
+    meshes.push_back(meshEarth);
+    // 光线
+    directionalLight              = new DirectionalLight();
+    directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
 
-    auto ball       = new PhoneMaterial;
-    ball->m_shiness = 32.0f;
-    ball->m_diffuse = new Texture("resources/texture/wall.jpg", 1);
-    auto ball_mesh  = new Mesh(geometry, ball);
-    ball_mesh->SetPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
-    meshes.push_back(ball_mesh);
-    // 平行光
-    directional_light = new DirectionalLight();
-    // 环境光
     ambient_light          = new AmbientLight();
-    ambient_light->m_color = glm::vec3(0.1f);
+    ambient_light->m_color = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
@@ -107,6 +110,7 @@ void prepareCamera()
     cameraCtl          = new TrackballCameraController(camera);
 }
 
+// 聚光灯 平行光 点光
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -118,9 +122,9 @@ int main()
     app->setScrollCallback(mouse_scroll_callback);
     app->setMouseBtnCallback(mouse_btn_callback);
 
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT));
     // 清理画布的时候清成啥样
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 
     prepareCamera();
     prepare();
@@ -128,16 +132,14 @@ int main()
     // 窗体循环
     while (app->update())
     {
-        // 地球旋转
-        meshes[0]->SetRotationX(0.1f);
-        meshes[0]->SetRotationY(1.0f);
         cameraCtl->OnUpdate();
-        renderer->render(meshes, camera, directional_light, ambient_light);
+        meshes[1]->SetRotationY(0.2f);
+        renderer->render(meshes, camera, directionalLight, ambient_light);
     }
     // 回收资源
     app->destroy();
     delete renderer;
-    delete directional_light;
+    delete spot_light;
     delete ambient_light;
     delete camera;
     delete cameraCtl;

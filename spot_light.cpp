@@ -23,7 +23,6 @@
 #include "glframework/light/PointLight.h"
 #include "glframework/light/SpotLight.h"
 #include "glframework/material/PhoneMaterial.h"
-#include "glframework/material/SpotLightMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
@@ -88,7 +87,7 @@ void prepare()
     renderer = new Renderer();
     // 箱子
     auto geometryBox            = new Box();
-    auto materialBox            = new SpotLightMaterial();
+    auto materialBox            = new PhoneMaterial();
     materialBox->m_shiness      = 32.0f;
     materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
     materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
@@ -116,7 +115,6 @@ void prepare()
     point_light->m_k1                = 0.07f;
     point_light->m_kc                = 1.0f;
 
-    // 探照灯跟白色物体在x正轴上 让灯看向x轴的负方向
     ambient_light          = new AmbientLight();
     ambient_light->m_color = glm::vec3(0.2f);
 }
@@ -134,7 +132,7 @@ void meshWhiteTransform()
     meshWhite->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
     spot_light->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
 }
-// 聚光灯
+// 聚光灯 平行光 点光
 int main()
 {
     if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;

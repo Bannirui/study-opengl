@@ -58,8 +58,4 @@ private:
     Shader* m_phoneShader{nullptr};
     // 纯白色渲染
     Shader* m_whiteShader{nullptr};
-    // 点光
-    Shader* m_pointLightShader{nullptr};
-    // 聚光灯
-    Shader* m_spotLightShader{nullptr};
 };
