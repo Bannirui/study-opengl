@@ -38,6 +38,7 @@ cmake-build-*/
 
 # ---- VSCode ----
 .vscode/
+.cache/
 
 # ---- Test 产物 ----
 /test/build/

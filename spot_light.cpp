@@ -15,14 +15,11 @@
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
 #include "glframework/Mesh.h"
-#include "glframework/geo/Geometry.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
-#include "glframework/light/DirectionalLight.h"
 #include "glframework/light/SpotLight.h"
-#include "glframework/material/Material.h"
 #include "glframework/material/PhoneMaterial.h"
 #include "glframework/material/PointLightMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
@@ -100,13 +97,13 @@ void prepare()
     meshWhite->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
     meshes.push_back(meshWhite);
     // 光线
-    spot_light = new SpotLight();
+    spot_light               = new SpotLight();
+    spot_light->m_innerAngle = 15.0f;
+    spot_light->m_outerAngle = 30.0f;
     spot_light->SetPosition(meshWhite->GetPosition());
     // 探照灯跟白色物体在x正轴上 让灯看向x轴的负方向
-    spot_light->m_targetDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
-    spot_light->m_spotAngle       = 30.0f;
-    ambient_light                 = new AmbientLight();
-    ambient_light->m_color        = glm::vec3(0.2f);
+    ambient_light          = new AmbientLight();
+    ambient_light->m_color = glm::vec3(0.2f);
 }
 void prepareCamera()
 {

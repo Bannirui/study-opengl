@@ -3,5 +3,11 @@
 //
 
 #include "glframework/light/SpotLight.h"
-SpotLight::SpotLight() {}
+#include "glm/fwd.hpp"
+SpotLight::SpotLight()
+    : m_targetDirection(glm::vec3(-1.0f, 0.0f, 0.0f)),
+      m_innerAngle(45.0f),
+      m_outerAngle(60.0f)
+{
+}
 SpotLight::~SpotLight() {}

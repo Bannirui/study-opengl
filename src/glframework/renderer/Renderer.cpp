@@ -48,7 +48,8 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, AmbientL
 void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
                       PointLight* pointLight, AmbientLight* ambientLight, SpotLight* spotLight) const
 {
-    // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话 后绘制的会覆盖先绘制的
+    // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话
+    // 后绘制的会覆盖先绘制的
     glEnable(GL_DEPTH_TEST);
     // 设置深度测试方法
     glDepthFunc(GL_LESS);
@@ -118,7 +119,8 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                     shader->setFloatVec3("u_lightColor", spotLight->m_color);
                     shader->setFloat("u_specularIntensity", spotLight->m_specularIntensity);
                     shader->setFloatVec3("u_targetDirection", spotLight->m_targetDirection);
-                    shader->setFloat("u_spotAngle", glm::radians(spotLight->m_spotAngle));
+                    shader->setFloat("u_innerCos", glm::cos(glm::radians(spotLight->m_innerAngle)));
+                    shader->setFloat("u_outerCos", glm::cos(glm::radians(spotLight->m_outerAngle)));
                 }
                 // 环境光
                 if (ambientLight)

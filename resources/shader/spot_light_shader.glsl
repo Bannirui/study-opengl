@@ -56,7 +56,9 @@ uniform sampler2D u_specularMaskSampler;
 uniform vec3 u_lightPos;
 uniform vec3 u_lightColor;
 uniform vec3 u_targetDirection;
-uniform float u_spotAngle;
+// 将探照灯inner跟outer的cos值直接传进来 不需要GPU计算
+uniform float u_innerCos;
+uniform float u_outerCos;
 // 相机位置
 uniform vec3 u_cameraPos;
 // 控制高光反射强度
@@ -81,12 +83,10 @@ void main()
     vec3 viewDir = normalize(worldPos - u_cameraPos);
     vec3 targetDirN = normalize(u_targetDirection);
 
-    // 探照灯的照射方向
-    float cosTheta = dot(lightDirN, targetDirN);
-    // 可视范围 gl中用的是弧度
-    float cosVisible = cos(u_spotAngle);
-    // cosTheta>cosVisible也就是theat<u_spotAngle时候才是可视的
-    float spotFlag = step(cosVisible, cosTheta);
+    // 探照灯的照射范围 spot light可视范围 gl中用的是弧度
+    // cosTheta>cosVisible也就是theat<u_spotAngle时候才是可视的 这种方式太锐化 用两个角度来过渡
+    float cosGamma = dot(lightDirN, targetDirN);
+    float spotLightIntensity = clamp((cosGamma - u_outerCos) / (u_innerCos - u_outerCos), 0.0f, 1.0f);
 
     // 计算漫反射 过滤负数 保证输出在0到1之间 得到的是平行光跟法线夹角的cos cos角度越大值越小 最终物体颜色越小
     float diffuse = clamp(dot(-lightDirN, normalN), 0.0f, 1.0f);
@@ -108,6 +108,6 @@ void main()
     vec3 specularColor = u_lightColor * specular * flag * u_specularIntensity * specularMask;
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
-    vec3 finalColor = (diffuseColor + specularColor) * spotFlag + ambientColor;
+    vec3 finalColor = (diffuseColor + specularColor) * spotLightIntensity + ambientColor;
     fragColor = vec4(finalColor, 1.0f);
 }
