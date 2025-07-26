@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
 
 #include "err_check.h"
 #include "application/Application.h"
@@ -39,8 +40,6 @@ PointLight*        point_light      = nullptr;
 
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
-
-Mesh* meshWhite = nullptr;
 
 void framebuffer_size_callback(int width, int height)
 {
@@ -96,7 +95,7 @@ void prepare()
     // 白色物体
     auto geometryWhite = new Sphere(0.1f);
     auto materialWhite = new WhiteMaterial();
-    meshWhite          = new Mesh(geometryWhite, materialWhite);
+    auto meshWhite     = new Mesh(geometryWhite, materialWhite);
     meshWhite->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
     meshes.push_back(meshWhite);
     // 光线
@@ -126,12 +125,22 @@ void prepareCamera()
 }
 
 // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
-void meshWhiteTransform()
+void meshTransform()
 {
     float xPos = glm::sin(glfwGetTime()) + 2.0f;
-    meshWhite->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
-    spot_light->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+    meshes[1]->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+    spot_light->SetPosition(meshes[1]->GetPosition());
+
+    meshes[0]->SetRotationX(1.0f);
+    meshes[0]->SetRotationY(0.4f);
+    meshes[0]->SetRotationZ(0.1f);
 }
+
+void initIMGUI()
+{
+    ImGui::CreateContext();
+}
+
 // 聚光灯 平行光 点光
 int main()
 {
@@ -150,12 +159,13 @@ int main()
 
     prepareCamera();
     prepare();
+    initIMGUI();
 
     // 窗体循环
     while (app->update())
     {
         cameraCtl->OnUpdate();
-        meshWhiteTransform();
+        meshTransform();
         renderer->render(meshes, camera, directionalLight, point_light, ambient_light, spot_light);
     }
     // 回收资源

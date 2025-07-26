@@ -38,8 +38,6 @@ PointLight*        point_light   = nullptr;
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
 
-Mesh* meshWhite = nullptr;
-
 void framebuffer_size_callback(int width, int height)
 {
     std::cout << "新窗口大小 w:" << width << ", h:" << height << std::endl;
@@ -94,7 +92,7 @@ void prepare()
     // 白色物体
     auto geometryWhite = new Sphere(0.1f);
     auto materialWhite = new WhiteMaterial();
-    meshWhite          = new Mesh(geometryWhite, materialWhite);
+    auto meshWhite     = new Mesh(geometryWhite, materialWhite);
     meshWhite->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
     meshes.push_back(meshWhite);
     // 光线
@@ -112,11 +110,14 @@ void prepareCamera()
 }
 
 // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
-void meshWhiteTransform()
+void meshTransform()
 {
     float xPos = glm::sin(glfwGetTime()) + 2.0f;
-    meshWhite->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
-    point_light->SetPosition(meshWhite->GetPosition());
+    meshes[1]->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+    point_light->SetPosition(meshes[1]->GetPosition());
+
+    meshes[0]->SetRotationX(1.0f);
+    meshes[0]->SetRotationY(0.2f);
 }
 // 点光
 int main()
@@ -141,7 +142,7 @@ int main()
     while (app->update())
     {
         cameraCtl->OnUpdate();
-        meshWhiteTransform();
+        meshTransform();
         renderer->render(meshes, camera, point_light, ambient_light);
     }
     // 回收资源

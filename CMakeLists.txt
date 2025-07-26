@@ -46,6 +46,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/glad.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/glfw.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/glm.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/stb.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/imgui.cmake)
 # 源文件
 file(GLOB_RECURSE srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE hdrs "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
@@ -56,7 +57,7 @@ foreach(target IN LISTS my_exec_targets)
     # 添加头文件的目的仅仅是为了让IDEA识别到 新建文件的时候添加索引
     add_executable(${target} ${target}.cpp ${srcs} ${hdrs})
     target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_link_libraries(${target} PRIVATE glad glfw stb glm)
+    target_link_libraries(${target} PRIVATE glad glfw stb glm imgui)
 
     if(UNIX)
         target_link_libraries(${target} PRIVATE dl)
