@@ -32,8 +32,8 @@ enum class MaterialType
 class Material
 {
 public:
-    Material()  = default;
-    ~Material() = default;
+    Material() {}
+    virtual ~Material() = default;
 
 public:
     MaterialType m_type;

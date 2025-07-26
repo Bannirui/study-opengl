@@ -21,7 +21,7 @@
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/SpotLight.h"
 #include "glframework/material/PhoneMaterial.h"
-#include "glframework/material/PointLightMaterial.h"
+#include "glframework/material/SpotLightMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 

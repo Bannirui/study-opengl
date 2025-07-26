@@ -15,14 +15,11 @@
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
 #include "glframework/Mesh.h"
-#include "glframework/geo/Geometry.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
-#include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
-#include "glframework/material/Material.h"
 #include "glframework/material/PhoneMaterial.h"
 #include "glframework/material/PointLightMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
@@ -87,7 +84,7 @@ void prepare()
     renderer = new Renderer();
     // 箱子
     auto geometryBox            = new Box();
-    auto materialBox            = new SpotLightMaterial();
+    auto materialBox            = new PointLightMaterial();
     materialBox->m_shiness      = 32.0f;
     materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
     materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);

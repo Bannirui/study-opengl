@@ -52,17 +52,8 @@ in vec3 worldPos;
 uniform sampler2D u_sampler;
 // 采样器 高光蒙版采样器
 uniform sampler2D u_specularMaskSampler;
-// 光源参数
-uniform vec3 u_lightPos;
-uniform vec3 u_lightColor;
-uniform vec3 u_targetDirection;
-// 将探照灯inner跟outer的cos值直接传进来 不需要GPU计算
-uniform float u_innerCos;
-uniform float u_outerCos;
 // 相机位置
 uniform vec3 u_cameraPos;
-// 控制高光反射强度
-uniform float u_specularIntensity;
 // 环境光
 uniform vec3 u_ambientColor;
 // 控制光斑大小
@@ -70,15 +61,91 @@ uniform float u_shiness;
 
 out vec4 fragColor;
 
+// 平行光
+struct DirectionalLight {
+    // 照射方向
+    vec3 direction;
+    // 光源的颜色
+    vec3 color;
+    // 高光反射强度
+    float specularIntensity;
+};
+// 点光源
+struct PointLight {
+    vec3 pos;
+    vec3 color;
+    float specularIntensity;
+
+    float k2;
+    float k2;
+    float kc;
+};
+// 探照光
+struct SpotLight {
+    // 光源位置
+    vec3 pos;
+    // 光照向的方向
+    vec3 targetDirection;
+    // 光源的颜色强度
+    vec3 color;
+    // 用两个可视角度范围控制过渡 避免边缘锐化
+    float innerCos;
+    float outerCos;
+    // 高光反射强度
+    float specularIntensity;
+};
+
+uniform SpotLight u_spotLight;
+
+/**
+ * 计算漫反射光照 光打到物体上反射的颜色
+ * @param objColor 物体颜色
+ * @param lightDir 光照方向 已经归一化好的
+ * @param lightColor 光照颜色
+ * @param normal 法线 归一化好的
+ */
+vec3 calDiffuse(vec3 objColor, vec3 lightDir, vec3 lightColor, vec3 normal) {
+    // 计算漫反射 过滤负数 保证输出在0到1之间 得到的是平行光跟法线夹角的cos cos角度越大值越小 最终物体颜色越小
+    float diffuse = clamp(dot(-lightDir, normal), 0.0f, 1.0f);
+    vec3 diffuseColor = lightColor * diffuse * objColor;
+    return diffuseColor;
+}
+
+/**
+ * 计算镜面反射光照
+ * @param lightDir 光源方向
+ * @param color 光源颜色
+ * @param normal 法线
+ * @param viewDir 视线方向
+ */
+vec3 calSpecular(vec3 lightDir, vec3 color, vec3 normal, vec3 viewDir, float intensity) {
+    // 防止背面光效果
+    // 光照和法线夹角的cos值
+    float cosVal = dot(-lightDir, normal);
+    // step函数 cosVal小于0就用0 大于0就用1.0 下面把flag作用到反射高光上0就达到了过滤效果
+    float flag = step(0.0, cosVal);
+    // 镜面反射
+    vec3 lightReflect = normalize(reflect(lightDir, normal));
+    // 从光照背面看物体高光的剔除 光线照射和法线夹角钝角就是背面情况 此时cos<0 反射方向跟目光方向夹角的cos 夹角越大 看到的反射高光越弱
+    float specular = max(dot(lightReflect, -viewDir) ,0.0f);
+    // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
+    specular = pow(specular, u_shiness);
+    // 对高光蒙版贴图采样 用R通道作为高光比例
+    // float specularMask = texture(u_specularMaskSampler, uv).r;
+    vec3 specularColor = lightColor * specular * flag * intensity;
+    return specularColor;
+}
+
 void main()
 {
+    vec3 ret = vec3(0.0f, 0.0f, 0.0f);
     // 计算光照的通用数据
     // 采样
     vec3 objectColor = texture(u_sampler, uv).rgb;
     // 法线向量归一
     vec3 normalN = normalize(normal);
     // 光源照射方向
-    vec3 lightDirN = normalize(worldPos - u_lightPos);
+    vec3 lightDirN = normalize(worldPos - u_spotLight.pos);
     // 视线向量
     vec3 viewDir = normalize(worldPos - u_cameraPos);
     vec3 targetDirN = normalize(u_targetDirection);
@@ -86,28 +153,11 @@ void main()
     // 探照灯的照射范围 spot light可视范围 gl中用的是弧度
     // cosTheta>cosVisible也就是theat<u_spotAngle时候才是可视的 这种方式太锐化 用两个角度来过渡
     float cosGamma = dot(lightDirN, targetDirN);
-    float spotLightIntensity = clamp((cosGamma - u_outerCos) / (u_innerCos - u_outerCos), 0.0f, 1.0f);
-
-    // 计算漫反射 过滤负数 保证输出在0到1之间 得到的是平行光跟法线夹角的cos cos角度越大值越小 最终物体颜色越小
-    float diffuse = clamp(dot(-lightDirN, normalN), 0.0f, 1.0f);
-    vec3 diffuseColor = u_lightColor * diffuse * objectColor;
-    // 镜面反射
-    vec3 lightReflect = normalize(reflect(lightDirN, normalN));
-    viewDir = clamp(-viewDir, 0.0f, 1.0f);
-    // 光照和法线夹角的cos值
-    float cosVal = dot(-lightDirN, normalN);
-    // step函数 cosVal小于0就用0 大于0就用1.0 下面把flag作用到反射高光上0就达到了过滤效果
-    float flag = step(0.0, cosVal);
-    // 从光照北面看物体高光的剔除 光线照射和法线夹角钝角就是背面情况 此时cos<0
-    // 反射方向跟目光方向夹角的cos 夹角越大 看到的反射高光越弱
-    float specular = max(dot(lightReflect, -viewDir) ,0.0f);
-    // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
-    specular = pow(specular, u_shiness);
-    // 对高光蒙版贴图采样 用R通道作为高光比例
-    float specularMask = texture(u_specularMaskSampler, uv).r;
-    vec3 specularColor = u_lightColor * specular * flag * u_specularIntensity * specularMask;
+    float spotLightIntensity = clamp((cosGamma - u_spotLight.outerCos) / (u_spotLight.innerCos - u_spotLight.outerCos), 0.0f, 1.0f);
+    ret += calDiffuse(objectColor, lightDirN, u_spotLight.color, normalN);
+    ret += calSpecular(lightDirN, u_spotLight.color, normalN, viewDir, u_spotLight.specularIntensity);
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
     vec3 finalColor = (diffuseColor + specularColor) * spotLightIntensity + ambientColor;
-    fragColor = vec4(finalColor, 1.0f);
+    fragColor = vec4(ret, 1.0f);
 }

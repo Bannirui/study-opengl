@@ -10,9 +10,9 @@
 class Texture;
 
 // 点光
-class SpotLightMaterial : public PhoneMaterial
+class PointLightMaterial : public PhoneMaterial
 {
 public:
-    SpotLightMaterial() { m_type = MaterialType::SpotLightMaterial; }
-    ~SpotLightMaterial();
+    PointLightMaterial() { m_type = MaterialType::PointLightMaterial; }
+    ~PointLightMaterial();
 };

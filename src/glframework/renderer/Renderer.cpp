@@ -115,12 +115,12 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                 // 聚光灯
                 if (spotLight)
                 {
-                    shader->setFloatVec3("u_lightPos", spotLight->GetPosition());
-                    shader->setFloatVec3("u_lightColor", spotLight->m_color);
-                    shader->setFloat("u_specularIntensity", spotLight->m_specularIntensity);
-                    shader->setFloatVec3("u_targetDirection", spotLight->m_targetDirection);
-                    shader->setFloat("u_innerCos", glm::cos(glm::radians(spotLight->m_innerAngle)));
-                    shader->setFloat("u_outerCos", glm::cos(glm::radians(spotLight->m_outerAngle)));
+                    shader->setFloatVec3("u_spotLight.pos", spotLight->GetPosition());
+                    shader->setFloatVec3("u_spotLight.targetDirection", spotLight->m_targetDirection);
+                    shader->setFloatVec3("u_spotLight.color", spotLight->m_color);
+                    shader->setFloat("u_spotLight.innerCos", glm::cos(glm::radians(spotLight->m_innerAngle)));
+                    shader->setFloat("u_spotLight.outerCos", glm::cos(glm::radians(spotLight->m_outerAngle)));
+                    shader->setFloat("u_spotLight.specularIntensity", spotLight->m_specularIntensity);
                 }
                 // 环境光
                 if (ambientLight)
