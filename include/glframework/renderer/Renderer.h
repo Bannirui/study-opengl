@@ -8,6 +8,8 @@
 
 #include <glm/glm.hpp>
 
+#include "glframework/Object.h"
+
 class Mesh;
 class Camera;
 class DirectionalLight;
@@ -46,8 +48,12 @@ public:
      */
     void render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
                 PointLight* pointLight, AmbientLight* ambientLight, SpotLight* spotLight) const;
+    void render(const Object* object, Camera* camera, DirectionalLight* directionalLight, PointLight* pointLight,
+                AmbientLight* ambientLight, SpotLight* spotLight) const;
 
 private:
+    void renderObject(const Object* object, Camera* camera, DirectionalLight* directionalLight, PointLight* pointLight,
+                AmbientLight* ambientLight, SpotLight* spotLight) const;
     /**
      * 根据不同材质类型选择不同的Shader
      * @param type 材质类型
