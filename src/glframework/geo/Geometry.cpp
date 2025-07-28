@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+Geometry::Geometry() {}
 Geometry::~Geometry()
 {
     if (m_VAO != 0) glDeleteVertexArrays(1, &m_VAO);
@@ -86,4 +87,29 @@ void Geometry::setupBuffers(const void* vertices, size_t vertSz, VertexLayout la
     m_IndicesCnt = indexSz / sizeof(unsigned int);
     // 解绑VAO
     glBindVertexArray(0);
+}
+void Geometry::setupBuffers(const std::vector<float>& positions, const std::vector<float>& uvs,
+                            const std::vector<float>& normals, const std::vector<uint32_t>& indices)
+{
+    // 合并顶点属性
+    std::vector<GLfloat> vertices;
+    size_t               vertexCount = indices.size();
+    for (size_t i = 0; i < vertexCount; ++i)
+    {
+        // position
+        vertices.push_back(positions[i * 3 + 0]);
+        vertices.push_back(positions[i * 3 + 1]);
+        vertices.push_back(positions[i * 3 + 2]);
+        // uv
+        vertices.push_back(uvs[i * 2 + 0]);
+        vertices.push_back(uvs[i * 2 + 1]);
+        // normal
+        vertices.push_back(normals[i * 3 + 0]);
+        vertices.push_back(normals[i * 3 + 1]);
+        vertices.push_back(normals[i * 3 + 2]);
+    }
+    // 数据灌到gl状态机
+    setupBuffers(vertices.data(), sizeof(GLfloat) * vertices.size(),
+                 static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal),
+                 indices.data(), sizeof(GLuint) * indices.size());
 }

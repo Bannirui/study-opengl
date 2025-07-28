@@ -136,7 +136,7 @@ Sphere::Sphere(float radius)
         tangents[i + 1]   = tangent.y;
         tangents[i + 2]   = tangent.z;
     }
-    // 合并定点属性
+    // 合并顶点属性
     std::vector<GLfloat> vertices;
     size_t               vertexCount = positions.size() / 3;
     for (size_t i = 0; i < vertexCount; ++i)

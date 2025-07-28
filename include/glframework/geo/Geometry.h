@@ -5,6 +5,7 @@
 #pragma once
 #include <glad/glad.h>
 #include <cstddef>
+#include <vector>
 
 enum class VertexAttr
 {
@@ -29,6 +30,7 @@ using VertexLayout = uint32_t;
 class Geometry
 {
 public:
+    Geometry();
     virtual ~Geometry();
 
     GLint    GetVAO() const { return m_VAO; }
@@ -44,6 +46,14 @@ protected:
      */
     void setupBuffers(const void* vertices, size_t vertSz, VertexLayout layout, const uint32_t* indices,
                       size_t indexSz);
+    /**
+     * @param positions vbo的顶点坐标
+     * @param normals vbo的法线
+     * @param uvs vbo的uv坐标
+     * @param indices vao索引
+     */
+    void setupBuffers(const std::vector<float>& positions, const std::vector<float>& uvs,
+                      const std::vector<float>& normals, const std::vector<uint32_t>& indices);
 
 protected:
     GLuint m_VAO{0};
