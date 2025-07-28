@@ -31,6 +31,11 @@ public:
 
     void SetScale(glm::vec3 scale);
 
+    // 设置旋转角度
+    void SetAngleX(float angle);
+    void SetAngleY(float angle);
+    void SetAngleZ(float angle);
+
     // 计算出model matrix
     glm::mat4 GetModelMatrix() const;
 
@@ -46,9 +51,9 @@ protected:
     glm::vec3 m_position{0.0f};
 
     // 绕着3根轴旋转的角度 旋转顺序 pitch yaw roll
-    float m_rotation_x{0.0f};
-    float m_rotation_y{0.0f};
-    float m_rotation_z{0.0f};
+    float m_angle_x{0.0f};
+    float m_angle_y{0.0f};
+    float m_angle_z{0.0f};
 
     // 在xyz3个方向的缩放
     glm::vec3 m_scale{1.0f};
