@@ -49,6 +49,8 @@ public:
     void        setMouseBtnCallback(MouseBtnCallbackPtr fn) { m_MouseBtnCallback = fn; }
     static void setShouldClose(bool flag);
 
+    GLFWwindow* getWindow() const { return m_Window; }
+
     // 获取鼠标位置
     void GetMousePos(double* x, double* y);
 

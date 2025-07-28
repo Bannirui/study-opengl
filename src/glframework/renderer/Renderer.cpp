@@ -26,6 +26,12 @@ Renderer::~Renderer()
     delete m_phoneShader;
     delete m_whiteShader;
 }
+
+void Renderer::setClearColor(glm::vec3 color)
+{
+    glClearColor(color.r, color.g, color.b, 1.0f);
+}
+
 void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
                       AmbientLight* ambientLight) const
 {

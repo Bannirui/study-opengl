@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include <glm/glm.hpp>
+
 class Mesh;
 class Camera;
 class DirectionalLight;
@@ -22,7 +24,8 @@ public:
     Renderer();
     ~Renderer();
 
-public:
+    void setClearColor(glm::vec3 color);
+
     // 平行光
     void render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
                 AmbientLight* ambientLight) const;

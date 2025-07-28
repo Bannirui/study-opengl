@@ -27,6 +27,9 @@
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
@@ -40,6 +43,8 @@ PointLight*        point_light      = nullptr;
 
 Camera*           camera    = nullptr;
 CameraController* cameraCtl = nullptr;
+
+glm::vec3 clear_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 void framebuffer_size_callback(int width, int height)
 {
@@ -136,9 +141,44 @@ void meshTransform()
     meshes[0]->SetRotationZ(0.1f);
 }
 
+// 整合imgui
 void initIMGUI()
 {
     ImGui::CreateContext();
+    // 主题
+    ImGui::StyleColorsDark();
+    // imgui绑定glfw
+    ImGui_ImplGlfw_InitForOpenGL(app->getWindow(), true);
+    // imgui绑定opengl
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+}
+
+/**
+ * 每一帧渲染gui
+ * <ul>
+ *   <li>开启当前imgui渲染</li>
+ *   <li>gui控件</li>
+ *   <li>执行ui渲染</li>
+ * </ul>
+ */
+void renderIMGUI()
+{
+    // 开启
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    // 控件
+    ImGui::Begin("Settings");
+    ImGui::Text("hello world");
+    ImGui::Button("test btn", ImVec2(40, 20));
+    ImGui::ColorEdit3("clear color", reinterpret_cast<float*>(&clear_color));
+    ImGui::End();
+    // 渲染
+    ImGui::Render();
+    int display_w, display_h;
+    glfwGetWindowSize(app->getWindow(), &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 // 聚光灯 平行光 点光
@@ -166,7 +206,10 @@ int main()
     {
         cameraCtl->OnUpdate();
         meshTransform();
+        renderer->setClearColor(clear_color);
         renderer->render(meshes, camera, directionalLight, point_light, ambient_light, spot_light);
+        // imgui渲染
+        renderIMGUI();
     }
     // 回收资源
     app->destroy();
