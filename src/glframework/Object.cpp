@@ -4,6 +4,9 @@
 
 #include "glframework/Object.h"
 
+#include <iostream>
+#include <ostream>
+
 void Object::SetPosition(glm::vec3 pos)
 {
     m_position = pos;
@@ -37,4 +40,26 @@ glm::mat4 Object::GetModelMatrix() const
     // 在世界坐标系下平移
     transform = glm::translate(glm::mat4(1.0f), m_position) * transform;
     return transform;
+}
+Object* Object::GetParent() const
+{
+    return m_parent;
+}
+void Object::AddChild(Object* child)
+{
+    // 检查是否加入过
+    auto iter = std::find(m_children.begin(), m_children.end(), child);
+    if (iter != m_children.end())
+    {
+        std::cerr << "重复添加" << std::endl;
+        return;
+    }
+    // 加入
+    m_children.push_back(child);
+    // 告诉孩子 父亲是谁
+    child->m_parent = this;
+}
+std::vector<Object*> Object::GetChildren() const
+{
+    return m_children;
 }

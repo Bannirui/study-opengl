@@ -26,6 +26,11 @@ public:
     // 计算出model matrix
     glm::mat4 GetModelMatrix() const;
 
+    // 父子关系
+    Object*              GetParent() const;
+    void                 AddChild(Object* child);
+    std::vector<Object*> GetChildren() const;
+
 protected:
     // 位置坐标 世界坐标系
     glm::vec3 m_position{0.0f};
@@ -37,4 +42,9 @@ protected:
 
     // 在xyz3个方向的缩放
     glm::vec3 m_scale{1.0f};
+
+    // 孩子节点
+    std::vector<Object*> m_children{};
+    // 父亲节点
+    Object* m_parent{nullptr};
 };
