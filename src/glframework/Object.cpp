@@ -7,6 +7,8 @@
 #include <iostream>
 #include <ostream>
 
+Object::Object() : m_type(ObjectType::Object) {}
+Object::~Object() {}
 void Object::SetPosition(glm::vec3 pos)
 {
     m_position = pos;

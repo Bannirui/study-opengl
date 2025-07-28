@@ -6,12 +6,20 @@
 
 #include "glframework/Core.h"
 
+// 区分是Object还是Mesh 决定要不要渲染
+enum class ObjectType
+{
+    Object,
+    Mesh,
+    Scene,
+};
+
 // 物体抽象 平移 缩放 转动
 class Object
 {
 public:
-    Object()  = default;
-    ~Object() = default;
+    Object();
+    ~Object();
 
     glm::vec3 GetPosition() const { return m_position; }
     void      SetPosition(glm::vec3 pos);
@@ -31,6 +39,8 @@ public:
     void                 AddChild(Object* child);
     std::vector<Object*> GetChildren() const;
 
+    ObjectType GetType() const { return m_type; }
+
 protected:
     // 位置坐标 世界坐标系
     glm::vec3 m_position{0.0f};
@@ -47,4 +57,6 @@ protected:
     std::vector<Object*> m_children{};
     // 父亲节点
     Object* m_parent{nullptr};
+    // 类型标识 将来渲染的时候看这个类型决定是不是需要渲染
+    ObjectType m_type;
 };
