@@ -97,6 +97,8 @@ void prepare()
     materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
     materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
     auto meshBox                = new Mesh(geometryBox, materialBox);
+    meshBox->SetRotationY(-15.0f);
+    meshBox->SetRotationX(15.0f);
     // 白色物体
     auto geometryWhite = new Sphere(0.1f);
     auto materialWhite = new WhiteMaterial();
