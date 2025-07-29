@@ -68,7 +68,7 @@ foreach(target IN LISTS my_exec_targets)
     endif()
 
     # 构建时触发资源文件复制
-    add_dependencies(${target} copy_resources)
+    add_dependencies(${target} copy_assets)
 endforeach()
 
 # 向项目添加全局的预编译宏
@@ -80,12 +80,12 @@ if (APPLE)
 endif()
 
 # 拷贝资源文件到构建目录和运行目录
-add_custom_target(copy_resources
+add_custom_target(copy_assets
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/resources"
-            "${CMAKE_CURRENT_BINARY_DIR}/resources"
+            "${CMAKE_CURRENT_SOURCE_DIR}/asset"
+            "${CMAKE_CURRENT_BINARY_DIR}/asset"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/resources"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources"
+            "${CMAKE_CURRENT_SOURCE_DIR}/asset"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/asset"
         COMMENT "Copying assets to build and runtime directories"
 )

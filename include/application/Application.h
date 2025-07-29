@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#define app Application::getInstance()
+#define glApp Application::getInstance()
 
 // 前向声明
 struct GLFWwindow;

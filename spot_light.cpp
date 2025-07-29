@@ -80,7 +80,7 @@ void mouse_scroll_callback(double yoffset)
 void mouse_btn_callback(int button, int action, int mods)
 {
     double x, y;
-    app->GetMousePos(&x, &y);
+    glApp->GetMousePos(&x, &y);
     std::cout << "button=" << button << ", action=" << action << ", mods=" << mods << ", x=" << x << ", y=" << y
               << std::endl;
     cameraCtl->OnMouse(button, action, mods, x, y);
@@ -124,7 +124,7 @@ void prepare()
 }
 void prepareCamera()
 {
-    camera = new PerspectiveCamera(static_cast<float>(app->getWidth()) / static_cast<float>(app->getHeight()));
+    camera = new PerspectiveCamera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
     camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
     cameraCtl          = new TrackballCameraController(camera);
 }
@@ -148,7 +148,7 @@ void initIMGUI()
     // 主题
     ImGui::StyleColorsDark();
     // imgui绑定glfw
-    ImGui_ImplGlfw_InitForOpenGL(app->getWindow(), true);
+    ImGui_ImplGlfw_InitForOpenGL(glApp->getWindow(), true);
     // imgui绑定opengl
     ImGui_ImplOpenGL3_Init("#version 330 core");
 }
@@ -176,7 +176,7 @@ void renderIMGUI()
     // 渲染
     ImGui::Render();
     int display_w, display_h;
-    glfwGetWindowSize(app->getWindow(), &display_w, &display_h);
+    glfwGetWindowSize(glApp->getWindow(), &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -184,14 +184,14 @@ void renderIMGUI()
 // 聚光灯 平行光 点光
 int main()
 {
-    if (!app->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
+    if (!glApp->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
 
     // 监听事件
-    app->setResizeCallback(framebuffer_size_callback);
-    app->setKeyboardCallback(keyboard_callback);
-    app->setCursorPosCallback(cursor_position_callback);
-    app->setScrollCallback(mouse_scroll_callback);
-    app->setMouseBtnCallback(mouse_btn_callback);
+    glApp->setResizeCallback(framebuffer_size_callback);
+    glApp->setKeyboardCallback(keyboard_callback);
+    glApp->setCursorPosCallback(cursor_position_callback);
+    glApp->setScrollCallback(mouse_scroll_callback);
+    glApp->setMouseBtnCallback(mouse_btn_callback);
 
     GL_CALL_AND_CHECK_ERR(glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT));
     // 清理画布的时候清成啥样
@@ -202,7 +202,7 @@ int main()
     initIMGUI();
 
     // 窗体循环
-    while (app->update())
+    while (glApp->update())
     {
         cameraCtl->OnUpdate();
         meshTransform();
@@ -212,7 +212,7 @@ int main()
         renderIMGUI();
     }
     // 回收资源
-    app->destroy();
+    glApp->destroy();
     delete renderer;
     delete spot_light;
     delete ambient_light;
