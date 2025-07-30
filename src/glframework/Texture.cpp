@@ -9,6 +9,31 @@
 
 #include "err_check.h"
 
+// 定义
+std::unordered_map<std::string, Texture*> Texture::m_TextureCache{};
+
+Texture* Texture::CreateTexture(const std::string& path, unsigned int uint)
+{
+    auto iter = m_TextureCache.find(path);
+    if (iter != m_TextureCache.end())
+    {
+        return iter->second;
+    }
+    auto texture         = new Texture(path, uint);
+    m_TextureCache[path] = texture;
+    return texture;
+}
+
+Texture* Texture::CreateTexture(const std::string& path, const uint8_t* dataIn, int widthIn, int heightIn,
+                                uint32_t uint)
+{
+    auto iter = m_TextureCache.find(path);
+    if (iter != m_TextureCache.end()) return iter->second;
+    auto texture         = new Texture(dataIn, widthIn, heightIn, uint);
+    m_TextureCache[path] = texture;
+    return texture;
+}
+
 Texture::Texture(const std::string& path, int unit) : m_Uint(unit)
 {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
@@ -46,7 +71,7 @@ Texture::Texture(const std::string& path, int unit) : m_Uint(unit)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-Texture::Texture(const uint8_t dataIn, int widthIn, int heightIn, uint32_t uint)
+Texture::Texture(const uint8_t* dataIn, int widthIn, int heightIn, uint32_t uint)
 {
     m_Uint = uint;
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
@@ -58,7 +83,7 @@ Texture::Texture(const uint8_t dataIn, int widthIn, int heightIn, uint32_t uint)
     else
         dataSize = widthIn * heightIn * 4;
     int            channels = 0;
-    unsigned char* data     = stbi_load_from_memory(&dataIn, dataSize, &widthIn, &heightIn, &channels, STBI_default);
+    unsigned char* data     = stbi_load_from_memory(dataIn, dataSize, &widthIn, &heightIn, &channels, STBI_default);
     if (!data)
     {
         std::cerr << "ERROR::TEXTURE::fail to read picture from memory" << std::endl;
