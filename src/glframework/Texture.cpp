@@ -46,6 +46,37 @@ Texture::Texture(const std::string& path, int unit) : m_Uint(unit)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
+Texture::Texture(const uint8_t dataIn, int widthIn, int heightIn, uint32_t uint)
+{
+    m_Uint = uint;
+    // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
+    stbi_set_flip_vertically_on_load(true);
+    // 图片大小 多少字节
+    uint32_t dataSize = 0;
+    if (!heightIn)
+        dataSize = widthIn;
+    else
+        dataSize = widthIn * heightIn * 4;
+    int            channels = 0;
+    unsigned char* data     = stbi_load_from_memory(&dataIn, dataSize, &widthIn, &heightIn, &channels, STBI_default);
+    if (!data)
+    {
+        std::cerr << "ERROR::TEXTURE::fail to read picture from memory" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_Texture));
+    GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
+    GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_Texture));
+    GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
+    GL_CALL_AND_CHECK_ERR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, data));
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
 Texture::~Texture()
 {
     if (m_Texture != 0) glDeleteTextures(1, &m_Texture);
