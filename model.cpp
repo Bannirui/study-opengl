@@ -117,7 +117,7 @@ void initIMGUI()
     // imgui绑定opengl
     ImGui_ImplOpenGL3_Init("#version 330 core");
 }
-
+float val=0.0f;
 /**
  * 每一帧渲染gui
  * <ul>
@@ -128,7 +128,7 @@ void initIMGUI()
  */
 void renderIMGUI()
 {
-    // 开启
+    // 开启imgui的渲染
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
