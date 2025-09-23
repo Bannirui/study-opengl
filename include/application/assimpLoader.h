@@ -11,6 +11,7 @@
 
 class Object;
 class Mesh;
+class Texture;
 
 class AssimpLoader
 {
@@ -18,7 +19,10 @@ public:
     static Object* load(const std::string& path);
 
 private:
-    static void      processNode(aiNode* aiNode, Object* parent, const aiScene* aiScene, const std::string& textureParentPath);
+    static void      processNode(aiNode* aiNode, Object* parent, const aiScene* aiScene,
+                                 const std::string& textureParentPath);
     static glm::mat4 getMat4f(aiMatrix4x4 val);
     static Mesh*     processMesh(aiMesh* aiMesh, const aiScene* aiScene, const std::string& textureParentPath);
+    static Texture*  processTexture(const aiMaterial* aiMaterial, const aiTextureType& type, const aiScene* aiScene,
+                                    const std::string& textureParentPath);
 };

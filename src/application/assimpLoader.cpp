@@ -118,26 +118,11 @@ Mesh* AssimpLoader::processMesh(aiMesh* aiMesh, const aiScene* aiScene, const st
     auto material = new PhongMaterial();
     if (aiMesh->mMaterialIndex >= 0)
     {
-        // exists material
-        Texture*    texture     = nullptr;
-        aiMaterial* ai_material = aiScene->mMaterials[aiMesh->mMaterialIndex];
-        // this path is relative to model
-        aiString aiPath;
-        ai_material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), aiPath);
-        const aiTexture* aiTexture = aiScene->GetEmbeddedTexture(aiPath.C_Str());
-        if (aiTexture)
+        aiMaterial* aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
+        Texture*    texture    = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
+        if (texture == nullptr)
         {
-            // the texture is in memory
-            unsigned char* dataIn = reinterpret_cast<unsigned char*>(aiTexture->pcData);
-            uint32_t       width  = aiTexture->mWidth;
-            uint32_t       height = aiTexture->mHeight;
-            texture               = Texture::CreateTexture(aiPath.C_Str(), dataIn, width, height, 0);
-        }
-        else
-        {
-            // the texture is in disk
-            std::string fullPath = textureParentPath + aiPath.C_Str();
-            texture              = Texture::CreateTexture(fullPath, 0);
+            texture = Texture::CreateTexture("asset/texture/wall.jpg", 0);
         }
         material->m_diffuse = texture;
     }
@@ -147,4 +132,33 @@ Mesh* AssimpLoader::processMesh(aiMesh* aiMesh, const aiScene* aiScene, const st
         material->m_diffuse = Texture::CreateTexture("asset/texture/wall.jpg", 0);
     }
     return new Mesh(geometry, material);
+}
+
+Texture* AssimpLoader::processTexture(const aiMaterial* aiMaterial, const aiTextureType& type, const aiScene* aiScene,
+                                      const std::string& textureParentPath)
+{
+    // this path is relative to model
+    aiString aiPath;
+    aiMaterial->Get(AI_MATKEY_TEXTURE(type, 0), aiPath);
+    if (!aiPath.length)
+    {
+        return nullptr;
+    }
+    const aiTexture* aiTexture = aiScene->GetEmbeddedTexture(aiPath.C_Str());
+    Texture*         texture   = nullptr;
+    if (aiTexture)
+    {
+        // the texture is in memory
+        unsigned char* dataIn = reinterpret_cast<unsigned char*>(aiTexture->pcData);
+        uint32_t       width  = aiTexture->mWidth;
+        uint32_t       height = aiTexture->mHeight;
+        texture               = Texture::CreateTexture(aiPath.C_Str(), dataIn, width, height, 0);
+    }
+    else
+    {
+        // the texture is in disk
+        std::string fullPath = textureParentPath + aiPath.C_Str();
+        texture              = Texture::CreateTexture(fullPath, 0);
+    }
+    return texture;
 }
