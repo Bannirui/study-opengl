@@ -11,7 +11,13 @@
 class Texture
 {
 public:
+    /**
+     * from picture file
+     */
     static Texture* CreateTexture(const std::string& path, unsigned int uint);
+    /**
+     * from stbi, memory data
+     */
     static Texture* CreateTexture(const std::string& path, const uint8_t* dataIn, int widthIn, int heightIn,
                                   uint32_t uint);
 

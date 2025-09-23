@@ -25,7 +25,7 @@
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
 #include "glframework/light/SpotLight.h"
-#include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/PhongMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 

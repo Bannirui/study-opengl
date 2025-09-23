@@ -20,7 +20,7 @@
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
 #include "glframework/light/SpotLight.h"
-#include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/PhongMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
@@ -83,14 +83,14 @@ void prepare()
     renderer = new Renderer();
     // ball
     auto geometryBall       = new Sphere();
-    auto materialBall       = new PhoneMaterial();
+    auto materialBall       = new PhongMaterial();
     materialBall->m_shiness = 10.0f;
     materialBall->m_diffuse = new Texture("resources/texture/wall.jpg", 0);
     auto meshBall           = new Mesh(geometryBall, materialBall);
     meshes.push_back(meshBall);
     // earth
     auto geoEarth            = new Sphere(1.0f);
-    auto materialEarth       = new PhoneMaterial();
+    auto materialEarth       = new PhongMaterial();
     materialEarth->m_shiness = 16.0f;
     materialEarth->m_diffuse = new Texture("resources/texture/earth.jpg", 1);
     auto meshEarth           = new Mesh(geoEarth, materialEarth);

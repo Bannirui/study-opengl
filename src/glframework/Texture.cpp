@@ -17,6 +17,7 @@ Texture* Texture::CreateTexture(const std::string& path, unsigned int uint)
     auto iter = m_TextureCache.find(path);
     if (iter != m_TextureCache.end())
     {
+        // first is key, second is val
         return iter->second;
     }
     auto texture         = new Texture(path, uint);
@@ -79,9 +80,13 @@ Texture::Texture(const uint8_t* dataIn, int widthIn, int heightIn, uint32_t uint
     // 图片大小 多少字节
     uint32_t dataSize = 0;
     if (!heightIn)
+    {
         dataSize = widthIn;
+    }
     else
+    {
         dataSize = widthIn * heightIn * 4;
+    }
     int            channels = 0;
     unsigned char* data     = stbi_load_from_memory(dataIn, dataSize, &widthIn, &heightIn, &channels, STBI_default);
     if (!data)

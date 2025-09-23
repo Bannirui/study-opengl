@@ -14,7 +14,7 @@
 #include "glframework/light/PointLight.h"
 #include "glframework/light/SpotLight.h"
 #include "glframework/material/Material.h"
-#include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/PhongMaterial.h"
 
 Renderer::Renderer()
 {
@@ -71,7 +71,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
         {
             case MaterialType::PhoneMaterial:
             {
-                PhoneMaterial* curMaterial = (PhoneMaterial*)material;
+                PhongMaterial* curMaterial = (PhongMaterial*)material;
                 if (curMaterial->m_diffuse)
                 {
                     // 将纹理对象跟纹理单元绑定
@@ -181,7 +181,7 @@ void Renderer::renderObject(const Object* object, Camera* camera, DirectionalLig
         {
             case MaterialType::PhoneMaterial:
             {
-                PhoneMaterial* curMaterial = (PhoneMaterial*)material;
+                PhongMaterial* curMaterial = (PhongMaterial*)material;
                 if (curMaterial->m_diffuse)
                 {
                     // 将纹理对象跟纹理单元绑定

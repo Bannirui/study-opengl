@@ -2,16 +2,16 @@
 // Created by dingrui on 25-7-23.
 //
 
-#include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/PhongMaterial.h"
 
 #include "glframework/Texture.h"
 
-PhoneMaterial::PhoneMaterial()
+PhongMaterial::PhongMaterial()
 {
     m_type = MaterialType::PhoneMaterial;
 }
 
-PhoneMaterial::~PhoneMaterial()
+PhongMaterial::~PhongMaterial()
 {
     delete m_diffuse;
     delete m_specularMask;

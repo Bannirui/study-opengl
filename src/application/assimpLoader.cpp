@@ -2,8 +2,6 @@
 // Created by dingrui on 25-7-29.
 //
 
-#include "application/assimpLoader.h"
-
 #include <iostream>
 #include <ostream>
 
@@ -16,11 +14,17 @@
 #include "glframework/Mesh.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Model.h"
-#include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/PhongMaterial.h"
+#include "application/assimpLoader.h"
+
+#include <filesystem>
 
 Object* AssimpLoader::load(const std::string& path)
 {
-    Object*          root = new Object();
+    // for example, the path is `asset/fbx/monkey.fbx`, the parent path is `asset/fbx/`
+    std::size_t      lastIndex = path.find_last_of("\\/");
+    auto             rootPath  = path.substr(0, lastIndex + 1);
+    Object*          root      = new Object();
     Assimp::Importer importer;
     const aiScene*   scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals);
     // 验证
@@ -29,15 +33,16 @@ Object* AssimpLoader::load(const std::string& path)
         std::cerr << "模型读取失败" << std::endl;
         return nullptr;
     }
-    processNode(scene->mRootNode, root, scene);
+    processNode(scene->mRootNode, root, scene, rootPath);
     return root;
 }
 
-void AssimpLoader::processNode(aiNode* node, Object* parent, const aiScene* scene)
+void AssimpLoader::processNode(aiNode* aiNode, Object* parent, const aiScene* aiScene,
+                               const std::string& textureParentPath)
 {
     Object* myNode = new Object();
     parent->AddChild(myNode);
-    auto localMatrix = getMat4f(node->mTransformation);
+    auto localMatrix = getMat4f(aiNode->mTransformation);
     // 解构位置 缩放 旋转
     glm::vec3 pos, eulerAngle, scale;
     Tool::decompose(localMatrix, pos, eulerAngle, scale);
@@ -47,17 +52,17 @@ void AssimpLoader::processNode(aiNode* node, Object* parent, const aiScene* scen
     myNode->SetAngleX(eulerAngle.z);
     myNode->SetScale(scale);
     // 检查mesh
-    for (int i = 0, sz = node->mNumMeshes; i < sz; i++)
+    for (int i = 0, sz = aiNode->mNumMeshes; i < sz; i++)
     {
-        int     meshId = node->mMeshes[i];
-        aiMesh* mesh   = scene->mMeshes[meshId];
-        auto    myMesh = processMesh(mesh);
+        int     meshId = aiNode->mMeshes[i];
+        aiMesh* aiMesh = aiScene->mMeshes[meshId];
+        auto    myMesh = processMesh(aiMesh, aiScene, textureParentPath);
         myNode->AddChild(myMesh);
     }
     // 孩子
-    for (int i = 0, sz = node->mNumChildren; i < sz; i++)
+    for (int i = 0, sz = aiNode->mNumChildren; i < sz; i++)
     {
-        processNode(node->mChildren[i], myNode, scene);
+        processNode(aiNode->mChildren[i], myNode, aiScene, textureParentPath);
     }
 }
 
@@ -73,7 +78,7 @@ glm::mat4 AssimpLoader::getMat4f(aiMatrix4x4 val)
     // clang-format on
     return ret;
 }
-Mesh* AssimpLoader::processMesh(aiMesh* aiMesh)
+Mesh* AssimpLoader::processMesh(aiMesh* aiMesh, const aiScene* aiScene, const std::string& textureParentPath)
 {
     std::vector<float>    vertices;
     std::vector<uint32_t> indices;
@@ -110,7 +115,36 @@ Mesh* AssimpLoader::processMesh(aiMesh* aiMesh)
     }
     auto geometry = new Model(
         vertices, indices, static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal));
-    auto material       = new PhoneMaterial();
-    material->m_diffuse = new Texture("asset/texture/wall.jpg", 0);
+    auto material = new PhongMaterial();
+    if (aiMesh->mMaterialIndex >= 0)
+    {
+        // exists material
+        Texture*    texture     = nullptr;
+        aiMaterial* ai_material = aiScene->mMaterials[aiMesh->mMaterialIndex];
+        // this path is relative to model
+        aiString aiPath;
+        ai_material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), aiPath);
+        const aiTexture* aiTexture = aiScene->GetEmbeddedTexture(aiPath.C_Str());
+        if (aiTexture)
+        {
+            // the texture is in memory
+            unsigned char* dataIn = reinterpret_cast<unsigned char*>(aiTexture->pcData);
+            uint32_t       width  = aiTexture->mWidth;
+            uint32_t       height = aiTexture->mHeight;
+            texture               = Texture::CreateTexture(aiPath.C_Str(), dataIn, width, height, 0);
+        }
+        else
+        {
+            // the texture is in disk
+            std::string fullPath = textureParentPath + aiPath.C_Str();
+            texture              = Texture::CreateTexture(fullPath, 0);
+        }
+        material->m_diffuse = texture;
+    }
+    else
+    {
+        // none material
+        material->m_diffuse = Texture::CreateTexture("asset/texture/wall.jpg", 0);
+    }
     return new Mesh(geometry, material);
 }

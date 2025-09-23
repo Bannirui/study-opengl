@@ -18,7 +18,7 @@ public:
     static Object* load(const std::string& path);
 
 private:
-    static void      processNode(aiNode* node, Object* parent, const aiScene* scene);
+    static void      processNode(aiNode* aiNode, Object* parent, const aiScene* aiScene, const std::string& textureParentPath);
     static glm::mat4 getMat4f(aiMatrix4x4 val);
-    static Mesh*     processMesh(aiMesh* aiMesh);
+    static Mesh*     processMesh(aiMesh* aiMesh, const aiScene* aiScene, const std::string& textureParentPath);
 };

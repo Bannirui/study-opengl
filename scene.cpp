@@ -24,7 +24,7 @@
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
 #include "glframework/light/SpotLight.h"
-#include "glframework/material/PhoneMaterial.h"
+#include "glframework/material/PhongMaterial.h"
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
@@ -92,7 +92,7 @@ void prepare()
     scene    = new Scene();
     // 箱子
     auto geometryBox            = new Box();
-    auto materialBox            = new PhoneMaterial();
+    auto materialBox            = new PhongMaterial();
     materialBox->m_shiness      = 32.0f;
     materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
     materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);

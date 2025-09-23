@@ -9,11 +9,11 @@
 class Texture;
 
 // 平行光
-class PhoneMaterial : public Material
+class PhongMaterial : public Material
 {
 public:
-    PhoneMaterial();
-    ~PhoneMaterial() override;
+    PhongMaterial();
+    ~PhongMaterial() override;
 
 public:
     // 漫反射和环境光都用贴图颜色
