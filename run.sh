@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cd  build/bin ; ./study-opengl
+cd  out/bin ; ./study-opengl

@@ -85,14 +85,14 @@ void prepare()
     auto geometryBall       = new Sphere();
     auto materialBall       = new PhongMaterial();
     materialBall->m_shiness = 10.0f;
-    materialBall->m_diffuse = new Texture("resources/texture/wall.jpg", 0);
+    materialBall->m_diffuse = new Texture("asset/texture/wall.jpg", 0);
     auto meshBall           = new Mesh(geometryBall, materialBall);
     meshes.push_back(meshBall);
     // earth
     auto geoEarth            = new Sphere(1.0f);
     auto materialEarth       = new PhongMaterial();
     materialEarth->m_shiness = 16.0f;
-    materialEarth->m_diffuse = new Texture("resources/texture/earth.jpg", 1);
+    materialEarth->m_diffuse = new Texture("asset/texture/earth.jpg", 1);
     auto meshEarth           = new Mesh(geoEarth, materialEarth);
     meshEarth->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
     meshes.push_back(meshEarth);

@@ -4,6 +4,10 @@
 
 #pragma once
 
+#ifdef __linux__
+#include <algorithm>
+#endif
+
 #include "glframework/Core.h"
 
 // 区分是Object还是Mesh 决定要不要渲染

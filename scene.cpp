@@ -94,8 +94,8 @@ void prepare()
     auto geometryBox            = new Box();
     auto materialBox            = new PhongMaterial();
     materialBox->m_shiness      = 32.0f;
-    materialBox->m_diffuse      = new Texture("resources/texture/box.png", 0);
-    materialBox->m_specularMask = new Texture("resources/texture/sp_mask.png", 1);
+    materialBox->m_diffuse      = new Texture("asset/texture/box.png", 0);
+    materialBox->m_specularMask = new Texture("asset/texture/sp_mask.png", 1);
     auto meshBox                = new Mesh(geometryBox, materialBox);
     meshBox->SetRotationY(-15.0f);
     meshBox->SetRotationX(15.0f);

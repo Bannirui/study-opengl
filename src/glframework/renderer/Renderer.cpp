@@ -18,8 +18,8 @@
 
 Renderer::Renderer()
 {
-    m_phoneShader = new Shader("resources/shader/phone_shader.glsl");
-    m_whiteShader = new Shader("resources/shader/white_shader.glsl");
+    m_phoneShader = new Shader("asset/shader/phone_shader.glsl");
+    m_whiteShader = new Shader("asset/shader/white_shader.glsl");
 }
 Renderer::~Renderer()
 {

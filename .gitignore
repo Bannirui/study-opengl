@@ -1,7 +1,6 @@
 # ---- 编译输出 ----
 /build/
 /bin/
-/lib/
 /CMakeFiles/
 /Makefile
 /CMakeCache.txt
