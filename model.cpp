@@ -90,7 +90,7 @@ void prepare()
 {
     renderer   = new Renderer();
     scene      = new Scene();
-    auto model = AssimpLoader::load("asset/fbx/monkey.fbx");
+    auto model = AssimpLoader::load("asset/fbx/cottage_obj.obj");
     scene->AddChild(model);
     // 光线
     directionalLight              = new DirectionalLight();

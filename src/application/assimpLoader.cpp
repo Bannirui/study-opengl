@@ -120,7 +120,7 @@ Mesh* AssimpLoader::processMesh(aiMesh* aiMesh, const aiScene* aiScene, const st
     {
         aiMaterial* aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
         Texture*    texture    = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
-        if (texture == nullptr)
+        if (!texture)
         {
             texture = Texture::CreateTexture("asset/texture/wall.jpg", 0);
         }
@@ -144,7 +144,13 @@ Texture* AssimpLoader::processTexture(const aiMaterial* aiMaterial, const aiText
     {
         return nullptr;
     }
-    const aiTexture* aiTexture = aiScene->GetEmbeddedTexture(aiPath.C_Str());
+    std::string s = aiPath.C_Str();
+    std::replace(s.begin(), s.end(), '\\', '/');
+    // Boundary conversion
+    std::filesystem::path texPath = std::filesystem::path(s);
+    // Combine with model directory
+    texPath                    = (textureParentPath / texPath).lexically_normal();
+    const aiTexture* aiTexture = aiScene->GetEmbeddedTexture(texPath.string().c_str());
     Texture*         texture   = nullptr;
     if (aiTexture)
     {
@@ -152,7 +158,7 @@ Texture* AssimpLoader::processTexture(const aiMaterial* aiMaterial, const aiText
         unsigned char* dataIn = reinterpret_cast<unsigned char*>(aiTexture->pcData);
         uint32_t       width  = aiTexture->mWidth;
         uint32_t       height = aiTexture->mHeight;
-        texture               = Texture::CreateTexture(aiPath.C_Str(), dataIn, width, height, 0);
+        texture               = Texture::CreateTexture(texPath.string(), dataIn, width, height, 0);
     }
     else
     {
