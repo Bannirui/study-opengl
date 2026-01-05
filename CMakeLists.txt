@@ -43,50 +43,33 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # dep
 set(lib_directory ${CMAKE_SOURCE_DIR}/lib)
+include(${lib_directory}/OpenGL.cmake)
 include(${lib_directory}/glad.cmake)
 include(${lib_directory}/glfw.cmake)
 include(${lib_directory}/glm.cmake)
 include(${lib_directory}/stb.cmake)
 include(${lib_directory}/imgui.cmake)
 include(${lib_directory}/assimp.cmake)
+
+# Enable CTest
+include(CTest)
+enable_testing()
+
 # 源文件
-file(GLOB_RECURSE srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE hdrs "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
-
-set(my_exec_targets earth box point_light spot_light scene model)
-
-foreach(target IN LISTS my_exec_targets)
-    # 添加头文件的目的仅仅是为了让IDEA识别到 新建文件的时候添加索引
-    add_executable(${target} ${target}.cpp ${srcs} ${hdrs})
-    target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_link_libraries(${target}
-            PRIVATE glad glfw stb glm imgui assimp)
-
-    if(LINUX)
-        target_link_libraries(${target} PRIVATE dl GL GLU X11)
-    elseif(WIN32)
-        target_link_libraries(${target} PRIVATE opengl32)
-    endif()
-
-    # 构建时触发资源文件复制
-    add_dependencies(${target} copy_assets)
-endforeach()
-
-# 向项目添加全局的预编译宏
-add_definitions(-DDEBUG)
-
-if (APPLE)
-    # OpenGL的API在mac上被弃用了 防止编译器warn
-    add_definitions(-DGL_SILENCE_DEPRECATION)
-endif()
+file(GLOB_RECURSE SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE HDRS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
+add_library(${PROJECT_NAME} ${SRCS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(${PROJECT_NAME} PUBLIC glad glfw stb glm imgui assimp)
 
 # 拷贝资源文件到构建目录和运行目录
-add_custom_target(copy_assets
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/asset"
-            "${CMAKE_CURRENT_BINARY_DIR}/asset"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/asset"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/asset"
-        COMMENT "Copying assets to build and runtime directories"
+add_custom_target(copy_shader
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/asset" "${CMAKE_CURRENT_BINARY_DIR}/asset"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/asset" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/asset"
+        COMMENT "Copying shaders to build and runtime directories"
 )
+
+# 构建时触发资源文件复制
+add_dependencies(${PROJECT_NAME} copy_shader)
+
+add_subdirectory(tests)
