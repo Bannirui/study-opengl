@@ -35,14 +35,14 @@
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-Renderer* renderer = nullptr;
-Scene*    scene    = nullptr;
+std::unique_ptr<Renderer> renderer;
+std::unique_ptr<Scene>    scene;
 
-DirectionalLight* directionalLight = nullptr;
-AmbientLight*     ambient_light    = nullptr;
+std::unique_ptr<DirectionalLight> directionalLight;
+std::unique_ptr<AmbientLight>     ambient_light;
 
-Camera*           camera    = nullptr;
-CameraController* cameraCtl = nullptr;
+std::unique_ptr<Camera>           camera;
+std::unique_ptr<CameraController> cameraCtl;
 
 glm::vec3 clear_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -88,22 +88,24 @@ void mouse_btn_callback(int button, int action, int mods)
 
 void prepare()
 {
-    renderer   = new Renderer();
-    scene      = new Scene();
+    renderer   = std::make_unique<Renderer>();
+    scene      = std::make_unique<Scene>();
     auto model = AssimpLoader::load("asset/fbx/cottage_fbx.fbx");
     scene->AddChild(model);
     // 光线
-    directionalLight              = new DirectionalLight();
+    directionalLight              = std::make_unique<DirectionalLight>();
     directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
 
-    ambient_light          = new AmbientLight();
+    ambient_light          = std::make_unique<AmbientLight>();
     ambient_light->m_color = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
-    camera = new PerspectiveCamera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    camera             = std::make_unique<PerspectiveCamera>(static_cast<float>(glApp->getWidth()) /
+                                                             static_cast<float>(glApp->getHeight()));
     camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
-    cameraCtl          = new TrackballCameraController(camera);
+    // todo
+    cameraCtl          = std::make_unique<TrackballCameraController>(camera.get());
 }
 
 // 整合imgui
@@ -117,7 +119,6 @@ void initIMGUI()
     // imgui绑定opengl
     ImGui_ImplOpenGL3_Init("#version 330 core");
 }
-float val=0.0f;
 /**
  * 每一帧渲染gui
  * <ul>
@@ -172,17 +173,13 @@ int main()
         cameraCtl->OnUpdate();
 
         renderer->setClearColor(clear_color);
-        renderer->render(scene, camera, directionalLight, nullptr, ambient_light, nullptr);
+        // todo
+        renderer->render(scene.get(), camera.get(), directionalLight.get(), nullptr, ambient_light.get(), nullptr);
 
         // imgui渲染
         renderIMGUI();
     }
     // 回收资源
     glApp->destroy();
-    delete renderer;
-    delete directionalLight;
-    delete ambient_light;
-    delete camera;
-    delete cameraCtl;
     return 0;
 }
