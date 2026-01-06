@@ -8,39 +8,49 @@
 #include <ostream>
 
 Object::Object() : m_type(ObjectType::Object) {}
-Object::~Object() {}
+
+Object::Object(ObjectType type) : m_type(type) {}
+
 void Object::SetPosition(glm::vec3 pos)
 {
     m_position = pos;
 }
+
 void Object::SetRotationX(float angle)
 {
     m_angle_x += angle;
 }
+
 void Object::SetRotationY(float angle)
 {
     m_angle_y += angle;
 }
+
 void Object::SetRotationZ(float angle)
 {
     m_angle_z += angle;
 }
+
 void Object::SetScale(glm::vec3 scale)
 {
     m_scale = scale;
 }
+
 void Object::SetAngleX(float angle)
 {
     m_angle_x = angle;
 }
+
 void Object::SetAngleY(float angle)
 {
     m_angle_y = angle;
 }
+
 void Object::SetAngleZ(float angle)
 {
     m_angle_z = angle;
 }
+
 glm::mat4 Object::GetModelMatrix() const
 {
     // 先缩放 再旋转 最后平移
@@ -55,12 +65,19 @@ glm::mat4 Object::GetModelMatrix() const
     transform = glm::translate(glm::mat4(1.0f), m_position) * transform;
     return transform;
 }
+
 Object* Object::GetParent() const
 {
     return m_parent;
 }
+
 void Object::AddChild(Object* child)
 {
+    assert(child);
+    if (child == this || child->m_parent == this)
+    {
+        return;
+    }
     // 检查是否加入过
     auto iter = std::find(m_children.begin(), m_children.end(), child);
     if (iter != m_children.end())
@@ -73,7 +90,8 @@ void Object::AddChild(Object* child)
     // 告诉孩子 父亲是谁
     child->m_parent = this;
 }
-std::vector<Object*> Object::GetChildren() const
+
+const std::vector<Object*>& Object::GetChildren() const
 {
     return m_children;
 }

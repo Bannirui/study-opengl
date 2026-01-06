@@ -4,8 +4,4 @@
 
 #include "glframework/Scene.h"
 
-Scene::Scene()
-{
-    m_type = ObjectType::Scene;
-}
-Scene::~Scene() {}
+Scene::Scene() : Object(ObjectType::Scene) {}

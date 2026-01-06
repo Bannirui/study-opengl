@@ -23,7 +23,8 @@ class Object
 {
 public:
     Object();
-    ~Object();
+    Object(ObjectType type);
+    virtual ~Object() = default;
 
     glm::vec3 GetPosition() const { return m_position; }
     void      SetPosition(glm::vec3 pos);
@@ -44,9 +45,9 @@ public:
     glm::mat4 GetModelMatrix() const;
 
     // 父子关系
-    Object*              GetParent() const;
-    void                 AddChild(Object* child);
-    std::vector<Object*> GetChildren() const;
+    Object*                     GetParent() const;
+    void                        AddChild(Object* child);
+    const std::vector<Object*>& GetChildren() const;
 
     ObjectType GetType() const { return m_type; }
 
@@ -62,10 +63,13 @@ protected:
     // 在xyz3个方向的缩放
     glm::vec3 m_scale{1.0f};
 
+    // 父子关系不是所有权的拥有关系 所以就用裸指针 不要用智能指针
     // 孩子节点
     std::vector<Object*> m_children{};
     // 父亲节点
     Object* m_parent{nullptr};
+
     // 类型标识 将来渲染的时候看这个类型决定是不是需要渲染
-    ObjectType m_type;
+    // 用const修饰语义是在构造后类型不应该再发生改变
+    const ObjectType m_type;
 };

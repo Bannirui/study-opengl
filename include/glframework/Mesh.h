@@ -16,7 +16,7 @@ class Mesh : public Object
 {
 public:
     Mesh(Geometry* geometry, Material* material);
-    ~Mesh();
+    ~Mesh() override = default;
 
 public:
     // 形状

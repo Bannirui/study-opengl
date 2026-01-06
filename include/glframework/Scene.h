@@ -12,5 +12,5 @@ class Scene : public Object
 {
 public:
     Scene();
-    ~Scene();
+    ~Scene() override = default;
 };

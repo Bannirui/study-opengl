@@ -4,10 +4,8 @@
 
 #include "glframework/Mesh.h"
 
-Mesh::Mesh(Geometry* geometry, Material* material)
+Mesh::Mesh(Geometry* geometry, Material* material) : Object(ObjectType::Mesh)
 {
-    m_type     = ObjectType::Mesh;
     m_geometry = geometry;
     m_material = material;
 }
-Mesh::~Mesh() {}
