@@ -17,14 +17,9 @@
 #include "glframework/material/PhongMaterial.h"
 
 Renderer::Renderer()
+    : m_phoneShader(std::make_unique<Shader>("asset/shader/phone_shader.glsl")),
+      m_whiteShader(std::make_unique<Shader>("asset/shader/white_shader.glsl"))
 {
-    m_phoneShader = new Shader("asset/shader/phone_shader.glsl");
-    m_whiteShader = new Shader("asset/shader/white_shader.glsl");
-}
-Renderer::~Renderer()
-{
-    delete m_phoneShader;
-    delete m_whiteShader;
 }
 
 void Renderer::setClearColor(glm::vec3 color)
@@ -64,9 +59,9 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
         auto geometry = mesh->m_geometry;
         auto material = mesh->m_material;
         // 用哪个shader
-        Shader* shader = getShader(material->m_type);
+        Shader& shader = getShader(material->m_type);
         // 更新shader的uniform变量
-        shader->Bind();
+        shader.Bind();
         switch (material->m_type)
         {
             case MaterialType::PhoneMaterial:
@@ -77,71 +72,71 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
                     // 将纹理对象跟纹理单元绑定
                     curMaterial->m_diffuse->Bind();
                     // diffuse贴图 将纹理采样器跟纹理单元绑定
-                    shader->setInt("u_sampler", curMaterial->m_diffuse->GetUnit());
+                    shader.setInt("u_sampler", curMaterial->m_diffuse->GetUnit());
                 }
                 // 高光蒙版贴图
                 if (curMaterial->m_specularMask)
                 {
                     curMaterial->m_specularMask->Bind();
-                    shader->setInt("u_specularMaskSampler", curMaterial->m_specularMask->GetUnit());
+                    shader.setInt("u_specularMaskSampler", curMaterial->m_specularMask->GetUnit());
                 }
                 // 模型变换矩阵 aPos模型->世界空间
-                shader->setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
+                shader.setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
                 // 视图矩阵 世界空间->摄影机空间
-                shader->setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
-                shader->setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
+                shader.setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
+                shader.setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
                 // normal matrix
                 auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh->GetModelMatrix())));
-                shader->setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
+                shader.setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
                 // 平行光
                 if (directionalLight)
                 {
-                    shader->setBool("u_activeDirectionalLight", true);
-                    shader->setFloatVec3("u_directionalLight.direction", directionalLight->m_direction);
-                    shader->setFloatVec3("u_directionalLight.color", directionalLight->m_color);
+                    shader.setBool("u_activeDirectionalLight", true);
+                    shader.setFloatVec3("u_directionalLight.direction", directionalLight->m_direction);
+                    shader.setFloatVec3("u_directionalLight.color", directionalLight->m_color);
                     // 高光反射强度
-                    shader->setFloat("u_directionalLight.specularIntensity", directionalLight->m_specularIntensity);
+                    shader.setFloat("u_directionalLight.specularIntensity", directionalLight->m_specularIntensity);
                 }
                 // 点光
                 if (pointLight)
                 {
-                    shader->setBool("u_activePointLight", true);
-                    shader->setFloatVec3("u_pointLight.pos", pointLight->GetPosition());
-                    shader->setFloatVec3("u_pointLight.color", pointLight->m_color);
+                    shader.setBool("u_activePointLight", true);
+                    shader.setFloatVec3("u_pointLight.pos", pointLight->GetPosition());
+                    shader.setFloatVec3("u_pointLight.color", pointLight->m_color);
                     // 高光反射强度
-                    shader->setFloat("u_pointLight.specularIntensity", pointLight->m_specularIntensity);
-                    shader->setFloat(".u_pointLight.k2", pointLight->m_k2);
-                    shader->setFloat("u_pointLight.k1", pointLight->m_k1);
-                    shader->setFloat("u_pointLight.kc", pointLight->m_kc);
+                    shader.setFloat("u_pointLight.specularIntensity", pointLight->m_specularIntensity);
+                    shader.setFloat(".u_pointLight.k2", pointLight->m_k2);
+                    shader.setFloat("u_pointLight.k1", pointLight->m_k1);
+                    shader.setFloat("u_pointLight.kc", pointLight->m_kc);
                 }
                 // 聚光灯
                 if (spotLight)
                 {
-                    shader->setBool("u_activeSpotLight", true);
-                    shader->setFloatVec3("u_spotLight.pos", spotLight->GetPosition());
-                    shader->setFloatVec3("u_spotLight.targetDirection", spotLight->m_targetDirection);
-                    shader->setFloatVec3("u_spotLight.color", spotLight->m_color);
-                    shader->setFloat("u_spotLight.innerCos", glm::cos(glm::radians(spotLight->m_innerAngle)));
-                    shader->setFloat("u_spotLight.outerCos", glm::cos(glm::radians(spotLight->m_outerAngle)));
-                    shader->setFloat("u_spotLight.specularIntensity", spotLight->m_specularIntensity);
+                    shader.setBool("u_activeSpotLight", true);
+                    shader.setFloatVec3("u_spotLight.pos", spotLight->GetPosition());
+                    shader.setFloatVec3("u_spotLight.targetDirection", spotLight->m_targetDirection);
+                    shader.setFloatVec3("u_spotLight.color", spotLight->m_color);
+                    shader.setFloat("u_spotLight.innerCos", glm::cos(glm::radians(spotLight->m_innerAngle)));
+                    shader.setFloat("u_spotLight.outerCos", glm::cos(glm::radians(spotLight->m_outerAngle)));
+                    shader.setFloat("u_spotLight.specularIntensity", spotLight->m_specularIntensity);
                 }
                 // 环境光
                 if (ambientLight)
                 {
-                    shader->setFloatVec3("u_ambientColor", ambientLight->m_color);
+                    shader.setFloatVec3("u_ambientColor", ambientLight->m_color);
                 }
                 // 控制高光反射光斑大小
-                shader->setFloat("u_shiness", curMaterial->m_shiness);
+                shader.setFloat("u_shiness", curMaterial->m_shiness);
                 // 相机位置
-                shader->setFloatVec3("u_cameraPos", camera->m_Position);
+                shader.setFloatVec3("u_cameraPos", camera->m_Position);
             }
             break;
             case MaterialType::WhiteMaterial:
             {
                 // mvp变换矩阵
-                shader->setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
-                shader->setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
-                shader->setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
+                shader.setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
+                shader.setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
+                shader.setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
             }
             break;
             default:
@@ -153,7 +148,7 @@ void Renderer::render(const std::vector<Mesh*>& meshes, Camera* camera, Directio
         glDrawElements(GL_TRIANGLES, geometry->GetIndicesCnt(), GL_UNSIGNED_INT, 0);
         // 解绑VAO
         glBindVertexArray(0);
-        shader->Unbind();
+        shader.Unbind();
     }
 }
 void Renderer::render(const Object* object, Camera* camera, DirectionalLight* directionalLight, PointLight* pointLight,
@@ -174,9 +169,9 @@ void Renderer::renderObject(const Object* object, Camera* camera, DirectionalLig
         auto geometry = mesh->m_geometry;
         auto material = mesh->m_material;
         // 用哪个shader
-        Shader* shader = getShader(material->m_type);
+        Shader& shader = getShader(material->m_type);
         // 更新shader的uniform变量
-        shader->Bind();
+        shader.Bind();
         switch (material->m_type)
         {
             case MaterialType::PhoneMaterial:
@@ -187,71 +182,71 @@ void Renderer::renderObject(const Object* object, Camera* camera, DirectionalLig
                     // 将纹理对象跟纹理单元绑定
                     curMaterial->m_diffuse->Bind();
                     // diffuse贴图 将纹理采样器跟纹理单元绑定
-                    shader->setInt("u_sampler", curMaterial->m_diffuse->GetUnit());
+                    shader.setInt("u_sampler", curMaterial->m_diffuse->GetUnit());
                 }
                 // 高光蒙版贴图
                 if (curMaterial->m_specularMask)
                 {
                     curMaterial->m_specularMask->Bind();
-                    shader->setInt("u_specularMaskSampler", curMaterial->m_specularMask->GetUnit());
+                    shader.setInt("u_specularMaskSampler", curMaterial->m_specularMask->GetUnit());
                 }
                 // 模型变换矩阵 aPos模型->世界空间
-                shader->setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
+                shader.setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
                 // 视图矩阵 世界空间->摄影机空间
-                shader->setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
-                shader->setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
+                shader.setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
+                shader.setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
                 // normal matrix
                 auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh->GetModelMatrix())));
-                shader->setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
+                shader.setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
                 // 平行光
                 if (directionalLight)
                 {
-                    shader->setBool("u_activeDirectionalLight", true);
-                    shader->setFloatVec3("u_directionalLight.direction", directionalLight->m_direction);
-                    shader->setFloatVec3("u_directionalLight.color", directionalLight->m_color);
+                    shader.setBool("u_activeDirectionalLight", true);
+                    shader.setFloatVec3("u_directionalLight.direction", directionalLight->m_direction);
+                    shader.setFloatVec3("u_directionalLight.color", directionalLight->m_color);
                     // 高光反射强度
-                    shader->setFloat("u_directionalLight.specularIntensity", directionalLight->m_specularIntensity);
+                    shader.setFloat("u_directionalLight.specularIntensity", directionalLight->m_specularIntensity);
                 }
                 // 点光
                 if (pointLight)
                 {
-                    shader->setBool("u_activePointLight", true);
-                    shader->setFloatVec3("u_pointLight.pos", pointLight->GetPosition());
-                    shader->setFloatVec3("u_pointLight.color", pointLight->m_color);
+                    shader.setBool("u_activePointLight", true);
+                    shader.setFloatVec3("u_pointLight.pos", pointLight->GetPosition());
+                    shader.setFloatVec3("u_pointLight.color", pointLight->m_color);
                     // 高光反射强度
-                    shader->setFloat("u_pointLight.specularIntensity", pointLight->m_specularIntensity);
-                    shader->setFloat(".u_pointLight.k2", pointLight->m_k2);
-                    shader->setFloat("u_pointLight.k1", pointLight->m_k1);
-                    shader->setFloat("u_pointLight.kc", pointLight->m_kc);
+                    shader.setFloat("u_pointLight.specularIntensity", pointLight->m_specularIntensity);
+                    shader.setFloat(".u_pointLight.k2", pointLight->m_k2);
+                    shader.setFloat("u_pointLight.k1", pointLight->m_k1);
+                    shader.setFloat("u_pointLight.kc", pointLight->m_kc);
                 }
                 // 聚光灯
                 if (spotLight)
                 {
-                    shader->setBool("u_activeSpotLight", true);
-                    shader->setFloatVec3("u_spotLight.pos", spotLight->GetPosition());
-                    shader->setFloatVec3("u_spotLight.targetDirection", spotLight->m_targetDirection);
-                    shader->setFloatVec3("u_spotLight.color", spotLight->m_color);
-                    shader->setFloat("u_spotLight.innerCos", glm::cos(glm::radians(spotLight->m_innerAngle)));
-                    shader->setFloat("u_spotLight.outerCos", glm::cos(glm::radians(spotLight->m_outerAngle)));
-                    shader->setFloat("u_spotLight.specularIntensity", spotLight->m_specularIntensity);
+                    shader.setBool("u_activeSpotLight", true);
+                    shader.setFloatVec3("u_spotLight.pos", spotLight->GetPosition());
+                    shader.setFloatVec3("u_spotLight.targetDirection", spotLight->m_targetDirection);
+                    shader.setFloatVec3("u_spotLight.color", spotLight->m_color);
+                    shader.setFloat("u_spotLight.innerCos", glm::cos(glm::radians(spotLight->m_innerAngle)));
+                    shader.setFloat("u_spotLight.outerCos", glm::cos(glm::radians(spotLight->m_outerAngle)));
+                    shader.setFloat("u_spotLight.specularIntensity", spotLight->m_specularIntensity);
                 }
                 // 环境光
                 if (ambientLight)
                 {
-                    shader->setFloatVec3("u_ambientColor", ambientLight->m_color);
+                    shader.setFloatVec3("u_ambientColor", ambientLight->m_color);
                 }
                 // 控制高光反射光斑大小
-                shader->setFloat("u_shiness", curMaterial->m_shiness);
+                shader.setFloat("u_shiness", curMaterial->m_shiness);
                 // 相机位置
-                shader->setFloatVec3("u_cameraPos", camera->m_Position);
+                shader.setFloatVec3("u_cameraPos", camera->m_Position);
             }
             break;
             case MaterialType::WhiteMaterial:
             {
                 // mvp变换矩阵
-                shader->setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
-                shader->setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
-                shader->setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
+                shader.setMat4("u_model", glm::value_ptr(mesh->GetModelMatrix()));
+                shader.setMat4("u_view", glm::value_ptr(camera->GetViewMatrix()));
+                shader.setMat4("u_projection", glm::value_ptr(camera->GetProjectionMatrix()));
             }
             break;
             default:
@@ -263,7 +258,7 @@ void Renderer::renderObject(const Object* object, Camera* camera, DirectionalLig
         glDrawElements(GL_TRIANGLES, geometry->GetIndicesCnt(), GL_UNSIGNED_INT, 0);
         // 解绑VAO
         glBindVertexArray(0);
-        shader->Unbind();
+        shader.Unbind();
     }
     // 递归子节点
     auto children = object->GetChildren();
@@ -272,19 +267,15 @@ void Renderer::renderObject(const Object* object, Camera* camera, DirectionalLig
         renderObject(children[i], camera, directionalLight, pointLight, ambientLight, spotLight);
     }
 }
-Shader* Renderer::getShader(const MaterialType type) const
+Shader& Renderer::getShader(const MaterialType type) const
 {
-    Shader* ret = nullptr;
+    assert(m_phoneShader && m_whiteShader);
     switch (type)
     {
         case MaterialType::PhoneMaterial:
-            ret = m_phoneShader;
-            break;
+            return *m_phoneShader;
         case MaterialType::WhiteMaterial:
-            ret = m_whiteShader;
-            break;
-        default:
-            break;
+            return *m_whiteShader;
     }
-    return ret;
+    std::terminate();
 }

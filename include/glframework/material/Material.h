@@ -24,9 +24,9 @@ enum class MaterialType
     // 纯白 用于点光
     WhiteMaterial,
     // 点光
-    PointLightMaterial,
+    // PointLightMaterial,
     // 聚光灯
-    SpotLightMaterial,
+    // SpotLightMaterial,
 };
 
 class Material
