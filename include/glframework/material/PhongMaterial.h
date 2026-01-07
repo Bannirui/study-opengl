@@ -15,6 +15,10 @@ public:
     PhongMaterial();
     ~PhongMaterial() override;
 
+    Shader& shader(const Renderer& renderer) const override;
+    void applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
+
+    // todo 访问修饰符改成private
 public:
     // 漫反射和环境光都用贴图颜色
     Texture* m_diffuse{nullptr};

@@ -11,7 +11,7 @@
 class CameraController
 {
 public:
-    CameraController(Camera* camera);
+    CameraController(Camera& camera);
     virtual ~CameraController() = default;
 
     /**
@@ -64,8 +64,8 @@ protected:
     std::unordered_map<int, bool> m_KeyPressedMap;
     // 相机pitch前后转角或者yaw左右转角的敏感度
     float m_Sensitivity = 0.1f;
-    // 控制的相机
-    Camera* m_CameraPtr{nullptr};
+    // 控制的相机 Controller一生只控制一个相机 设计成引用类型
+    Camera& m_Camera;
     // 相机缩放速度
     float m_ScaleSpeed = 0.2f;
     // 移动速度

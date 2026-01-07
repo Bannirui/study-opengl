@@ -11,7 +11,6 @@ class SpotLight : public Light, public Object
 {
 public:
     SpotLight();
-    ~SpotLight();
 
 public:
     // 探照灯看向的方向

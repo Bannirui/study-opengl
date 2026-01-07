@@ -19,7 +19,7 @@ PerspectiveCamera::PerspectiveCamera(float fovy, float aspect, float near, float
 {
 }
 
-glm::mat4 PerspectiveCamera::GetProjectionMatrix()
+glm::mat4 PerspectiveCamera::GetProjectionMatrix() const
 {
     // 透视投影矩阵 摄影机空间->剪裁空间
     // fovy 在y轴方向的视张角

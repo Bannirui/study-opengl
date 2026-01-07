@@ -8,9 +8,8 @@
 #include <glm/ext/matrix_transform.hpp>
 
 Camera::Camera() {}
-Camera::~Camera() {}
 
-glm::mat4 Camera::GetViewMatrix()
+glm::mat4 Camera::GetViewMatrix() const
 {
     // 生成一个viewMatrix
     // eye 摄像机所在的位置

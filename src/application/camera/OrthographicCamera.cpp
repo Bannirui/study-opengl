@@ -12,7 +12,7 @@ OrthographicCamera::OrthographicCamera(float l, float r, float t, float b, float
     m_Near = n;
     m_Far  = f;
 }
-glm::mat4 OrthographicCamera::GetProjectionMatrix()
+glm::mat4 OrthographicCamera::GetProjectionMatrix() const
 {
     return glm::ortho(m_Left, m_Right, m_Bottom, m_Top, m_Near, m_Far);
 }

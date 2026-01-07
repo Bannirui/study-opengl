@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
 
 #include "err_check.h"
 #include "application/Application.h"
@@ -26,17 +27,29 @@
 #include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-Renderer* renderer = nullptr;
+std::unique_ptr<Renderer> renderer;
 // 渲染列表
-std::vector<Mesh*> meshes{};
-AmbientLight*      ambient_light = nullptr;
-PointLight*        point_light   = nullptr;
+std::vector<Mesh*>                meshes{};
+std::unique_ptr<DirectionalLight> directionalLight;
+std::unique_ptr<SpotLight>        spot_light;
+std::unique_ptr<AmbientLight>     ambient_light;
+std::unique_ptr<PointLight>       point_light;
 
-Camera*           camera    = nullptr;
-CameraController* cameraCtl = nullptr;
+std::unique_ptr<Camera>           camera;
+std::unique_ptr<CameraController> cameraCtl;
+
+std::unique_ptr<Box>           boxGeometry;
+std::unique_ptr<PhongMaterial> boxMaterial;
+std::unique_ptr<Sphere>        whiteObjectGeometry;
+std::unique_ptr<WhiteMaterial> whiteObjectMaterial;
+
+glm::vec3 clear_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 void framebuffer_size_callback(int width, int height)
 {
@@ -80,33 +93,47 @@ void mouse_btn_callback(int button, int action, int mods)
 
 void prepare()
 {
-    renderer = new Renderer();
+    renderer = std::make_unique<Renderer>();
     // 箱子
-    auto geometryBox            = new Box();
-    auto materialBox            = new PhongMaterial();
-    materialBox->m_shiness      = 32.0f;
-    materialBox->m_diffuse      = new Texture("asset/texture/box.png", 0);
-    materialBox->m_specularMask = new Texture("asset/texture/sp_mask.png", 1);
-    auto meshBox                = new Mesh(geometryBox, materialBox);
+    boxGeometry                 = std::make_unique<Box>();
+    boxMaterial                 = std::make_unique<PhongMaterial>();
+    boxMaterial->m_shiness      = 32.0f;
+    boxMaterial->m_diffuse      = new Texture("asset/texture/box.png", 0);
+    boxMaterial->m_specularMask = new Texture("asset/texture/sp_mask.png", 1);
+    auto meshBox                = new Mesh(*boxGeometry, *boxMaterial);
     meshes.push_back(meshBox);
     // 白色物体
-    auto geometryWhite = new Sphere(0.1f);
-    auto materialWhite = new WhiteMaterial();
-    auto meshWhite     = new Mesh(geometryWhite, materialWhite);
+    whiteObjectGeometry = std::make_unique<Sphere>(0.1f);
+    whiteObjectMaterial = std::make_unique<WhiteMaterial>();
+    auto meshWhite      = new Mesh(*whiteObjectGeometry, *whiteObjectMaterial);
     meshWhite->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
     meshes.push_back(meshWhite);
     // 光线
-    point_light = new PointLight();
-    point_light->SetPosition(meshWhite->GetPosition());
+    spot_light               = std::make_unique<SpotLight>();
+    spot_light->m_innerAngle = 15.0f;
+    spot_light->m_outerAngle = 30.0f;
+    spot_light->SetPosition(meshWhite->GetPosition());
 
-    ambient_light          = new AmbientLight();
+    directionalLight              = std::make_unique<DirectionalLight>();
+    directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    point_light = std::make_unique<PointLight>();
+    point_light->SetPosition(glm::vec3(0.0f, 0.0f, 1.5f));
+    point_light->m_specularIntensity = 0.5f;
+    point_light->m_k2                = 0.017f;
+    point_light->m_k1                = 0.07f;
+    point_light->m_kc                = 1.0f;
+
+    ambient_light          = std::make_unique<AmbientLight>();
     ambient_light->m_color = glm::vec3(0.2f);
 }
+
 void prepareCamera()
 {
-    camera = new PerspectiveCamera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    camera             = std::make_unique<PerspectiveCamera>(static_cast<float>(glApp->getWidth()) /
+                                                             static_cast<float>(glApp->getHeight()));
     camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
-    cameraCtl          = new TrackballCameraController(camera);
+    cameraCtl          = std::make_unique<TrackballCameraController>(*camera);
 }
 
 // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
@@ -114,12 +141,54 @@ void meshTransform()
 {
     float xPos = glm::sin(glfwGetTime()) + 2.0f;
     meshes[1]->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
-    point_light->SetPosition(meshes[1]->GetPosition());
+    spot_light->SetPosition(meshes[1]->GetPosition());
 
     meshes[0]->SetRotationX(1.0f);
-    meshes[0]->SetRotationY(0.2f);
+    meshes[0]->SetRotationY(0.4f);
+    meshes[0]->SetRotationZ(0.1f);
 }
-// 点光
+
+// 整合imgui
+void initIMGUI()
+{
+    ImGui::CreateContext();
+    // 主题
+    ImGui::StyleColorsDark();
+    // imgui绑定glfw
+    ImGui_ImplGlfw_InitForOpenGL(glApp->getWindow(), true);
+    // imgui绑定opengl
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+}
+
+/**
+ * 每一帧渲染gui
+ * <ul>
+ *   <li>开启当前imgui渲染</li>
+ *   <li>gui控件</li>
+ *   <li>执行ui渲染</li>
+ * </ul>
+ */
+void renderIMGUI()
+{
+    // 开启
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    // 控件
+    ImGui::Begin("Settings");
+    ImGui::Text("hello world");
+    ImGui::Button("test btn", ImVec2(40, 20));
+    ImGui::ColorEdit3("clear color", reinterpret_cast<float*>(&clear_color));
+    ImGui::End();
+    // 渲染
+    ImGui::Render();
+    int display_w, display_h;
+    glfwGetWindowSize(glApp->getWindow(), &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+// 聚光灯 平行光 点光
 int main()
 {
     if (!glApp->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -137,20 +206,20 @@ int main()
 
     prepareCamera();
     prepare();
+    initIMGUI();
 
     // 窗体循环
     while (glApp->update())
     {
         cameraCtl->OnUpdate();
         meshTransform();
-        renderer->render(meshes, camera, point_light, ambient_light);
+        renderer->setClearColor(clear_color);
+        renderer->render(meshes, camera.get(),
+                         {directionalLight.get(), point_light.get(), spot_light.get(), ambient_light.get()});
+        // imgui渲染
+        renderIMGUI();
     }
     // 回收资源
     glApp->destroy();
-    delete renderer;
-    delete point_light;
-    delete ambient_light;
-    delete camera;
-    delete cameraCtl;
     return 0;
 }

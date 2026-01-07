@@ -5,14 +5,91 @@
 #include "glframework/material/PhongMaterial.h"
 
 #include "glframework/Texture.h"
+#include "glframework/renderer/Renderer.h"
+#include "glframework/renderer/light_pack.h"
+#include "glframework/light/AmbientLight.h"
+#include "glframework/light/SpotLight.h"
+#include "glframework/light/PointLight.h"
+#include "glframework/light/DirectionalLight.h"
+#include "glframework/Mesh.h"
 
-PhongMaterial::PhongMaterial()
-{
-    m_type = MaterialType::PhoneMaterial;
-}
+#include "application/camera/Camera.h"
+
+PhongMaterial::PhongMaterial() : Material(MaterialType::PhoneMaterial) {}
 
 PhongMaterial::~PhongMaterial()
 {
     delete m_diffuse;
     delete m_specularMask;
+}
+
+Shader& PhongMaterial::shader(const Renderer& renderer) const
+{
+    return renderer.getShader(type());
+}
+
+void PhongMaterial::applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
+{
+    if (m_diffuse)
+    {
+        // 将纹理对象跟纹理单元绑定
+        m_diffuse->Bind();
+        // diffuse贴图 将纹理采样器跟纹理单元绑定
+        shader.setInt("u_sampler", m_diffuse->GetUnit());
+    }
+    // 高光蒙版贴图
+    if (m_specularMask)
+    {
+        m_specularMask->Bind();
+        shader.setInt("u_specularMaskSampler", m_specularMask->GetUnit());
+    }
+    // 模型变换矩阵 aPos模型->世界空间
+    shader.setMat4("u_model", glm::value_ptr(mesh.GetModelMatrix()));
+    // 视图矩阵 世界空间->摄影机空间
+    shader.setMat4("u_view", glm::value_ptr(camera.GetViewMatrix()));
+    shader.setMat4("u_projection", glm::value_ptr(camera.GetProjectionMatrix()));
+    // normal matrix
+    auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh.GetModelMatrix())));
+    shader.setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
+    // 平行光
+    if (lights.directional)
+    {
+        shader.setBool("u_activeDirectionalLight", true);
+        shader.setFloatVec3("u_directionalLight.direction", lights.directional->m_direction);
+        shader.setFloatVec3("u_directionalLight.color", lights.directional->m_color);
+        // 高光反射强度
+        shader.setFloat("u_directionalLight.specularIntensity", lights.directional->m_specularIntensity);
+    }
+    // 点光
+    if (lights.point)
+    {
+        shader.setBool("u_activePointLight", true);
+        shader.setFloatVec3("u_pointLight.pos", lights.point->GetPosition());
+        shader.setFloatVec3("u_pointLight.color", lights.point->m_color);
+        // 高光反射强度
+        shader.setFloat("u_pointLight.specularIntensity", lights.point->m_specularIntensity);
+        shader.setFloat(".u_pointLight.k2", lights.point->m_k2);
+        shader.setFloat("u_pointLight.k1", lights.point->m_k1);
+        shader.setFloat("u_pointLight.kc", lights.point->m_kc);
+    }
+    // 聚光灯
+    if (lights.spot)
+    {
+        shader.setBool("u_activeSpotLight", true);
+        shader.setFloatVec3("u_spotLight.pos", lights.spot->GetPosition());
+        shader.setFloatVec3("u_spotLight.targetDirection", lights.spot->m_targetDirection);
+        shader.setFloatVec3("u_spotLight.color", lights.spot->m_color);
+        shader.setFloat("u_spotLight.innerCos", glm::cos(glm::radians(lights.spot->m_innerAngle)));
+        shader.setFloat("u_spotLight.outerCos", glm::cos(glm::radians(lights.spot->m_outerAngle)));
+        shader.setFloat("u_spotLight.specularIntensity", lights.spot->m_specularIntensity);
+    }
+    // 环境光
+    if (lights.ambient)
+    {
+        shader.setFloatVec3("u_ambientColor", lights.ambient->m_color);
+    }
+    // 控制高光反射光斑大小
+    shader.setFloat("u_shiness", m_shiness);
+    // 相机位置
+    shader.setFloatVec3("u_cameraPos", camera.m_Position);
 }

@@ -28,10 +28,10 @@ public:
 
 public:
     Camera();
-    virtual ~Camera();
+    virtual ~Camera() = default;
 
-    glm::mat4 GetViewMatrix();
+    glm::mat4 GetViewMatrix() const;
 
-    virtual glm::mat4 GetProjectionMatrix() = 0;
+    virtual glm::mat4 GetProjectionMatrix() const = 0;
     virtual void      scale(float scale)    = 0;
 };

@@ -15,12 +15,17 @@ class Material;
 class Mesh : public Object
 {
 public:
-    Mesh(Geometry* geometry, Material* material);
-    ~Mesh() override = default;
+    Mesh(std::shared_ptr<Geometry> geometry, std::shared_ptr<Material> material);
 
-public:
-    // 形状
-    Geometry* m_geometry{nullptr};
+    const Geometry& getGeometry() const noexcept { return *m_geometry; };
+    const Material& getMaterial() const noexcept { return *m_material; };
+
+    void render(const Renderer&, Camera&, const LightPack&) const override;
+
+private:
+    // 形状和材质于Mesh而言 Mesh并不是拥有 而仅仅是挂载 Geometry可以被多个Mesh共享 Material可以被多个Mesh共享
+    // 又因为是多态的 所以用智能指针修饰 形状
+    std::shared_ptr<Geometry> m_geometry;
     // 材质
-    Material* m_material{nullptr};
+    std::shared_ptr<Material> m_material;
 };

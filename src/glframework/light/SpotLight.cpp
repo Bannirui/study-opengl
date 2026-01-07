@@ -10,4 +10,3 @@ SpotLight::SpotLight()
       m_outerAngle(60.0f)
 {
 }
-SpotLight::~SpotLight() {}

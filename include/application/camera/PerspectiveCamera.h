@@ -18,9 +18,8 @@ class PerspectiveCamera : public Camera
 public:
     PerspectiveCamera(float aspect);
     PerspectiveCamera(float fovy, float aspect, float near, float far);
-    ~PerspectiveCamera() = default;
 
-    glm::mat4 GetProjectionMatrix() override;
+    glm::mat4 GetProjectionMatrix() const override;
     void      scale(float scale) override;
 
 private:

@@ -10,6 +10,10 @@
 
 #include "glframework/Core.h"
 
+class Renderer;
+class Camera;
+struct LightPack;
+
 // 区分是Object还是Mesh 决定要不要渲染
 enum class ObjectType
 {
@@ -19,7 +23,7 @@ enum class ObjectType
 };
 
 // 物体抽象 平移 缩放 转动
-class Object
+class Object : public std::enable_shared_from_this<Object>
 {
 public:
     Object();
@@ -45,11 +49,15 @@ public:
     glm::mat4 GetModelMatrix() const;
 
     // 父子关系
-    Object*                     GetParent() const;
-    void                        AddChild(Object* child);
-    const std::vector<Object*>& GetChildren() const;
+    std::shared_ptr<Object>                     GetParent() const;
+    void                                        AddChild(const std::shared_ptr<Object> child);
+    const std::vector<std::shared_ptr<Object>>& GetChildren() const;
 
     ObjectType GetType() const { return m_type; }
+    void       RemoveChild(const std::shared_ptr<Object>& child);
+
+    // Object是多态的 渲染下沉到具体对象
+    virtual void render(const Renderer&, Camera&, const LightPack&) const {}
 
 protected:
     // 位置坐标 世界坐标系
@@ -65,9 +73,9 @@ protected:
 
     // 父子关系不是所有权的拥有关系 所以就用裸指针 不要用智能指针
     // 孩子节点
-    std::vector<Object*> m_children{};
+    std::vector<std::shared_ptr<Object>> m_children;
     // 父亲节点
-    Object* m_parent{nullptr};
+    std::weak_ptr<Object> m_parent;
 
     // 类型标识 将来渲染的时候看这个类型决定是不是需要渲染
     // 用const修饰语义是在构造后类型不应该再发生改变

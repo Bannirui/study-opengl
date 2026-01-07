@@ -4,6 +4,13 @@
 
 #pragma once
 
+class Shader;
+class Renderer;
+class Mesh;
+class Material;
+class Camera;
+struct LightPack;
+
 /**
  * 材质描述了物体表面如何与光发生反应
  * <ul>
@@ -29,12 +36,23 @@ enum class MaterialType
     // SpotLightMaterial,
 };
 
+// renderer只负责渲染 material负责选择shader/绑定纹理/上传uniform
 class Material
 {
 public:
-    Material() {}
     virtual ~Material() = default;
 
-public:
-    MaterialType m_type;
+    MaterialType type() const noexcept { return m_type; };
+
+    // 用哪个shader交给具体材质去决定
+    virtual Shader& shader(const Renderer& renderer) const = 0;
+    // 材质负责上传uniform renderer只负责渲染
+    virtual void applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera,
+                               const LightPack& lights) const = 0;
+
+protected:
+    explicit Material(MaterialType type) noexcept : m_type(type) {}
+
+private:
+    const MaterialType m_type;
 };

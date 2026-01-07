@@ -11,7 +11,6 @@ class PointLight : public Light, public Object
 {
 public:
     PointLight();
-    ~PointLight();
 
 public:
     // 控制点光源的衰减

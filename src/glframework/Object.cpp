@@ -66,15 +66,21 @@ glm::mat4 Object::GetModelMatrix() const
     return transform;
 }
 
-Object* Object::GetParent() const
+std::shared_ptr<Object> Object::GetParent() const
 {
-    return m_parent;
+    return m_parent.lock();
 }
 
-void Object::AddChild(Object* child)
+void Object::AddChild(const std::shared_ptr<Object> child)
 {
     assert(child);
-    if (child == this || child->m_parent == this)
+    // 不能加自己
+    if (child.get() == this)
+    {
+        return;
+    }
+    // 已经是我的孩子了
+    if (child->m_parent.lock().get() == this)
     {
         return;
     }
@@ -85,13 +91,27 @@ void Object::AddChild(Object* child)
         std::cerr << "重复添加" << std::endl;
         return;
     }
-    // 加入
+    // 如果child原来有父节点 先从原父节点移除
+    if (auto oldParent = child->m_parent.lock())
+    {
+        oldParent->RemoveChild(child);
+    }
+    // 建立联系
     m_children.push_back(child);
-    // 告诉孩子 父亲是谁
-    child->m_parent = this;
+    child->m_parent = shared_from_this();
 }
 
-const std::vector<Object*>& Object::GetChildren() const
+const std::vector<std::shared_ptr<Object>>& Object::GetChildren() const
 {
     return m_children;
+}
+
+void Object::RemoveChild(const std::shared_ptr<Object>& child)
+{
+    auto iter = std::find(m_children.begin(), m_children.end(), child);
+    if (iter != m_children.end())
+    {
+        (*iter)->m_parent.reset();
+        m_children.erase(iter);
+    }
 }

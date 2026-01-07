@@ -10,9 +10,8 @@ class OrthographicCamera : public Camera
 {
 public:
     OrthographicCamera(float l, float r, float t, float b, float n, float f);
-    ~OrthographicCamera() = default;
 
-    glm::mat4 GetProjectionMatrix() override;
+    glm::mat4 GetProjectionMatrix() const override;
     void      scale(float scale) override;
 
 private:

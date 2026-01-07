@@ -10,5 +10,4 @@ class AmbientLight : public Light
 {
 public:
     AmbientLight()  = default;
-    ~AmbientLight() override = default;
 };

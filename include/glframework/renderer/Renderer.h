@@ -10,15 +10,13 @@
 
 #include "glframework/Object.h"
 // Shader资源用了智能指针管理 就不能简单用前向声明了 必须引用头文件 让编译器明确知道类的结构
+#include "light_pack.h"
 #include "glframework/Shader.h"
 
 class Mesh;
 class Camera;
-class DirectionalLight;
-class AmbientLight;
-class PointLight;
-class SpotLight;
 enum class MaterialType;
+struct LightPack;
 
 // 渲染相关
 class Renderer
@@ -26,35 +24,6 @@ class Renderer
 public:
     Renderer();
     ~Renderer() = default;
-
-    void setClearColor(glm::vec3 color);
-
-    // 平行光
-    void render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
-                AmbientLight* ambientLight) const;
-    // 点光
-    void render(const std::vector<Mesh*>& meshes, Camera* camera, PointLight* pointLight,
-                AmbientLight* ambientLight) const;
-    // 探照光
-    void render(const std::vector<Mesh*>& meshes, Camera* camera, AmbientLight* ambientLight,
-                SpotLight* spotLight) const;
-    /**
-     * 每次调用都会渲染一帧
-     * @param meshes 要渲染的物体对象
-     * @param camera 相机 需要知道从哪儿看的
-     * @param directionalLight 平行光
-     * @param pointLight 点光
-     * @param ambientLight 环境光
-     * @param spotLight 聚光光
-     */
-    void render(const std::vector<Mesh*>& meshes, Camera* camera, DirectionalLight* directionalLight,
-                PointLight* pointLight, AmbientLight* ambientLight, SpotLight* spotLight) const;
-    void render(const Object* object, Camera* camera, DirectionalLight* directionalLight, PointLight* pointLight,
-                AmbientLight* ambientLight, SpotLight* spotLight) const;
-
-private:
-    void renderObject(const Object* object, Camera* camera, DirectionalLight* directionalLight, PointLight* pointLight,
-                      AmbientLight* ambientLight, SpotLight* spotLight) const;
 
     /**
      * 根据不同材质类型选择不同的Shader
@@ -66,6 +35,19 @@ private:
      * 3 指针类型什么时候用 当可能不存在的时候用指针的nullptr语义
      */
     Shader& getShader(const MaterialType type) const;
+
+    void setClearColor(glm::vec3 color);
+
+    void beginFrame();
+    /**
+     * 每次调用都会渲染一帧
+     * 只要给renderer相机和光源就行
+     * @param meshes 要渲染的物体对象
+     * @param camera 相机 需要知道从哪儿看的
+     * @param lights 光源 至于具体的光源是啥不用关注
+     */
+    void render(const std::vector<Mesh*>& meshes, Camera* camera, const LightPack& lights) const;
+    void render(const std::shared_ptr<Object>& object, Camera* camera, const LightPack& lights) const;
 
 private:
     // 生成多种不同的shader 根据材质类型挑选合适的shader

@@ -10,7 +10,6 @@ class DirectionalLight : public Light
 {
 public:
     DirectionalLight()           = default;
-    ~DirectionalLight() override = default;
 
 public:
     // 光照向的方向

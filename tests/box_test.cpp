@@ -29,14 +29,17 @@
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-Renderer* renderer = nullptr;
+std::unique_ptr<Renderer> renderer;
 // 渲染列表
-std::vector<Mesh*> meshes{};
-DirectionalLight*  directionalLight = nullptr;
-AmbientLight*      ambient_light    = nullptr;
+std::vector<Mesh*>                meshes;
+std::unique_ptr<DirectionalLight> directionalLight;
+std::unique_ptr<AmbientLight>     ambient_light;
 
-Camera*           camera    = nullptr;
-CameraController* cameraCtl = nullptr;
+std::unique_ptr<Camera>           camera;
+std::unique_ptr<CameraController> cameraCtl;
+
+std::unique_ptr<Box>           boxGeometry;
+std::unique_ptr<PhongMaterial> boxMaterial;
 
 void framebuffer_size_callback(int width, int height)
 {
@@ -80,27 +83,28 @@ void mouse_btn_callback(int button, int action, int mods)
 
 void prepare()
 {
-    renderer = new Renderer();
+    renderer = std::make_unique<Renderer>();
     // 箱子
-    auto geometryBox            = new Box();
-    auto materialBox            = new PhongMaterial();
-    materialBox->m_shiness      = 32.0f;
-    materialBox->m_diffuse      = new Texture("asset/texture/box.png", 0);
-    materialBox->m_specularMask = new Texture("asset/texture/sp_mask.png", 1);
-    auto meshBox                = new Mesh(geometryBox, materialBox);
+    boxGeometry                 = std::make_unique<Box>();
+    boxMaterial                 = std::make_unique<PhongMaterial>();
+    boxMaterial->m_shiness      = 32.0f;
+    boxMaterial->m_diffuse      = new Texture("asset/texture/box.png", 0);
+    boxMaterial->m_specularMask = new Texture("asset/texture/sp_mask.png", 1);
+    auto meshBox                = new Mesh(*boxGeometry, *boxMaterial);
     meshes.push_back(meshBox);
     // 光线
-    directionalLight              = new DirectionalLight();
+    directionalLight              = std::make_unique<DirectionalLight>();
     directionalLight->m_direction = glm::vec3(-1.0f, 0.0f, 0.0f);
 
-    ambient_light          = new AmbientLight();
+    ambient_light          = std::make_unique<AmbientLight>();
     ambient_light->m_color = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
-    camera = new PerspectiveCamera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    camera             = std::make_unique<PerspectiveCamera>(static_cast<float>(glApp->getWidth()) /
+                                                             static_cast<float>(glApp->getHeight()));
     camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
-    cameraCtl          = new TrackballCameraController(camera);
+    cameraCtl          = std::make_unique<TrackballCameraController>(*camera);
 }
 
 int main()
@@ -128,14 +132,9 @@ int main()
         meshes[0]->SetRotationX(0.1f);
         meshes[0]->SetRotationY(0.05f);
         meshes[0]->SetRotationZ(0.01f);
-        renderer->render(meshes, camera, directionalLight, ambient_light);
+        renderer->render(meshes, camera.get(), {directionalLight.get(), nullptr, nullptr, ambient_light.get()});
     }
     // 回收资源
     glApp->destroy();
-    delete renderer;
-    delete directionalLight;
-    delete ambient_light;
-    delete camera;
-    delete cameraCtl;
     return 0;
 }

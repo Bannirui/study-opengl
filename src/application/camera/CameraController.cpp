@@ -6,10 +6,8 @@
 
 #include <GLFW/glfw3.h>
 
-CameraController::CameraController(Camera* camera)
-{
-    m_CameraPtr = camera;
-}
+CameraController::CameraController(Camera& camera) : m_Camera(camera) {}
+
 void CameraController::OnMouse(int button, int action, int mods, double x, double y)
 {
     // 鼠标是被按下还是抬起
@@ -33,12 +31,16 @@ void CameraController::OnMouse(int button, int action, int mods, double x, doubl
             break;
     }
 }
+
 void CameraController::OnScroll(float yOffset) {}
+
 void CameraController::OnCursor(double x, double y) {}
+
 void CameraController::OnKey(int key, int action, int mods)
 {
     // 过滤repeat情况
     if (action == GLFW_REPEAT) return;
     m_KeyPressedMap[key] = (action == GLFW_PRESS);
 }
+
 void CameraController::OnUpdate() {}

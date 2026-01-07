@@ -9,7 +9,7 @@
 class GameCameraController : public CameraController
 {
 public:
-    GameCameraController(Camera* camera);
+    GameCameraController(Camera& camera);
     ~GameCameraController() override = default;
 
     void OnCursor(double x, double y) override;

@@ -27,16 +27,16 @@
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-Renderer* renderer = nullptr;
+std::unique_ptr<Renderer> renderer;
 // 渲染列表
-std::vector<Mesh*> meshes{};
-DirectionalLight*  directionalLight = nullptr;
-SpotLight*         spot_light       = nullptr;
-AmbientLight*      ambient_light    = nullptr;
-PointLight*        point_light      = nullptr;
+std::vector<Mesh*>                meshes;
+std::unique_ptr<DirectionalLight> directionalLight;
+std::unique_ptr<SpotLight>        spot_light;
+std::unique_ptr<AmbientLight>     ambient_light;
+std::unique_ptr<PointLight>       point_light;
 
-Camera*           camera    = nullptr;
-CameraController* cameraCtl = nullptr;
+std::unique_ptr<Camera>           camera;
+std::unique_ptr<CameraController> cameraCtl;
 
 void framebuffer_size_callback(int width, int height)
 {
@@ -80,34 +80,35 @@ void mouse_btn_callback(int button, int action, int mods)
 
 void prepare()
 {
-    renderer = new Renderer();
+    renderer = std::make_unique<Renderer>();
     // ball
     auto geometryBall       = new Sphere();
     auto materialBall       = new PhongMaterial();
     materialBall->m_shiness = 10.0f;
     materialBall->m_diffuse = new Texture("asset/texture/wall.jpg", 0);
-    auto meshBall           = new Mesh(geometryBall, materialBall);
+    auto meshBall           = new Mesh(*geometryBall, *materialBall);
     meshes.push_back(meshBall);
     // earth
     auto geoEarth            = new Sphere(1.0f);
     auto materialEarth       = new PhongMaterial();
     materialEarth->m_shiness = 16.0f;
     materialEarth->m_diffuse = new Texture("asset/texture/earth.jpg", 1);
-    auto meshEarth           = new Mesh(geoEarth, materialEarth);
+    auto meshEarth           = new Mesh(*geoEarth, *materialEarth);
     meshEarth->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
     meshes.push_back(meshEarth);
     // 光线
-    directionalLight              = new DirectionalLight();
+    directionalLight              = std::make_unique<DirectionalLight>();
     directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
 
-    ambient_light          = new AmbientLight();
+    ambient_light          = std::make_unique<AmbientLight>();
     ambient_light->m_color = glm::vec3(0.2f);
 }
 void prepareCamera()
 {
-    camera = new PerspectiveCamera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    camera             = std::make_unique<PerspectiveCamera>(static_cast<float>(glApp->getWidth()) /
+                                                             static_cast<float>(glApp->getHeight()));
     camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
-    cameraCtl          = new TrackballCameraController(camera);
+    cameraCtl          = std::make_unique<TrackballCameraController>(*camera);
 }
 
 // 聚光灯 平行光 点光
@@ -134,14 +135,9 @@ int main()
     {
         cameraCtl->OnUpdate();
         meshes[1]->SetRotationY(0.2f);
-        renderer->render(meshes, camera, directionalLight, ambient_light);
+        renderer->render(meshes, camera.get(), {directionalLight.get(), nullptr, nullptr, ambient_light.get()});
     }
     // 回收资源
     glApp->destroy();
-    delete renderer;
-    delete spot_light;
-    delete ambient_light;
-    delete camera;
-    delete cameraCtl;
     return 0;
 }
