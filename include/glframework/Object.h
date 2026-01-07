@@ -57,7 +57,7 @@ public:
     void       RemoveChild(const std::shared_ptr<Object>& child);
 
     // Object是多态的 渲染下沉到具体对象
-    virtual void render(const Renderer&, Camera&, const LightPack&) const {}
+    virtual void render(const Renderer&, const Camera&, const LightPack&) const {}
 
 protected:
     // 位置坐标 世界坐标系

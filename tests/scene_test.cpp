@@ -211,7 +211,7 @@ int main()
         cameraCtl->OnUpdate();
 
         renderer->setClearColor(clear_color);
-        renderer->render(scene, camera.get(),
+        renderer->render(scene, *camera,
                          {directionalLight.get(), point_light.get(), spot_light.get(), ambient_light.get()});
 
         // imgui渲染

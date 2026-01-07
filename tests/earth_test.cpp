@@ -29,11 +29,11 @@ const unsigned int SCR_HEIGHT = 800;
 
 std::unique_ptr<Renderer> renderer;
 // 渲染列表
-std::vector<Mesh*>                meshes;
-std::unique_ptr<DirectionalLight> directionalLight;
-std::unique_ptr<SpotLight>        spot_light;
-std::unique_ptr<AmbientLight>     ambient_light;
-std::unique_ptr<PointLight>       point_light;
+std::vector<std::shared_ptr<Mesh>> meshes;
+std::unique_ptr<DirectionalLight>  directionalLight;
+std::unique_ptr<SpotLight>         spot_light;
+std::unique_ptr<AmbientLight>      ambient_light;
+std::unique_ptr<PointLight>        point_light;
 
 std::unique_ptr<Camera>           camera;
 std::unique_ptr<CameraController> cameraCtl;
@@ -82,20 +82,20 @@ void prepare()
 {
     renderer = std::make_unique<Renderer>();
     // ball
-    auto geometryBall       = new Sphere();
-    auto materialBall       = new PhongMaterial();
-    materialBall->m_shiness = 10.0f;
-    materialBall->m_diffuse = new Texture("asset/texture/wall.jpg", 0);
-    auto meshBall           = new Mesh(*geometryBall, *materialBall);
-    meshes.push_back(meshBall);
+    std::shared_ptr<Sphere>        ballGeometry = std::make_shared<Sphere>();
+    std::shared_ptr<PhongMaterial> ballMaterial = std::make_shared<PhongMaterial>();
+    ballMaterial->m_shiness                     = 10.0f;
+    ballMaterial->m_diffuse                     = new Texture("asset/texture/wall.jpg", 0);
+    std::shared_ptr<Mesh> ballMesh              = std::make_shared<Mesh>(ballGeometry, ballMaterial);
+    meshes.push_back(ballMesh);
     // earth
-    auto geoEarth            = new Sphere(1.0f);
-    auto materialEarth       = new PhongMaterial();
-    materialEarth->m_shiness = 16.0f;
-    materialEarth->m_diffuse = new Texture("asset/texture/earth.jpg", 1);
-    auto meshEarth           = new Mesh(*geoEarth, *materialEarth);
-    meshEarth->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
-    meshes.push_back(meshEarth);
+    std::shared_ptr<Sphere>        earthGeometry = std::make_shared<Sphere>(1.0f);
+    std::shared_ptr<PhongMaterial> earthMaterial = std::make_shared<PhongMaterial>();
+    earthMaterial->m_shiness                     = 16.0f;
+    earthMaterial->m_diffuse                     = new Texture("asset/texture/earth.jpg", 1);
+    std::shared_ptr<Mesh> earthMesh              = std::make_shared<Mesh>(earthGeometry, earthMaterial);
+    earthMesh->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
+    meshes.push_back(earthMesh);
     // 光线
     directionalLight              = std::make_unique<DirectionalLight>();
     directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
@@ -135,7 +135,7 @@ int main()
     {
         cameraCtl->OnUpdate();
         meshes[1]->SetRotationY(0.2f);
-        renderer->render(meshes, camera.get(), {directionalLight.get(), nullptr, nullptr, ambient_light.get()});
+        renderer->render(meshes, *camera, {directionalLight.get(), nullptr, nullptr, ambient_light.get()});
     }
     // 回收资源
     glApp->destroy();

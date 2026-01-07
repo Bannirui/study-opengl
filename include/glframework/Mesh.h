@@ -20,7 +20,7 @@ public:
     const Geometry& getGeometry() const noexcept { return *m_geometry; };
     const Material& getMaterial() const noexcept { return *m_material; };
 
-    void render(const Renderer&, Camera&, const LightPack&) const override;
+    void render(const Renderer&, const Camera&, const LightPack&) const override;
 
 private:
     // 形状和材质于Mesh而言 Mesh并不是拥有 而仅仅是挂载 Geometry可以被多个Mesh共享 Material可以被多个Mesh共享

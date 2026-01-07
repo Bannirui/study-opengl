@@ -10,7 +10,6 @@
 
 #include "glframework/Object.h"
 // Shader资源用了智能指针管理 就不能简单用前向声明了 必须引用头文件 让编译器明确知道类的结构
-#include "light_pack.h"
 #include "glframework/Shader.h"
 
 class Mesh;
@@ -38,7 +37,7 @@ public:
 
     void setClearColor(glm::vec3 color);
 
-    void beginFrame();
+    static void BeginFrame();
     /**
      * 每次调用都会渲染一帧
      * 只要给renderer相机和光源就行
@@ -46,8 +45,8 @@ public:
      * @param camera 相机 需要知道从哪儿看的
      * @param lights 光源 至于具体的光源是啥不用关注
      */
-    void render(const std::vector<Mesh*>& meshes, Camera* camera, const LightPack& lights) const;
-    void render(const std::shared_ptr<Object>& object, Camera* camera, const LightPack& lights) const;
+    void render(const std::vector<std::shared_ptr<Mesh>>& meshes, const Camera& camera, const LightPack& lights) const;
+    void render(const std::shared_ptr<Object>& object, const Camera& camera, const LightPack& lights) const;
 
 private:
     // 生成多种不同的shader 根据材质类型挑选合适的shader
