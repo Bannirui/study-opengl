@@ -122,19 +122,29 @@ std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh* aiMesh, const aiScene* a
     std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>();
     if (aiMesh->mMaterialIndex >= 0)
     {
-        aiMaterial* aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
-        Texture*    texture    = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
-        if (!texture)
+        aiMaterial* aiMaterial     = aiScene->mMaterials[aiMesh->mMaterialIndex];
+        Texture*    diffuseTexture = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
+        if (diffuseTexture)
         {
-            texture = Texture::CreateTexture("asset/texture/wall.jpg", 0);
+            diffuseTexture->SetUint(0);
+            material->m_diffuse = diffuseTexture;
         }
-        material->m_diffuse = texture;
+        // if (!diffuseTexture)
+        // {
+        //     diffuseTexture = Texture::CreateTexture("asset/texture/wall.jpg", 0);
+        // }
+        Texture* specularMask = processTexture(aiMaterial, aiTextureType_SPECULAR, aiScene, textureParentPath);
+        if (specularMask)
+        {
+            specularMask->SetUint(1);
+            material->m_specularMask = specularMask;
+        }
     }
-    else
-    {
-        // none material
-        material->m_diffuse = Texture::CreateTexture("asset/texture/wall.jpg", 0);
-    }
+    // else
+    // {
+    //     // none material
+    //     material->m_diffuse = Texture::CreateTexture("asset/texture/wall.jpg", 0);
+    // }
     return std::make_shared<Mesh>(geometry, material);
 }
 

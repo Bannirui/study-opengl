@@ -132,8 +132,8 @@ vec3 calSpecular(vec3 lightDir, vec3 color, vec3 normal, vec3 viewDir, float int
     // cos指数次方 让cos函数趋于高斯函数形状 让光斑变小变集中 控制高光反射的光班
     specular = pow(specular, u_shiness);
     // 对高光蒙版贴图采样 用R通道作为高光比例
-    // float specularMask = texture(u_specularMaskSampler, uv).r;
-    vec3 specularColor = color * specular * flag * intensity;
+    float specularMask = texture(u_specularMaskSampler, uv).r;
+    vec3 specularColor = color * specular * flag * intensity * specularMask;
     return specularColor;
 }
 

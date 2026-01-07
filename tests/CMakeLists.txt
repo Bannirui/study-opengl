@@ -36,3 +36,7 @@ add_dependencies(scene_test copy_assets)
 add_executable(model_test model_test.cpp)
 target_link_libraries(model_test PRIVATE study-opengl)
 add_dependencies(model_test copy_assets)
+
+add_executable(backpack_model_test backpack_model_test.cpp)
+target_link_libraries(backpack_model_test PRIVATE study-opengl)
+add_dependencies(backpack_model_test copy_assets)

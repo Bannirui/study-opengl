@@ -25,7 +25,7 @@
 // 必须先声明版本 OpenGL3.3声明的版本是330 OpenGL4.2版本声明为420
 // 随后是输入输出的变量 大部分情况场景float都足够使用了 因此vecn类型是最高频使用的变量类型
 // uniform变量 uniform是CPU传递给GPU的全局只读变量
-// mian函数 跟C语言一样main是入口
+// main函数 跟C语言一样main是入口
 // 通过location告诉输入数据怎么组织的
 // vertex shader的出参是fragment shader的入参 类型是vec4
 // 计算机中图像表示的4元组RGBA(红 绿 蓝 透明度)
