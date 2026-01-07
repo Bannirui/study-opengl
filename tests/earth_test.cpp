@@ -19,23 +19,13 @@
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
-#include "glframework/light/SpotLight.h"
 #include "glframework/material/PhongMaterial.h"
-#include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
+#include "glframework/renderer/light_pack.h"
 
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-std::unique_ptr<Renderer> renderer;
-// 渲染列表
-std::vector<std::shared_ptr<Mesh>> meshes;
-std::unique_ptr<DirectionalLight>  directionalLight;
-std::unique_ptr<SpotLight>         spot_light;
-std::unique_ptr<AmbientLight>      ambient_light;
-std::unique_ptr<PointLight>        point_light;
-
-std::unique_ptr<Camera>           camera;
 std::unique_ptr<CameraController> cameraCtl;
 
 void framebuffer_size_callback(int width, int height)
@@ -52,66 +42,49 @@ void keyboard_callback(int key, int scancode, int action, int mods)
     std::cout << "键盘事件 键位" << static_cast<char>(key) << ", 操作" << action << ", 有没有ctrl/shift功能键" << mods
               << std::endl;
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) Application::setShouldClose(true);
-    cameraCtl->OnKey(key, action, mods);
+    if (cameraCtl)
+    {
+        cameraCtl->OnKey(key, action, mods);
+    }
 }
 
 void cursor_position_callback(double x, double y)
 {
     std::cout << "鼠标位置发生了变化 现在的 x=" << x << ", y=" << y << std::endl;
-    cameraCtl->OnCursor(x, y);
+    if (cameraCtl)
+    {
+        cameraCtl->OnCursor(x, y);
+    }
 }
 
 void mouse_scroll_callback(double yoffset)
 {
     if (yoffset > 0)
+    {
         std::cout << "鼠标滚轮放大 yoffset: " << yoffset << std::endl;
+    }
     else
+    {
         std::cout << "鼠标滚轮缩小 yoffset: " << yoffset << std::endl;
-    cameraCtl->OnScroll(yoffset);
+    }
+    if (cameraCtl)
+    {
+        cameraCtl->OnScroll(yoffset);
+    }
 }
+
 void mouse_btn_callback(int button, int action, int mods)
 {
     double x, y;
     glApp->GetMousePos(&x, &y);
     std::cout << "button=" << button << ", action=" << action << ", mods=" << mods << ", x=" << x << ", y=" << y
               << std::endl;
-    cameraCtl->OnMouse(button, action, mods, x, y);
+    if (cameraCtl)
+    {
+        cameraCtl->OnMouse(button, action, mods, x, y);
+    }
 }
 
-void prepare()
-{
-    renderer = std::make_unique<Renderer>();
-    // ball
-    std::shared_ptr<Sphere>        ballGeometry = std::make_shared<Sphere>();
-    std::shared_ptr<PhongMaterial> ballMaterial = std::make_shared<PhongMaterial>();
-    ballMaterial->m_shiness                     = 10.0f;
-    ballMaterial->m_diffuse                     = new Texture("asset/texture/wall.jpg", 0);
-    std::shared_ptr<Mesh> ballMesh              = std::make_shared<Mesh>(ballGeometry, ballMaterial);
-    meshes.push_back(ballMesh);
-    // earth
-    std::shared_ptr<Sphere>        earthGeometry = std::make_shared<Sphere>(1.0f);
-    std::shared_ptr<PhongMaterial> earthMaterial = std::make_shared<PhongMaterial>();
-    earthMaterial->m_shiness                     = 16.0f;
-    earthMaterial->m_diffuse                     = new Texture("asset/texture/earth.jpg", 1);
-    std::shared_ptr<Mesh> earthMesh              = std::make_shared<Mesh>(earthGeometry, earthMaterial);
-    earthMesh->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
-    meshes.push_back(earthMesh);
-    // 光线
-    directionalLight              = std::make_unique<DirectionalLight>();
-    directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
-
-    ambient_light          = std::make_unique<AmbientLight>();
-    ambient_light->m_color = glm::vec3(0.2f);
-}
-void prepareCamera()
-{
-    camera             = std::make_unique<PerspectiveCamera>(static_cast<float>(glApp->getWidth()) /
-                                                             static_cast<float>(glApp->getHeight()));
-    camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
-    cameraCtl          = std::make_unique<TrackballCameraController>(*camera);
-}
-
-// 聚光灯 平行光 点光
 int main()
 {
     if (!glApp->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
@@ -127,15 +100,47 @@ int main()
     // 清理画布的时候清成啥样
     GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 
-    prepareCamera();
-    prepare();
+    // 负责渲染
+    std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
+    // 物体
+    // 球体
+    std::vector<std::shared_ptr<Mesh>> meshes;
+    std::shared_ptr<Sphere>            ballGeometry = std::make_shared<Sphere>();
+    std::shared_ptr<PhongMaterial>     ballMaterial = std::make_shared<PhongMaterial>();
+    ballMaterial->m_shiness                         = 10.0f;
+    ballMaterial->m_diffuse                         = new Texture("asset/texture/wall.jpg", 0);
+    std::shared_ptr<Mesh> ballMesh                  = std::make_shared<Mesh>(ballGeometry, ballMaterial);
+    meshes.push_back(ballMesh);
+    // 地球
+    std::shared_ptr<Sphere>        earthGeometry = std::make_shared<Sphere>(1.0f);
+    std::shared_ptr<PhongMaterial> earthMaterial = std::make_shared<PhongMaterial>();
+    earthMaterial->m_shiness                     = 16.0f;
+    earthMaterial->m_diffuse                     = new Texture("asset/texture/earth.jpg", 1);
+    std::shared_ptr<Mesh> earthMesh              = std::make_shared<Mesh>(earthGeometry, earthMaterial);
+    earthMesh->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
+    meshes.push_back(earthMesh);
+    // 光线
+    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
+    directionalLight->m_direction                      = glm::vec3(-1.0f, -1.0f, -1.0f);
+    std::shared_ptr<AmbientLight> ambientLight         = std::make_shared<AmbientLight>();
+    ambientLight->m_color                              = glm::vec3(0.2f);
+    struct LightPack lights;
+    lights.directional = directionalLight;
+    lights.ambient     = ambientLight;
+    // 相机
+    PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    camera.m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
+    cameraCtl         = std::make_unique<TrackballCameraController>(camera);
 
     // 窗体循环
     while (glApp->update())
     {
         cameraCtl->OnUpdate();
         meshes[1]->SetRotationY(0.2f);
-        renderer->render(meshes, *camera, {directionalLight.get(), nullptr, nullptr, ambient_light.get()});
+
+        // 每一帧清一次屏
+        Renderer::BeginFrame();
+        renderer->render(meshes, camera, lights);
     }
     // 回收资源
     glApp->destroy();

@@ -12,36 +12,25 @@
 #include "err_check.h"
 #include "application/Application.h"
 #include "application/assimpLoader.h"
-#include "application/camera/Camera.h"
 #include "application/camera/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
-#include "glframework/Mesh.h"
 #include "glframework/Scene.h"
 #include "glframework/Texture.h"
-#include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
-#include "glframework/light/SpotLight.h"
-#include "glframework/material/PhongMaterial.h"
-#include "glframework/material/WhiteMaterial.h"
 #include "glframework/renderer/Renderer.h"
 
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include "glframework/renderer/light_pack.h"
+
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
 
-std::unique_ptr<Renderer> renderer;
-std::unique_ptr<Scene>    scene;
-
-std::unique_ptr<DirectionalLight> directionalLight;
-std::unique_ptr<AmbientLight>     ambient_light;
-
-std::unique_ptr<Camera>           camera;
 std::unique_ptr<CameraController> cameraCtl;
 
 glm::vec3 clear_color = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -60,13 +49,19 @@ void keyboard_callback(int key, int scancode, int action, int mods)
     std::cout << "键盘事件 键位" << static_cast<char>(key) << ", 操作" << action << ", 有没有ctrl/shift功能键" << mods
               << std::endl;
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) Application::setShouldClose(true);
-    cameraCtl->OnKey(key, action, mods);
+    if (cameraCtl)
+    {
+        cameraCtl->OnKey(key, action, mods);
+    }
 }
 
 void cursor_position_callback(double x, double y)
 {
     std::cout << "鼠标位置发生了变化 现在的 x=" << x << ", y=" << y << std::endl;
-    cameraCtl->OnCursor(x, y);
+    if (cameraCtl)
+    {
+        cameraCtl->OnCursor(x, y);
+    }
 }
 
 void mouse_scroll_callback(double yoffset)
@@ -75,36 +70,22 @@ void mouse_scroll_callback(double yoffset)
         std::cout << "鼠标滚轮放大 yoffset: " << yoffset << std::endl;
     else
         std::cout << "鼠标滚轮缩小 yoffset: " << yoffset << std::endl;
-    cameraCtl->OnScroll(yoffset);
+    if (cameraCtl)
+    {
+        cameraCtl->OnScroll(yoffset);
+    }
 }
+
 void mouse_btn_callback(int button, int action, int mods)
 {
     double x, y;
     glApp->GetMousePos(&x, &y);
     std::cout << "button=" << button << ", action=" << action << ", mods=" << mods << ", x=" << x << ", y=" << y
               << std::endl;
-    cameraCtl->OnMouse(button, action, mods, x, y);
-}
-
-void prepare()
-{
-    renderer   = std::make_unique<Renderer>();
-    scene      = std::make_unique<Scene>();
-    auto model = AssimpLoader::load("asset/fbx/cottage_fbx.fbx");
-    scene->AddChild(model);
-    // 光线
-    directionalLight              = std::make_unique<DirectionalLight>();
-    directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
-    ambient_light                 = std::make_unique<AmbientLight>();
-    ambient_light->m_color        = glm::vec3(0.2f);
-}
-
-void prepareCamera()
-{
-    camera             = std::make_unique<PerspectiveCamera>(static_cast<float>(glApp->getWidth()) /
-                                                             static_cast<float>(glApp->getHeight()));
-    camera->m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
-    cameraCtl          = std::make_unique<TrackballCameraController>(*camera);
+    if (cameraCtl)
+    {
+        cameraCtl->OnMouse(button, action, mods, x, y);
+    }
 }
 
 // 整合imgui
@@ -162,8 +143,24 @@ int main()
     // 清理画布的时候清成啥样
     GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 
-    prepareCamera();
-    prepare();
+    // 渲染器
+    Renderer renderer;
+    // 渲染场景
+    std::shared_ptr<Scene> scene = std::make_shared<Scene>();
+    auto                   model = AssimpLoader::load("asset/fbx/cottage_fbx.fbx");
+    scene->AddChild(model);
+    // 光线
+    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
+    directionalLight->m_direction                      = glm::vec3(1.0f, 0.0f, 0.0f);
+    std::shared_ptr<AmbientLight> ambientLight         = std::make_shared<AmbientLight>();
+    ambientLight->m_color                              = glm::vec3(0.2f);
+    struct LightPack lights;
+    lights.directional = directionalLight;
+    lights.ambient     = ambientLight;
+    PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    camera.m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
+    cameraCtl         = std::make_unique<TrackballCameraController>(camera);
+
     initIMGUI();
 
     // 窗体循环
@@ -171,9 +168,10 @@ int main()
     {
         cameraCtl->OnUpdate();
 
-        renderer->setClearColor(clear_color);
-        LightPack lights = {directionalLight.get(), nullptr, nullptr, ambient_light.get()};
-        renderer->render(scene.get(), camera.get(), lights);
+        renderer.setClearColor(clear_color);
+        // 每一帧清一次屏
+        Renderer::BeginFrame();
+        renderer.render(scene, camera, lights);
 
         // imgui渲染
         renderIMGUI();

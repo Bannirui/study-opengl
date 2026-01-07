@@ -14,7 +14,7 @@ Mesh::Mesh(std::shared_ptr<Geometry> geometry, std::shared_ptr<Material> materia
 {
 }
 
-void Mesh::render(const Renderer& renderer, const Camera& camera, const LightPack& lights) const
+void Mesh::Render(const Renderer& renderer, const Camera& camera, const LightPack& lights) const
 {
     // 用哪个shader
     Shader& shader = m_material->shader(renderer);

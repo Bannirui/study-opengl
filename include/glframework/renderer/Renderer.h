@@ -37,6 +37,7 @@ public:
 
     void setClearColor(glm::vec3 color);
 
+    // 绘画的时候只管一帧 在递归过程中误用会导致渲染不全
     static void BeginFrame();
     /**
      * 每次调用都会渲染一帧

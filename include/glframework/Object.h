@@ -56,8 +56,8 @@ public:
     ObjectType GetType() const { return m_type; }
     void       RemoveChild(const std::shared_ptr<Object>& child);
 
-    // Object是多态的 渲染下沉到具体对象
-    virtual void render(const Renderer&, const Camera&, const LightPack&) const {}
+    // Object是多态的 真正的渲染逻辑下沉到具体对象
+    virtual void Render(const Renderer&, const Camera&, const LightPack&) const {}
 
 protected:
     // 位置坐标 世界坐标系

@@ -13,11 +13,11 @@ class AmbientLight;
 struct LightPack
 {
     // 平行光
-    const DirectionalLight* directional = nullptr;
+    std::shared_ptr<DirectionalLight> directional;
     // 点光
-    const PointLight* point = nullptr;
+    std::shared_ptr<PointLight> point;
     // 聚光
-    const SpotLight* spot = nullptr;
+    std::shared_ptr<SpotLight> spot;
     // 环境光
-    const AmbientLight* ambient = nullptr;
+    std::shared_ptr<AmbientLight> ambient;
 };

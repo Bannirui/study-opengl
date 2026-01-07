@@ -52,27 +52,15 @@ void Renderer::render(const std::vector<std::shared_ptr<Mesh>>& meshes, const Ca
     // 遍历mesh绘制
     for (const std::shared_ptr<Mesh>& mesh : meshes)
     {
-        const Geometry& geometry = mesh->getGeometry();
-        const Material& material = mesh->getMaterial();
-        // 用哪个shader
-        Shader& shader = material.shader(*this);
-        // 更新shader的uniform变量
-        shader.Bind();
-        material.applyUniforms(shader, *mesh, camera, lights);
-        // 绑定VAO
-        glBindVertexArray(geometry.GetVAO());
-        // 执行绘制指令
-        glDrawElements(GL_TRIANGLES, geometry.GetIndicesCnt(), GL_UNSIGNED_INT, 0);
-        // 解绑VAO
-        glBindVertexArray(0);
-        shader.Unbind();
+        // mesh自己去渲染自己
+        mesh->Render(*this, camera, lights);
     }
 }
 
 void Renderer::render(const std::shared_ptr<Object>& object, const Camera& camera, const LightPack& lights) const
 {
     // object是mesh还是其他具体类型 renderer不再需要感知 直接把渲染动作转交给object就行
-    object->render(*this, camera, lights);
+    object->Render(*this, camera, lights);
     // 递归子节点
     for (const auto& child : object->GetChildren())
     {
