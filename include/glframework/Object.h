@@ -6,6 +6,7 @@
 
 #ifdef __linux__
 #include <algorithm>
+#include <memory>
 #endif
 
 #include "glframework/Core.h"
