@@ -1,17 +1,18 @@
 # study-opengl
 study OpenGL and make note
 
-- [关于项目代码组织结构](./doc/ProjStructure.md)
-- ![关于代码架构](./doc/img/1753204446.png)
-- ![渲染器设计](./doc/img/1753204651.png)
-
-## DEMO
-
 <div>
   <img src="./doc/gif/Double_Ball.gif" width="300"/>
   <img src="./doc/gif/Box_Rotate.gif" width="300"/>
   <img src="./doc/gif/Box_Rotate_Point_Light.gif" width="300"/>
   <img src="./doc/gif/Box_Rotate_Spot_Light.gif" width="300"/>
+</div>
+
+[关于项目代码组织结构](./doc/ProjStructure.md)
+
+<div>
+  <img src="./doc/img/1753204446.png" width="300"/>
+  <img src="./doc/img/1753204651.png" width="300"/>
 </div>
 
 ### 1 NDC(Normalized Device Coordinate)
