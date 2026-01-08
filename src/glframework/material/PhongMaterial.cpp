@@ -52,7 +52,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
     auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh.GetModelMatrix())));
     shader.setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
     // 平行光
-    if (lights.directional)
+    if (lights.HasDirection())
     {
         shader.setBool("u_activeDirectionalLight", true);
         shader.setFloatVec3("u_directionalLight.direction", lights.directional->m_direction);
@@ -61,7 +61,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setFloat("u_directionalLight.specularIntensity", lights.directional->get_specular_intensity());
     }
     // 点光
-    if (lights.point)
+    if (lights.HasSpot())
     {
         shader.setBool("u_activePointLight", true);
         shader.setFloatVec3("u_pointLight.pos", lights.point->GetPosition());
@@ -73,7 +73,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setFloat("u_pointLight.kc", lights.point->m_kc);
     }
     // 聚光灯
-    if (lights.spot)
+    if (lights.HasSpot())
     {
         shader.setBool("u_activeSpotLight", true);
         shader.setFloatVec3("u_spotLight.pos", lights.spot->GetPosition());
@@ -84,7 +84,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setFloat("u_spotLight.specularIntensity", lights.spot->get_specular_intensity());
     }
     // 环境光
-    if (lights.ambient)
+    if (lights.HasAmbient())
     {
         shader.setFloatVec3("u_ambientColor", lights.ambient->get_color());
     }
