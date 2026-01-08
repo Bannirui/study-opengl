@@ -3,5 +3,3 @@
 //
 
 #include "glframework/light/PointLight.h"
-
-PointLight::PointLight() {}

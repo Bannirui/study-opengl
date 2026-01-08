@@ -30,13 +30,13 @@ using VertexLayout = uint32_t;
 class Geometry
 {
 public:
-    Geometry();
     virtual ~Geometry();
 
     GLint    GetVAO() const { return m_VAO; }
     uint32_t GetIndicesCnt() const { return m_IndicesCnt; }
 
 protected:
+    Geometry() = default;
     /**
      * @param vertices vbo
      * @param vertSz 多少个byte

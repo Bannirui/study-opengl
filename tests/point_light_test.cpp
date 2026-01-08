@@ -138,9 +138,9 @@ int main()
     std::shared_ptr<PointLight> point_light = std::make_shared<PointLight>();
     point_light->SetPosition(whiteObjMesh->GetPosition());
     std::shared_ptr<AmbientLight> ambient_light = std::make_shared<AmbientLight>();
-    ambient_light->m_color                      = glm::vec3(0.2f);
-    lights.point                                = point_light;
-    lights.ambient                              = ambient_light;
+    ambient_light->set_color(glm::vec3(0.2f));
+    lights.point   = point_light;
+    lights.ambient = ambient_light;
 
     // 相机
     PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));

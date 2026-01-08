@@ -123,7 +123,7 @@ int main()
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     directionalLight->m_direction                      = glm::vec3(-1.0f, -1.0f, -1.0f);
     std::shared_ptr<AmbientLight> ambientLight         = std::make_shared<AmbientLight>();
-    ambientLight->m_color                              = glm::vec3(0.2f);
+    ambientLight->set_color(glm::vec3(0.2f));
     struct LightPack lights;
     lights.directional = directionalLight;
     lights.ambient     = ambientLight;

@@ -153,10 +153,10 @@ int main()
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     // 光源从右后方
-    directionalLight->m_direction              = glm::vec3(-1.0f, -1.0f, -1.0f);
-    directionalLight->m_specularIntensity      = 1.0f;
+    directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
+    directionalLight->set_specular_intensity(1.0f);
     std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
-    ambientLight->m_color                      = glm::vec3(0.2f);
+    ambientLight->set_color(glm::vec3(0.2f));
     struct LightPack lights;
     lights.directional = directionalLight;
     lights.ambient     = ambientLight;

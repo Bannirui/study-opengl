@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-Geometry::Geometry() {}
 Geometry::~Geometry()
 {
     if (m_VAO != 0) glDeleteVertexArrays(1, &m_VAO);

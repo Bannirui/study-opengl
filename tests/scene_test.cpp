@@ -183,13 +183,13 @@ int main()
 
     std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>();
     pointLight->SetPosition(glm::vec3(0.0f, 0.0f, 1.5f));
-    pointLight->m_specularIntensity = 0.5f;
-    pointLight->m_k2                = 0.017f;
-    pointLight->m_k1                = 0.07f;
-    pointLight->m_kc                = 1.0f;
+    pointLight->set_specular_intensity(0.5f);
+    pointLight->m_k2 = 0.017f;
+    pointLight->m_k1 = 0.07f;
+    pointLight->m_kc = 1.0f;
 
     std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
-    ambientLight->m_color                      = glm::vec3(0.2f);
+    ambientLight->set_color(glm::vec3(0.2f));
 
     struct LightPack lights;
     lights.directional = directionalLight;

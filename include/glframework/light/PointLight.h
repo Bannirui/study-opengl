@@ -10,7 +10,8 @@
 class PointLight : public Light, public Object
 {
 public:
-    PointLight();
+    PointLight() = default;
+    ~PointLight() override = default;
 
 public:
     // 控制点光源的衰减

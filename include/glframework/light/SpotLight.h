@@ -11,6 +11,7 @@ class SpotLight : public Light, public Object
 {
 public:
     SpotLight();
+    ~SpotLight() override = default;
 
 public:
     // 探照灯看向的方向

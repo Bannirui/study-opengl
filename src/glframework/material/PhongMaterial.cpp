@@ -56,18 +56,18 @@ void PhongMaterial::applyUniforms(Shader& shader, const Mesh& mesh, const Camera
     {
         shader.setBool("u_activeDirectionalLight", true);
         shader.setFloatVec3("u_directionalLight.direction", lights.directional->m_direction);
-        shader.setFloatVec3("u_directionalLight.color", lights.directional->m_color);
+        shader.setFloatVec3("u_directionalLight.color", lights.directional->get_color());
         // 高光反射强度
-        shader.setFloat("u_directionalLight.specularIntensity", lights.directional->m_specularIntensity);
+        shader.setFloat("u_directionalLight.specularIntensity", lights.directional->get_specular_intensity());
     }
     // 点光
     if (lights.point)
     {
         shader.setBool("u_activePointLight", true);
         shader.setFloatVec3("u_pointLight.pos", lights.point->GetPosition());
-        shader.setFloatVec3("u_pointLight.color", lights.point->m_color);
+        shader.setFloatVec3("u_pointLight.color", lights.point->get_color());
         // 高光反射强度
-        shader.setFloat("u_pointLight.specularIntensity", lights.point->m_specularIntensity);
+        shader.setFloat("u_pointLight.specularIntensity", lights.point->get_specular_intensity());
         shader.setFloat(".u_pointLight.k2", lights.point->m_k2);
         shader.setFloat("u_pointLight.k1", lights.point->m_k1);
         shader.setFloat("u_pointLight.kc", lights.point->m_kc);
@@ -78,15 +78,15 @@ void PhongMaterial::applyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setBool("u_activeSpotLight", true);
         shader.setFloatVec3("u_spotLight.pos", lights.spot->GetPosition());
         shader.setFloatVec3("u_spotLight.targetDirection", lights.spot->m_targetDirection);
-        shader.setFloatVec3("u_spotLight.color", lights.spot->m_color);
+        shader.setFloatVec3("u_spotLight.color", lights.spot->get_color());
         shader.setFloat("u_spotLight.innerCos", glm::cos(glm::radians(lights.spot->m_innerAngle)));
         shader.setFloat("u_spotLight.outerCos", glm::cos(glm::radians(lights.spot->m_outerAngle)));
-        shader.setFloat("u_spotLight.specularIntensity", lights.spot->m_specularIntensity);
+        shader.setFloat("u_spotLight.specularIntensity", lights.spot->get_specular_intensity());
     }
     // 环境光
     if (lights.ambient)
     {
-        shader.setFloatVec3("u_ambientColor", lights.ambient->m_color);
+        shader.setFloatVec3("u_ambientColor", lights.ambient->get_color());
     }
     // 控制高光反射光斑大小
     shader.setFloat("u_shiness", m_shiness);

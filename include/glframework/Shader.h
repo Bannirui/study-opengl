@@ -46,11 +46,11 @@ public:
      * @param path程序的文件路径
      */
     Shader(const std::string& path);
-    // 告诉GPU接下来绘制图形使用的Shader程序是谁
     virtual ~Shader();
 
+    // 告诉GPU接下来绘制图形使用的Shader程序是谁
     void Bind();
-    // 结束使用program shader use和end成对使用
+    // 结束使用program shader Bind和Unbind成对使用
     void Unbind();
     /**
      * 给shader设置uniform全局变量

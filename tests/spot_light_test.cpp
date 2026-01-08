@@ -183,17 +183,17 @@ int main()
 
     std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>();
     pointLight->SetPosition(glm::vec3(0.0f, 0.0f, 1.5f));
-    pointLight->m_specularIntensity = 0.5f;
-    pointLight->m_k2                = 0.017f;
-    pointLight->m_k1                = 0.07f;
-    pointLight->m_kc                = 1.0f;
+    pointLight->set_specular_intensity(0.5f);
+    pointLight->m_k2 = 0.017f;
+    pointLight->m_k1 = 0.07f;
+    pointLight->m_kc = 1.0f;
     struct LightPack lights;
     lights.directional = directionalLight;
     lights.point       = pointLight;
     lights.spot        = spotLight;
 
     std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
-    ambientLight->m_color                      = glm::vec3(0.2f);
+    ambientLight->set_color(glm::vec3(0.2f));
     PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
     camera.m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
     cameraCtl         = std::make_unique<TrackballCameraController>(camera);
@@ -212,9 +212,8 @@ int main()
         {
             lights.spot->SetPosition(meshes[1]->GetPosition());
         }
-        // meshes[0]->SetRotationX(0.5f);
-        // meshes[0]->SetRotationY(0.5f);
-        // meshes[0]->SetRotationZ(0.5f);
+        // 每个帧在x轴上旋转
+        meshes[0]->SetRotationX(0.5f);
 
         renderer.setClearColor(clear_color);
         // 每一帧清一次屏
