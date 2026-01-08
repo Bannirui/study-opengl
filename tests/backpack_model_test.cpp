@@ -23,6 +23,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include "glframework/renderer/light_pack.h"
+#include "glm/gtx/integer.hpp"
 
 const unsigned int SCR_WIDTH  = 1600;
 const unsigned int SCR_HEIGHT = 800;
@@ -144,14 +145,18 @@ int main()
     // 渲染场景
     std::shared_ptr<Scene> scene = std::make_shared<Scene>();
     auto                   model = AssimpLoader::load("asset/fbx/backpack/backpack.obj");
-    model->SetScale(glm::vec3(0.8f));
     scene->AddChild(model);
+    // 有个初始角度方便观察
+    // todo 现在没有生效 应该是因为加载进来的模型自带了世界坐标 我在渲染的时候并没有把模型自己的坐标系因素也加进来
+    scene->SetAngleX(30.0f);
+    scene->SetAngleY(30.0f);
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
-    directionalLight->m_direction                      = glm::vec3(1.0f, 1.0f, 1.0f);
-    directionalLight->m_specularIntensity              = 1.0f;
-    std::shared_ptr<AmbientLight> ambientLight         = std::make_shared<AmbientLight>();
-    ambientLight->m_color                              = glm::vec3(0.2f);
+    // 光源从右后方
+    directionalLight->m_direction              = glm::vec3(-1.0f, -1.0f, -1.0f);
+    directionalLight->m_specularIntensity      = 1.0f;
+    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    ambientLight->m_color                      = glm::vec3(0.2f);
     struct LightPack lights;
     lights.directional = directionalLight;
     lights.ambient     = ambientLight;

@@ -6,6 +6,7 @@ study OpenGL and make note
   <img src="./doc/gif/Box_Rotate.gif" width="300" height="225"/>
   <img src="./doc/gif/Box_Rotate_Point_Light.gif" width="300" height="225"/>
   <img src="./doc/gif/Box_Rotate_Spot_Light.gif" width="300" height="225"/>
+  <img src="./doc/img/BackPack_Mode.png" width="300"/>
 </div>
 
 [关于项目代码组织结构](./doc/ProjStructure.md)

@@ -93,20 +93,6 @@ void mouse_btn_callback(int button, int action, int mods)
     }
 }
 
-// 点光跟着白球的位置 让白球运动起来 点光位置就会变化
-void meshTransform(const std::vector<std::shared_ptr<Mesh>>& meshes, const struct LightPack& lights)
-{
-    float xPos = glm::sin(glfwGetTime()) + 2.0f;
-    meshes[1]->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
-    if (lights.spot)
-    {
-        lights.spot->SetPosition(meshes[1]->GetPosition());
-    }
-    meshes[0]->SetRotationX(1.0f);
-    meshes[0]->SetRotationY(0.4f);
-    meshes[0]->SetRotationZ(0.1f);
-}
-
 // 整合imgui
 void initIMGUI()
 {
@@ -174,6 +160,11 @@ int main()
     boxMaterial->m_diffuse                     = new Texture("asset/texture/box.png", 0);
     boxMaterial->m_specularMask                = new Texture("asset/texture/sp_mask.png", 1);
     std::shared_ptr<Mesh> boxMesh              = std::make_shared<Mesh>(boxGeometry, boxMaterial);
+    // 缩小箱子 让它跟白球大小相对差别不那么大
+    boxMesh->SetScale(glm::vec3(0.8f));
+    // 初始的时候让箱子有个偏角观察全貌
+    boxMesh->SetAngleX(30.0f);
+    boxMesh->SetAngleY(45.0f);
     meshes.push_back(boxMesh);
     // 白色物体
     std::shared_ptr<Sphere>        whiteObjGeometry = std::make_shared<Sphere>(0.1f);
@@ -213,7 +204,18 @@ int main()
     while (glApp->update())
     {
         cameraCtl->OnUpdate();
-        meshTransform(meshes, lights);
+
+        // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
+        float xPos = glm::sin(glfwGetTime()) + 2.0f;
+        meshes[1]->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+        if (lights.spot)
+        {
+            lights.spot->SetPosition(meshes[1]->GetPosition());
+        }
+        // meshes[0]->SetRotationX(0.5f);
+        // meshes[0]->SetRotationY(0.5f);
+        // meshes[0]->SetRotationZ(0.5f);
+
         renderer.setClearColor(clear_color);
         // 每一帧清一次屏
         Renderer::BeginFrame();
