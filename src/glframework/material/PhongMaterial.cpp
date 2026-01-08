@@ -23,12 +23,12 @@ PhongMaterial::~PhongMaterial()
     delete m_specularMask;
 }
 
-Shader& PhongMaterial::shader(const Renderer& renderer) const
+Shader& PhongMaterial::GetShader(const Renderer& renderer) const
 {
-    return renderer.getShader(type());
+    return renderer.getShader(this->get_type());
 }
 
-void PhongMaterial::applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
+void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
 {
     if (m_diffuse)
     {

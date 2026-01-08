@@ -42,12 +42,13 @@ class Material
 public:
     virtual ~Material() = default;
 
-    MaterialType type() const noexcept { return m_type; };
+    // 材质类型
+    MaterialType get_type() const noexcept { return m_type; };
 
     // 用哪个shader交给具体材质去决定
-    virtual Shader& shader(const Renderer& renderer) const = 0;
-    // 材质负责上传uniform renderer只负责渲染
-    virtual void applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera,
+    virtual Shader& GetShader(const Renderer& renderer) const = 0;
+    // 材质负责上传uniform给shader 渲染动作发起只由renderer负责
+    virtual void ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera,
                                const LightPack& lights) const = 0;
 
 protected:

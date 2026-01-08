@@ -11,6 +11,6 @@ class WhiteMaterial : public Material
 {
 public:
     WhiteMaterial();
-    Shader& shader(const Renderer& renderer) const override;
-    void applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
+    Shader& GetShader(const Renderer& renderer) const override;
+    void ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
 };

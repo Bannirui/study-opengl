@@ -11,12 +11,12 @@
 
 WhiteMaterial::WhiteMaterial() : Material(MaterialType::WhiteMaterial) {}
 
-Shader& WhiteMaterial::shader(const Renderer& renderer) const
+Shader& WhiteMaterial::GetShader(const Renderer& renderer) const
 {
-    return renderer.getShader(type());
+    return renderer.getShader(this->get_type());
 }
 
-void WhiteMaterial::applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
+void WhiteMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
 {
     // mvp变换矩阵
     shader.setMat4("u_model", glm::value_ptr(mesh.GetModelMatrix()));

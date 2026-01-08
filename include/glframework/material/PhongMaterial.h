@@ -15,8 +15,8 @@ public:
     PhongMaterial();
     ~PhongMaterial() override;
 
-    Shader& shader(const Renderer& renderer) const override;
-    void applyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
+    Shader& GetShader(const Renderer& renderer) const override;
+    void ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
 
     // todo 访问修饰符改成private
 public:
