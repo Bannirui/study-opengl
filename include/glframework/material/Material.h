@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include <memory>
+#include <glframework/Shader.h>
 
 class Shader;
 class Renderer;
@@ -24,36 +26,23 @@ struct LightPack;
  *   <li>环境光效果 设置为物体贴图颜色</li>
  * </ul>
  */
-enum class MaterialType
-{
-    // 冯氏光照模型
-    PhoneMaterial,
-    // 纯白 用于点光
-    WhiteMaterial,
-    // 点光
-    // PointLightMaterial,
-    // 聚光灯
-    // SpotLightMaterial,
-};
-
 // renderer只负责渲染 material负责选择shader/绑定纹理/上传uniform
 class Material
 {
 public:
     virtual ~Material() = default;
 
-    // 材质类型
-    MaterialType get_type() const noexcept { return m_type; };
-
     // 用哪个shader交给具体材质去决定
-    virtual Shader& GetShader(const Renderer& renderer) const = 0;
+    // 返回值设计成引用的考量
+    // 1 不暴露资源所有权
+    // 2 引用表示的是非空借用
+    virtual Shader& get_shader() const { return *this->m_shader; }
     // 材质负责上传uniform给shader 渲染动作发起只由renderer负责
     virtual void ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera,
                                const LightPack& lights) const = 0;
 
 protected:
-    explicit Material(MaterialType type) noexcept : m_type(type) {}
-
-private:
-    const MaterialType m_type;
+    explicit Material(const std::shared_ptr<Shader>& shader) : m_shader(shader) {}
+    // todo 考虑到单个材质可能不止一个shader 所以shader成员暂时放在基类里面 以后需要扩展了可能需要下沉下子类
+    std::shared_ptr<Shader> m_shader;
 };

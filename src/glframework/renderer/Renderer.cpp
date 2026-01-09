@@ -11,25 +11,6 @@
 #include "glframework/geo/Geometry.h"
 #include "glframework/material/Material.h"
 
-Renderer::Renderer()
-    : m_phoneShader(std::make_unique<Shader>("asset/shader/phone_shader.glsl")),
-      m_whiteShader(std::make_unique<Shader>("asset/shader/white_shader.glsl"))
-{
-}
-
-Shader& Renderer::getShader(const MaterialType type) const
-{
-    assert(m_phoneShader && m_whiteShader);
-    switch (type)
-    {
-        case MaterialType::PhoneMaterial:
-            return *m_phoneShader;
-        case MaterialType::WhiteMaterial:
-            return *m_whiteShader;
-    }
-    std::terminate();
-}
-
 void Renderer::setClearColor(glm::vec3 color)
 {
     glClearColor(color.r, color.g, color.b, 1.0f);

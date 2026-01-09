@@ -9,12 +9,7 @@
 
 #include "application/camera/Camera.h"
 
-WhiteMaterial::WhiteMaterial() : Material(MaterialType::WhiteMaterial) {}
-
-Shader& WhiteMaterial::GetShader(const Renderer& renderer) const
-{
-    return renderer.getShader(this->get_type());
-}
+WhiteMaterial::WhiteMaterial() : Material(std::make_shared<Shader>("asset/shader/white_shader.glsl")) {}
 
 void WhiteMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
 {

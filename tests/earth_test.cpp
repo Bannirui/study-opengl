@@ -107,16 +107,16 @@ int main()
     std::vector<std::shared_ptr<Mesh>> meshes;
     std::shared_ptr<Sphere>            ballGeometry = std::make_shared<Sphere>();
     std::shared_ptr<PhongMaterial>     ballMaterial = std::make_shared<PhongMaterial>();
-    ballMaterial->m_shiness                         = 10.0f;
-    ballMaterial->m_diffuse                         = new Texture("asset/texture/wall.jpg", 0);
-    std::shared_ptr<Mesh> ballMesh                  = std::make_shared<Mesh>(ballGeometry, ballMaterial);
+    ballMaterial->set_shines(10.0f);
+    ballMaterial->set_diffuse(new Texture("asset/texture/wall.jpg", 0));
+    std::shared_ptr<Mesh> ballMesh = std::make_shared<Mesh>(ballGeometry, ballMaterial);
     meshes.push_back(ballMesh);
     // 地球
     std::shared_ptr<Sphere>        earthGeometry = std::make_shared<Sphere>(1.0f);
     std::shared_ptr<PhongMaterial> earthMaterial = std::make_shared<PhongMaterial>();
-    earthMaterial->m_shiness                     = 16.0f;
-    earthMaterial->m_diffuse                     = new Texture("asset/texture/earth.jpg", 1);
-    std::shared_ptr<Mesh> earthMesh              = std::make_shared<Mesh>(earthGeometry, earthMaterial);
+    earthMaterial->set_shines(16.0f);
+    earthMaterial->set_diffuse(new Texture("asset/texture/earth.jpg", 1));
+    std::shared_ptr<Mesh> earthMesh = std::make_shared<Mesh>(earthGeometry, earthMaterial);
     earthMesh->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
     meshes.push_back(earthMesh);
     // 光线

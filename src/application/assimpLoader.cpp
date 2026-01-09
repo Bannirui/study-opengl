@@ -127,7 +127,7 @@ std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh* aiMesh, const aiScene* a
         if (diffuseTexture)
         {
             diffuseTexture->SetUint(0);
-            material->m_diffuse = diffuseTexture;
+            material->set_diffuse(diffuseTexture);
         }
         // if (!diffuseTexture)
         // {
@@ -137,7 +137,7 @@ std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh* aiMesh, const aiScene* a
         if (specularMask)
         {
             specularMask->SetUint(1);
-            material->m_specularMask = specularMask;
+            material->set_specular_mask(specularMask);
         }
     }
     // else

@@ -17,7 +17,7 @@ Mesh::Mesh(std::shared_ptr<Geometry> geometry, std::shared_ptr<Material> materia
 void Mesh::Render(const Renderer& renderer, const Camera& camera, const LightPack& lights) const
 {
     // 用哪个shader
-    Shader& shader = m_material->GetShader(renderer);
+    Shader& shader = m_material->get_shader();
     // 更新shader的uniform变量
     shader.Bind();
     m_material->ApplyUniforms(shader, *this, camera, lights);

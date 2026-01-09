@@ -156,10 +156,10 @@ int main()
     // 箱子
     std::shared_ptr<Box>           boxGeometry = std::make_shared<Box>();
     std::shared_ptr<PhongMaterial> boxMaterial = std::make_shared<PhongMaterial>();
-    boxMaterial->m_shiness                     = 32.0f;
-    boxMaterial->m_diffuse                     = new Texture("asset/texture/box.png", 0);
-    boxMaterial->m_specularMask                = new Texture("asset/texture/sp_mask.png", 1);
-    std::shared_ptr<Mesh> boxMesh              = std::make_shared<Mesh>(boxGeometry, boxMaterial);
+    boxMaterial->set_shines(32.0f);
+    boxMaterial->set_diffuse(new Texture("asset/texture/box.png", 0));
+    boxMaterial->set_specular_mask(new Texture("asset/texture/sp_mask.png", 1));
+    std::shared_ptr<Mesh> boxMesh = std::make_shared<Mesh>(boxGeometry, boxMaterial);
     boxMesh->SetRotationY(-15.0f);
     boxMesh->SetRotationX(15.0f);
     // 白色物体

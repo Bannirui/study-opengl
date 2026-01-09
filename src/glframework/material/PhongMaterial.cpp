@@ -15,17 +15,12 @@
 
 #include "application/camera/Camera.h"
 
-PhongMaterial::PhongMaterial() : Material(MaterialType::PhoneMaterial) {}
+PhongMaterial::PhongMaterial() : Material(std::make_shared<Shader>("asset/shader/phone_shader.glsl")) {}
 
 PhongMaterial::~PhongMaterial()
 {
     delete m_diffuse;
     delete m_specularMask;
-}
-
-Shader& PhongMaterial::GetShader(const Renderer& renderer) const
-{
-    return renderer.getShader(this->get_type());
 }
 
 void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
@@ -89,7 +84,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setFloatVec3("u_ambientColor", lights.ambient->get_color());
     }
     // 控制高光反射光斑大小
-    shader.setFloat("u_shiness", m_shiness);
+    shader.setFloat("u_shiness", this->m_shines);
     // 相机位置
     shader.setFloatVec3("u_cameraPos", camera.m_Position);
 }
