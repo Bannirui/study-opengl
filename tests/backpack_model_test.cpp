@@ -94,7 +94,7 @@ void initIMGUI()
     // imgui绑定glfw
     ImGui_ImplGlfw_InitForOpenGL(glApp->getWindow(), true);
     // imgui绑定opengl
-    ImGui_ImplOpenGL3_Init("#version 330 core");
+    ImGui_ImplOpenGL3_Init("#version 450 core");
 }
 
 /**

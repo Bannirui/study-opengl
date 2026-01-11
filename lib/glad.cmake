@@ -8,35 +8,31 @@ else ()
     set(MY_PYTHON "${MY_VENV}/bin/python")
 endif ()
 
-# check ensurepip before creating virtual env
-execute_process(
-        COMMAND ${Python3_EXECUTABLE} -m ensurepip --version
-        RESULT_VARIABLE ENSUREPIP_RET
-        OUTPUT_QUIET
-        ERROR_QUIET
-)
-if(NOT ENSUREPIP_RET EQUAL 0)
-    message(FATAL_ERROR
-        "Python ensurepip is missing.\n"
-            "Install it via:\n"
-            "   sudo apt install python3-venv"
-    )
-endif ()
-
 # py虚拟环境
-if(NOT EXISTS "${MY_VENV}")
+if (NOT EXISTS "${MY_VENV}")
     message(STATUS "Creating virtualenv at ${MY_VENV}")
     # 创建.venv
     execute_process(
             COMMAND ${Python3_EXECUTABLE} -m venv "${MY_VENV}"
             RESULT_VARIABLE VENV_CREATE_RESULT
     )
-    if(NOT VENV_CREATE_RESULT EQUAL 0)
+    if (NOT VENV_CREATE_RESULT EQUAL 0)
         message(FATAL_ERROR "Failed to create virtual environment at ${MY_VENV}")
-    endif()
-else()
+    endif ()
+else ()
     message(STATUS "Found existing virtualenv: ${MY_VENV}")
-endif()
+endif ()
+
+# ensure pip exists inside venv
+execute_process(
+        COMMAND ${MY_PYTHON} -m ensurepip --upgrade
+        RESULT_VARIABLE VENV_PIP_RET
+        OUTPUT_QUIET
+        ERROR_QUIET
+)
+if (NOT VENV_PIP_RET EQUAL 0)
+    message(FATAL_ERROR "Failed to bootstrap pip inside virtualenv")
+endif ()
 
 # 检查glad命令
 execute_process(
@@ -45,32 +41,32 @@ execute_process(
         OUTPUT_QUIET
         ERROR_QUIET
 )
-if(NOT GLAD_RET EQUAL 0)
+if (NOT GLAD_RET EQUAL 0)
     message(STATUS "Installing glad in venv...")
     # 安装glad到虚拟环境中
     execute_process(
             COMMAND ${MY_PYTHON} -m pip install glad
-                --no-cache-dir
-                --timeout 60
-                -i https://pypi.tuna.tsinghua.edu.cn/simple
+            --no-cache-dir
+            --timeout 60
+            -i https://pypi.tuna.tsinghua.edu.cn/simple
             RESULT_VARIABLE GLAD_INSTALL_RET
             ERROR_VARIABLE GLAD_INSTALL_ERR
     )
-    if(NOT GLAD_INSTALL_RET EQUAL 0)
+    if (NOT GLAD_INSTALL_RET EQUAL 0)
         message(FATAL_ERROR "Failed to install glad in virtualenv:\n${GLAD_INSTALL_ERR}")
-    endif()
+    endif ()
     message(STATUS "Glad installed successfully in ${MY_VENV}")
 else ()
     message(STATUS "Glad already exist in ${MY_VENV}")
-endif()
+endif ()
 
 # 依赖FetchContent管理三方库
 include(FetchContent)
 # glad
 FetchContent_Declare(
         glad
-        GIT_REPOSITORY	https://github.com/Bannirui/glad.git
-        GIT_TAG 	    431786d8126e4f383a81e36f47b61a5d52a1c20d
+        GIT_REPOSITORY https://github.com/Bannirui/glad.git
+        GIT_TAG 431786d8126e4f383a81e36f47b61a5d52a1c20d
 )
 
 # GLFW options (before FetchContent), this avoid
@@ -92,7 +88,7 @@ set(GLAD_C_FILE "${GLAD_GENERATED_DIR}/src/glad.c")
 set(GLAD_H_FILE "${GLAD_GENERATED_DIR}/include/glad/glad.h")
 file(MAKE_DIRECTORY ${GLAD_GENERATED_DIR})
 # glad源码文件不存在 再执行生成
-if(NOT EXISTS ${GLAD_C_FILE} OR NOT EXISTS ${GLAD_H_FILE})
+if (NOT EXISTS ${GLAD_C_FILE} OR NOT EXISTS ${GLAD_H_FILE})
     message(STATUS "Glad output not found, will generate with glad2")
     add_custom_command(
             OUTPUT
@@ -104,16 +100,16 @@ if(NOT EXISTS ${GLAD_C_FILE} OR NOT EXISTS ${GLAD_H_FILE})
             ${MY_PYTHON} -m glad
             --generator c
             --spec gl
-            --api gl=3.3
+            --api gl=4.5
             --profile core
             --out-path ${GLAD_GENERATED_DIR}
             --extensions="" # glad2没做隔离 会把所有函数都生成 禁用所有扩展 避免看到4.x的高版本gl函数
             COMMENT "Generating glad loader with glad2"
             VERBATIM
     )
-else()
+else ()
     message(STATUS "Glad already generated, skipping generation")
-endif()
+endif ()
 # glad
 add_custom_target(glad-gen
         DEPENDS ${GLAD_C_FILE} ${GLAD_H_FILE}

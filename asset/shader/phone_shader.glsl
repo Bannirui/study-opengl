@@ -1,5 +1,5 @@
 #type vertex
-#version 330 core
+#version 450 core
 
 // 本地xyz坐标
 layout (location = 0) in vec3 a_pos;
