@@ -16,6 +16,18 @@ study OpenGL and make note
   <img src="./doc/img/1753204651.png" width="300"/>
 </div>
 
+> Install dependency
+- OpenGl `sudo apt install libgl1-mesa-dev`
+- Build glad
+  - Python
+  - pip `sudo apt install python3-venv`
+- x11 support
+  - `sudo apt install libxrandr-dev`
+  - `sudo apt install libxinerama-dev`
+  - `sudo apt install libxcursor-dev`
+  - `sudo apt install libxi-dev`
+- zlib `sudo apt install pkg-config zlib1g-dev`
+
 ### 1 NDC(Normalized Device Coordinate)
 
 当屏幕尺寸或者比例发生变化时，显示要跟随屏幕一起拉伸
@@ -130,7 +142,7 @@ void glBindVertexArray(GLuint array);
 ```
 
 - array 要绑定的VAO编号
-- 
+
 #### 4.3 删除
 
 ```glsl

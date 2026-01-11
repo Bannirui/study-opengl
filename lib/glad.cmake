@@ -1,4 +1,5 @@
-# glad的代码生成依赖py和glad
+# glad的代码生成依赖py/pip和glad
+# python
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 set(MY_VENV "${CMAKE_BINARY_DIR}/.venv")
 if (WIN32)
@@ -6,8 +7,24 @@ if (WIN32)
 else ()
     set(MY_PYTHON "${MY_VENV}/bin/python")
 endif ()
+
+# check ensurepip before creating virtual env
+execute_process(
+        COMMAND ${Python3_EXECUTABLE} -m ensurepip --version
+        RESULT_VARIABLE ENSUREPIP_RET
+        OUTPUT_QUIET
+        ERROR_QUIET
+)
+if(NOT ENSUREPIP_RET EQUAL 0)
+    message(FATAL_ERROR
+        "Python ensurepip is missing.\n"
+            "Install it via:\n"
+            "   sudo apt install python3-venv"
+    )
+endif ()
+
 # py虚拟环境
-if(NOT EXISTS "${MY_PYTHON}")
+if(NOT EXISTS "${MY_VENV}")
     message(STATUS "Creating virtualenv at ${MY_VENV}")
     # 创建.venv
     execute_process(
@@ -18,8 +35,9 @@ if(NOT EXISTS "${MY_PYTHON}")
         message(FATAL_ERROR "Failed to create virtual environment at ${MY_VENV}")
     endif()
 else()
-    message(STATUS "Found existing virtualenv: ${MY_PYTHON}")
+    message(STATUS "Found existing virtualenv: ${MY_VENV}")
 endif()
+
 # 检查glad命令
 execute_process(
         COMMAND ${MY_PYTHON} -m glad --help
@@ -30,9 +48,11 @@ execute_process(
 if(NOT GLAD_RET EQUAL 0)
     message(STATUS "Installing glad in venv...")
     # 安装glad到虚拟环境中
-    execute_process(COMMAND ${MY_PYTHON} -m pip install --upgrade pip)
     execute_process(
-            COMMAND ${MY_PYTHON} -m pip install glad --timeout 60 -i https://pypi.tuna.tsinghua.edu.cn/simple
+            COMMAND ${MY_PYTHON} -m pip install glad
+                --no-cache-dir
+                --timeout 60
+                -i https://pypi.tuna.tsinghua.edu.cn/simple
             RESULT_VARIABLE GLAD_INSTALL_RET
             ERROR_VARIABLE GLAD_INSTALL_ERR
     )
@@ -43,6 +63,7 @@ if(NOT GLAD_RET EQUAL 0)
 else ()
     message(STATUS "Glad already exist in ${MY_VENV}")
 endif()
+
 # 依赖FetchContent管理三方库
 include(FetchContent)
 # glad
@@ -51,6 +72,17 @@ FetchContent_Declare(
         GIT_REPOSITORY	https://github.com/Bannirui/glad.git
         GIT_TAG 	    431786d8126e4f383a81e36f47b61a5d52a1c20d
 )
+
+# GLFW options (before FetchContent), this avoid
+# 1 Wayland
+# 2 examples/tests overhead
+# 3 unnecessary build time
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_X11 ON CACHE BOOL "" FORCE)
+
 # 下载依赖的源码
 FetchContent_MakeAvailable(glad)
 # glad2没有现成的代码 用py生成glad代码

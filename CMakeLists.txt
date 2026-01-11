@@ -16,6 +16,7 @@ project(study-opengl
 )
 # 平台判断并设置默认编译器 仅在未手动指定时生效
 if(NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED CMAKE_CXX_COMPILER)
+    message(STATUS "No platform default compiler, start user-defined compiler")
     if(APPLE)
         message(STATUS "Detected Apple platform")
         set(CMAKE_C_COMPILER /usr/bin/clang CACHE STRING "C compiler" FORCE)
@@ -27,9 +28,8 @@ if(NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED CMAKE_CXX_COMPILER)
     else()
         message(FATAL_ERROR "Unsupported platform")
     endif()
-else()
-    message(STATUS "Using user-defined compiler: ${CMAKE_C_COMPILER}, ${CMAKE_CXX_COMPILER}")
 endif()
+message(STATUS "Using compiler: ${CMAKE_C_COMPILER}, ${CMAKE_CXX_COMPILER}")
 
 # c/cpp标准
 set(CMAKE_C_STANDARD 11)
@@ -51,10 +51,6 @@ include(${lib_directory}/stb.cmake)
 include(${lib_directory}/imgui.cmake)
 include(${lib_directory}/assimp.cmake)
 
-# Enable CTest
-include(CTest)
-enable_testing()
-
 # 源文件
 file(GLOB_RECURSE SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HDRS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
@@ -72,4 +68,7 @@ add_custom_target(copy_shader
 # 构建时触发资源文件复制
 add_dependencies(${PROJECT_NAME} copy_shader)
 
+# Enable CTest
+include(CTest)
+enable_testing()
 add_subdirectory(tests)
