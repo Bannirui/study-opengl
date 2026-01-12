@@ -14,29 +14,29 @@ add_custom_target(copy_assets
 )
 
 add_executable(earth_test earth_test.cpp)
-target_link_libraries(earth_test PRIVATE study-opengl)
+target_link_libraries(earth_test PRIVATE ${PROJECT_NAME})
 add_dependencies(earth_test copy_assets)
 
 add_executable(box_test box_test.cpp)
-target_link_libraries(box_test PRIVATE study-opengl)
+target_link_libraries(box_test PRIVATE ${PROJECT_NAME})
 add_dependencies(box_test copy_assets)
 
 add_executable(point_light_test point_light_test.cpp)
-target_link_libraries(point_light_test PRIVATE study-opengl)
+target_link_libraries(point_light_test PRIVATE ${PROJECT_NAME})
 add_dependencies(point_light_test copy_assets)
 
 add_executable(spot_light_test spot_light_test.cpp)
-target_link_libraries(spot_light_test PRIVATE study-opengl)
+target_link_libraries(spot_light_test PRIVATE ${PROJECT_NAME})
 add_dependencies(spot_light_test copy_assets)
 
 add_executable(scene_test scene_test.cpp)
-target_link_libraries(scene_test PRIVATE study-opengl)
+target_link_libraries(scene_test PRIVATE ${PROJECT_NAME})
 add_dependencies(scene_test copy_assets)
 
 add_executable(model_test model_test.cpp)
-target_link_libraries(model_test PRIVATE study-opengl)
+target_link_libraries(model_test PRIVATE ${PROJECT_NAME})
 add_dependencies(model_test copy_assets)
 
 add_executable(backpack_model_test backpack_model_test.cpp)
-target_link_libraries(backpack_model_test PRIVATE study-opengl)
+target_link_libraries(backpack_model_test PRIVATE ${PROJECT_NAME})
 add_dependencies(backpack_model_test copy_assets)

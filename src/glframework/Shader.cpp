@@ -33,6 +33,7 @@ Shader::Shader(const std::string& path)
     auto name      = path.substr(lastSlash, count);
     (void)name;
 }
+
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
     std::string   vertexCode, fragmentCode;
@@ -170,21 +171,38 @@ std::string Shader::ReadFile(const std::string& filepath)
     }
     return result;
 }
+
 std::unordered_map<GLenum, std::string> Shader::preProcess(const std::string& source)
 {
+    std::string modifiedSource = source;
+    // 动态替换#version占位符
+    if (modifiedSource.find("#version") != std::string::npos)
+    {
+#ifdef __APPLE__
+        modifiedSource = replaceVersion(modifiedSource, "330 core");
+#elif defined(__linux__)
+        modifiedSource = replaceVersion(modifiedSource, "450 core");
+#else
+        std::cerr << "Unsupported platform" << std::endl;
+        exit(EXIT_FAILURE);
+#endif
+    }
+
     std::unordered_map<GLenum, std::string> shaderSources;
     const char*                             typeToken       = "#type";
     size_t                                  typeTokenLength = strlen(typeToken);
-    size_t                                  pos             = source.find(typeToken, 0);
+    size_t                                  pos             = modifiedSource.find(typeToken, 0);
+
     while (pos != std::string::npos)
     {
-        size_t      eol         = source.find_first_of("\r\n", pos);
-        size_t      begin       = pos + typeTokenLength + 1;
-        std::string type        = source.substr(begin, eol - begin);
-        size_t      nextLinePos = source.find_first_not_of("\r\n", eol);
-        pos                     = source.find(typeToken, nextLinePos);
-        shaderSources[ShaderTypeFromString(type)] =
-            (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
+        size_t      eol                           = modifiedSource.find_first_of("\r\n", pos);
+        size_t      begin                         = pos + typeTokenLength + 1;
+        std::string type                          = modifiedSource.substr(begin, eol - begin);
+        size_t      nextLinePos                   = modifiedSource.find_first_not_of("\r\n", eol);
+        pos                                       = modifiedSource.find(typeToken, nextLinePos);
+        shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos)
+                                                        ? modifiedSource.substr(nextLinePos)
+                                                        : modifiedSource.substr(nextLinePos, pos - nextLinePos);
     }
     return shaderSources;
 }
@@ -243,4 +261,18 @@ void Shader::compile(const std::unordered_map<GLenum, std::string>& shaderSource
         GL_CALL_AND_CHECK_ERR(glDetachShader(program, id));
         GL_CALL_AND_CHECK_ERR(glDeleteShader(id));
     }
+}
+
+std::string Shader::replaceVersion(std::string source, const std::string& version)
+{
+    const char* versionToken = "#version";
+    size_t      versionPos   = source.find(versionToken, 0);
+    while (versionPos != std::string::npos)
+    {
+        size_t eol = source.find_first_of("\r\n", versionPos);
+        source.replace(versionPos, eol - versionPos, "#version " + version);
+        size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+        versionPos         = source.find(versionToken, nextLinePos);
+    }
+    return source;
 }

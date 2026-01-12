@@ -17,7 +17,7 @@ study OpenGL and make note
 </div>
 
 > Install dependency
-- OpenGl `sudo apt install libgl1-mesa-dev`
+- OpenGl 3.3是在Apple平台支持的最后一个版本 `sudo apt install libgl1-mesa-dev`
 - Build glad
   - Python
   - pip `sudo apt install python3-venv`

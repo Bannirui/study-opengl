@@ -27,12 +27,17 @@ bool Application::init(const uint32_t& width, const uint32_t& height)
 {
     m_Width  = width;
     m_Height = height;
-    // 初始化GLFW的基本环境 OpenGL的版本是3.3
+    // 初始化GLFW的基本环境 OpenGL的版本
     glfwInit();
+#ifdef __APPLE__
     // 主版本
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     // 次版本
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#elif defined(__linux__)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+#endif
     // 使用核心模式
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__

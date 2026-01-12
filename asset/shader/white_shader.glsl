@@ -1,5 +1,6 @@
 #type vertex
-#version 450 core
+// 占位用 OpenGL的真正版本在编译的时候根据平台动态替换掉
+#version xxx
 
 // 本地xyz坐标
 layout (location = 0) in vec3 a_pos;
@@ -26,7 +27,8 @@ void main()
 }
 
 #type fragment
-#version 330 core
+// 占位用 OpenGL的真正版本在编译的时候根据平台动态替换掉
+#version xxx
 
 // uv坐标
 in vec2 uv;

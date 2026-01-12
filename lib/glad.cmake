@@ -5,7 +5,7 @@ set(MY_VENV "${CMAKE_BINARY_DIR}/.venv")
 if (WIN32)
     set(MY_PYTHON "${MY_VENV}/bin/python.exe")
 else ()
-    set(MY_PYTHON "${MY_VENV}/bin/python")
+    set(MY_PYTHON "${MY_VENV}/bin/python3")
 endif ()
 
 # py虚拟环境
@@ -69,15 +69,17 @@ FetchContent_Declare(
         GIT_TAG 431786d8126e4f383a81e36f47b61a5d52a1c20d
 )
 
-# GLFW options (before FetchContent), this avoid
-# 1 Wayland
-# 2 examples/tests overhead
-# 3 unnecessary build time
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_X11 ON CACHE BOOL "" FORCE)
+if (UNIX)
+    # GLFW options (before FetchContent), this avoid
+    # 1 Wayland
+    # 2 examples/tests overhead
+    # 3 unnecessary build time
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_X11 ON CACHE BOOL "" FORCE)
+endif ()
 
 # 下载依赖的源码
 FetchContent_MakeAvailable(glad)
@@ -87,30 +89,38 @@ set(GLAD_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/cmake/glad.cmake)
 set(GLAD_C_FILE "${GLAD_GENERATED_DIR}/src/glad.c")
 set(GLAD_H_FILE "${GLAD_GENERATED_DIR}/include/glad/glad.h")
 file(MAKE_DIRECTORY ${GLAD_GENERATED_DIR})
+
 # glad源码文件不存在 再执行生成
 if (NOT EXISTS ${GLAD_C_FILE} OR NOT EXISTS ${GLAD_H_FILE})
-    message(STATUS "Glad output not found, will generate with glad2")
+    # OpenGL 3.3是apple平台支持的最后一个版本
+    if (APPLE)
+        set(GLAD_API_VER "3.3")
+    elseif (LINUX)
+        set(GLAD_API_VER "4.5")
+    else ()
+        message(FATAL_ERROR "Unknown platform, cannot specify OpenGL version")
+    endif ()
+    message(STATUS "Glad output not found, will generate with glad2 for OpenGL${GLAD_API_VER}")
+    # Set proxy if required, using environment variables
+    set(HTTP_PROXY "http://127.0.0.1:7890")
+    set(HTTPS_PROXY "http://127.0.0.1:7890")
+    # Show full command being executed for debugging purposes
+    # glad2没做隔离 会把所有函数都生成 禁用所有扩展 避免看到4.x的高版本gl函数
+    set(GLAD_COMMAND "${MY_PYTHON} -m glad --generator c --spec gl --api gl=${GLAD_API_VER} --profile core --out-path ${GLAD_GENERATED_DIR} --extensions=''")
+    message(STATUS "Running command: ${GLAD_COMMAND}")
+    message(STATUS "Using Python at: ${MY_PYTHON}")
+            #PATH=${MY_VENV}/bin:$ENV{PATH}
     add_custom_command(
-            OUTPUT
-            ${GLAD_GENERATED_DIR}/src/glad.c
-            ${GLAD_GENERATED_DIR}/include/glad/glad.h
+            OUTPUT ${GLAD_C_FILE} ${GLAD_H_FILE}
             COMMAND ${CMAKE_COMMAND} -E env
-            http_proxy=http://127.0.0.1:7890
-            https_proxy=http://127.0.0.1:7890
-            ${MY_PYTHON} -m glad
-            --generator c
-            --spec gl
-            --api gl=4.5
-            --profile core
-            --out-path ${GLAD_GENERATED_DIR}
-            --extensions="" # glad2没做隔离 会把所有函数都生成 禁用所有扩展 避免看到4.x的高版本gl函数
+                http_proxy=${HTTP_PROXY} https_proxy=${HTTPS_PROXY}
+                ${MY_PYTHON} -m glad --generator c --spec gl --api gl=${GLAD_API_VER} --profile core --out-path ${GLAD_GENERATED_DIR} --extensions=''
+            DEPENDS ${MY_PYTHON} ${MY_VENV}/bin/glad
             COMMENT "Generating glad loader with glad2"
             VERBATIM
     )
-else ()
-    message(STATUS "Glad already generated, skipping generation")
 endif ()
-# glad
+# glad通过depend触发python生成glad文件
 add_custom_target(glad-gen
         DEPENDS ${GLAD_C_FILE} ${GLAD_H_FILE}
 )

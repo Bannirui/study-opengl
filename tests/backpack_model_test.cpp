@@ -94,7 +94,11 @@ void initIMGUI()
     // imgui绑定glfw
     ImGui_ImplGlfw_InitForOpenGL(glApp->getWindow(), true);
     // imgui绑定opengl
+#ifdef __APPLE__
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+#elif defined(__linux__)
     ImGui_ImplOpenGL3_Init("#version 450 core");
+#endif
 }
 
 /**
