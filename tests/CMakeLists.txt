@@ -13,30 +13,22 @@ add_custom_target(copy_assets
         COMMENT "Copying assets to build and runtime directories"
 )
 
-add_executable(earth_test earth_test.cpp)
-target_link_libraries(earth_test PRIVATE ${PROJECT_NAME})
-add_dependencies(earth_test copy_assets)
+# Collect all cpp files in this directory
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "*.cpp")
 
-add_executable(box_test box_test.cpp)
-target_link_libraries(box_test PRIVATE ${PROJECT_NAME})
-add_dependencies(box_test copy_assets)
-
-add_executable(point_light_test point_light_test.cpp)
-target_link_libraries(point_light_test PRIVATE ${PROJECT_NAME})
-add_dependencies(point_light_test copy_assets)
-
-add_executable(spot_light_test spot_light_test.cpp)
-target_link_libraries(spot_light_test PRIVATE ${PROJECT_NAME})
-add_dependencies(spot_light_test copy_assets)
-
-add_executable(scene_test scene_test.cpp)
-target_link_libraries(scene_test PRIVATE ${PROJECT_NAME})
-add_dependencies(scene_test copy_assets)
-
-add_executable(model_test model_test.cpp)
-target_link_libraries(model_test PRIVATE ${PROJECT_NAME})
-add_dependencies(model_test copy_assets)
-
-add_executable(backpack_model_test backpack_model_test.cpp)
-target_link_libraries(backpack_model_test PRIVATE ${PROJECT_NAME})
-add_dependencies(backpack_model_test copy_assets)
+foreach (test_src ${TEST_SOURCES})
+    # Extract file name without extension
+    get_filename_component(test_name ${test_src} NAME_WE)
+    # Create executable
+    add_executable(${test_name} ${test_src})
+    # Link main library
+    target_link_libraries(${test_name}
+            PRIVATE ${PROJECT_NAME}
+    )
+    # 构建时触发资源文件复制
+    add_dependencies(${test_name} copy_assets)
+    # Register with CTest
+    add_test(NAME ${test_name}
+            COMMAND ${test_name}
+    )
+endforeach ()
