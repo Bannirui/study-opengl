@@ -1,0 +1,37 @@
+{
+  "version": 3,
+
+  "configurePresets": [
+    {
+      "hidden": true,
+      "name": "base",
+      "generator": "Ninja",
+      "cacheVariables": {
+      }
+    },
+
+    {
+      "name": "linux-gcc-debug",
+      "inherits": "base",
+      "displayName": "linux-gcc-debug",
+      "binaryDir": "build/linux-gcc-debug",
+      "toolchainFile": "cmake/toolchains/linux-gcc.cmake",
+      "environment": {
+        "http_proxy": "http://127.0.0.1:7890",
+        "https_proxy": "http://127.0.0.1:7890",
+        "ALL_PROXY": "socks5://127.0.0.1:7890"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "FETCHCONTENT_QUIET": "OFF"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "linux-gcc-debug",
+      "configurePreset": "linux-gcc-debug"
+    }
+  ]
+}
