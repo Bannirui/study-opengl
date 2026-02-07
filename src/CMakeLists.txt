@@ -29,7 +29,7 @@ add_custom_target(copy_shader
 # 构建时触发资源文件复制
 add_dependencies(${LIB_NAME} copy_shader)
 
-target_compile_definitions(${LIB_NAME} PRIVATE
+target_compile_definitions(${LIB_NAME} PUBLIC
         OPENGL_VERSION_MAJOR=${OPENGL_VERSION_MAJOR}
         OPENGL_VERSION_MINOR=${OPENGL_VERSION_MINOR}
 )

@@ -164,8 +164,8 @@ std::unordered_map<GLenum, std::string> Shader::preProcess(const std::string &so
     std::string modifiedSource = source;
     // 动态替换#version占位符
     if (modifiedSource.find("#version") != std::string::npos) {
-        XLOG_INFO("shader using OpenGL:{}", X_GLSL_VERSION_DOTTED);
-        modifiedSource = replaceVersion(modifiedSource, X_GLSL_VERSION_STR" core");
+        XLOG_INFO("shader using OpenGL:{}", X_GL_VER_STR);
+        modifiedSource = replaceVersion(modifiedSource, X_GL_VERSION_STR);
     }
 
     std::unordered_map<GLenum, std::string> shaderSources;
@@ -236,12 +236,12 @@ void Shader::compile(const std::unordered_map<GLenum, std::string> &shaderSource
     }
 }
 
-std::string Shader::replaceVersion(std::string source, const std::string &version) {
+std::string Shader::replaceVersion(std::string source, const std::string &versionStr) {
     const char *versionToken = "#version";
     size_t versionPos = source.find(versionToken, 0);
     while (versionPos != std::string::npos) {
         size_t eol = source.find_first_of("\r\n", versionPos);
-        source.replace(versionPos, eol - versionPos, "#version " + version);
+        source.replace(versionPos, eol - versionPos, versionStr);
         size_t nextLinePos = source.find_first_not_of("\r\n", eol);
         versionPos = source.find(versionToken, nextLinePos);
     }

@@ -18,10 +18,11 @@
 // 450
 #define X_GL_VERSION_3DIGIT CAT(X_GL_VERSION_2DIGIT, 0)
 
-// 450
-#define X_GLSL_VERSION_STR STR(X_GL_VERSION_3DIGIT)
-
 // ---------- optional helpers ----------
 // 4.5
-#define X_GLSL_VERSION_DOTTED \
-STR(OPENGL_VERSION_MAJOR) "." STR(OPENGL_VERSION_MINOR)
+#define X_GL_VER_STR \
+    STR(OPENGL_VERSION_MAJOR) "." STR(OPENGL_VERSION_MINOR)
+
+// #version 450 core
+#define X_GL_VERSION_STR \
+    "#version " STR(X_GL_VERSION_3DIGIT) " core"

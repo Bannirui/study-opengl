@@ -86,9 +86,9 @@ private:
      * 根据平台动态替换掉shader的OpenGL版本
      * 找到源码中#version xxx关键字#version然后替换成#version 330 core
      * @param source shader的glsl源码
-     * @param version 要替换成什么版本 比如330 core
+     * @param version 要替换成什么版本 比如#version 330 core
      */
-    static std::string replaceVersion(std::string source, const std::string& version);
+    static std::string replaceVersion(std::string source, const std::string& versionStr);
 
 private:
     // shader program的唯一id vertex shader和fragment shader编译链接之后最后要保留使用的就是program shader

@@ -13,12 +13,17 @@
 #include "application/camera/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
+#include "glframework/Mesh.h"
 #include "glframework/Scene.h"
 #include "glframework/Texture.h"
+#include "glframework/x_config.h"
+#include "glframework/geo/Plane.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
+#include "glframework/material/DepthMaterial.h"
+#include "glframework/material/PhongMaterial.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 
@@ -27,7 +32,7 @@ const unsigned int SCR_HEIGHT = 800;
 
 std::unique_ptr<CameraController> cameraCtl;
 
-glm::vec3 clear_color = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 clear_color = glm::vec3(1.0f, 0.5f, 0.2f);
 
 void framebuffer_size_callback(int width, int height) {
     std::cout << "新窗口大小 w:" << width << ", h:" << height << std::endl;
@@ -81,11 +86,7 @@ void initIMGUI() {
     // imgui绑定glfw
     ImGui_ImplGlfw_InitForOpenGL(glApp->getWindow(), true);
     // imgui绑定opengl
-#ifdef __APPLE__
-    ImGui_ImplOpenGL3_Init("#version 330 core");
-#elif defined(__linux__)
-    ImGui_ImplOpenGL3_Init("#version 450 core");
-#endif
+    ImGui_ImplOpenGL3_Init(X_GL_VERSION_STR);
 }
 
 /**
@@ -131,14 +132,23 @@ int main() {
 
     // 渲染器
     Renderer renderer;
-    // 渲染场景
+
     std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-    auto model = AssimpLoader::load("asset/fbx/backpack/backpack.obj");
-    scene->AddChild(model);
-    // 有个初始角度方便观察
-    // todo 现在没有生效 应该是因为加载进来的模型自带了世界坐标 我在渲染的时候并没有把模型自己的坐标系因素也加进来
-    scene->SetAngleX(30.0f);
-    scene->SetAngleY(30.0f);
+
+    std::shared_ptr<Plane> geometry = std::make_unique<Plane>(5.0f, 5.0f);
+    std::shared_ptr<DepthMaterial> material = std::make_shared<DepthMaterial>();
+
+    std::shared_ptr<Mesh> meshA = std::make_shared<Mesh>(geometry, material);
+    scene->AddChild(meshA);
+
+    std::shared_ptr<Mesh> meshB = std::make_shared<Mesh>(geometry, material);
+    meshB->SetPosition(glm::vec3(2.0f, 0.5f, -1.0f));
+    scene->AddChild(meshB);
+
+    std::shared_ptr<Mesh> meshC = std::make_shared<Mesh>(geometry, material);
+    meshC->SetPosition(glm::vec3(4.0f, 1.0f, -2.0f));
+    scene->AddChild(meshC);
+
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     // 光源从右后方

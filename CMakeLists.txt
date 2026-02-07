@@ -31,6 +31,8 @@ include(${lib_directory}/stb.cmake)
 include(${lib_directory}/imgui.cmake)
 include(${lib_directory}/assimp.cmake)
 
+set(OPENGL_VERSION_MAJOR 3 CACHE STRING "OpenGL major version")
+set(OPENGL_VERSION_MINOR 3 CACHE STRING "OpenGL minor version")
 if(NOT OPENGL_VERSION_MAJOR MATCHES "^[0-9]+$")
     message(FATAL_ERROR "OPENGL_VERSION_MAJOR must be numeric")
 endif()
