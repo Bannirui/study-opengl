@@ -9,7 +9,6 @@
 
 #include "input/Input.h"
 #include "x_log.h"
-#include "glframework/x_config.h"
 
 // 初始化静态变量
 Application *Application::s_Instance = nullptr;
@@ -20,10 +19,8 @@ Application *Application::getInstance() {
     return s_Instance;
 }
 
-Application::Application() {
-}
-
 Application::~Application() {
+    destroy();
 }
 
 bool Application::init(const uint32_t &width, const uint32_t &height) {
@@ -60,7 +57,7 @@ bool Application::init(const uint32_t &width, const uint32_t &height) {
     glfwSetKeyCallback(m_Window, keyboardCallback);
     glfwSetCursorPosCallback(m_Window, mousePosCallback);
     glfwSetScrollCallback(m_Window, mouseScrollCallback);
-    glfwSetMouseButtonCallback(window, mouseBtnCallback);
+    glfwSetMouseButtonCallback(m_Window, mouseBtnCallback);
 
     // 把Application单例的实例放到glfw的window中 以后想要Application就从window中拿
     glfwSetWindowUserPointer(m_Window, this);
@@ -105,7 +102,7 @@ void Application::mousePosCallback(GLFWwindow *window, double x, double y) {
 
 void Application::mouseScrollCallback(GLFWwindow *window, double x, double y) {
     Application *self = (Application *) glfwGetWindowUserPointer(window);
-    if (self->m_MouseScrollCallback) self->m_MouseScrollCallback(y);
+    if (self->m_MouseScrollCallback) self->m_MouseScrollCallback(x, y);
 }
 
 void Application::mouseBtnCallback(GLFWwindow *window, int button, int action, int mods) {
