@@ -150,7 +150,7 @@ int main() {
     lights.directional = directionalLight;
     lights.ambient = ambientLight;
     PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
-    camera.m_Position = glm::vec3(0.0f, 0.0f, 5.0f);
+    camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     cameraCtl = std::make_unique<TrackballCameraController>(camera);
 
     initIMGUI();

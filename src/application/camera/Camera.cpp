@@ -2,12 +2,10 @@
 // Created by rui ding on 2025/7/1.
 //
 
-#include "../../../include/application/camera/Camera.h"
+#include "application/camera/Camera.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
-
-Camera::Camera() {}
 
 glm::mat4 Camera::GetViewMatrix() const
 {

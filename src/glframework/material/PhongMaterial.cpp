@@ -15,26 +15,24 @@
 
 #include "application/camera/Camera.h"
 
-PhongMaterial::PhongMaterial() : Material(std::make_shared<Shader>("asset/shader/phone_shader.glsl")) {}
+PhongMaterial::PhongMaterial() : Material(std::make_shared<Shader>("asset/shader/phone_shader.glsl")) {
+}
 
-PhongMaterial::~PhongMaterial()
-{
+PhongMaterial::~PhongMaterial() {
     delete m_diffuse;
     delete m_specularMask;
 }
 
-void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
-{
-    if (m_diffuse)
-    {
+void PhongMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
+                                  const LightPack &lights) const {
+    if (m_diffuse) {
         // 将纹理对象跟纹理单元绑定
         m_diffuse->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
         shader.setInt("u_sampler", m_diffuse->GetUnit());
     }
     // 高光蒙版贴图
-    if (m_specularMask)
-    {
+    if (m_specularMask) {
         m_specularMask->Bind();
         shader.setInt("u_specularMaskSampler", m_specularMask->GetUnit());
     }
@@ -47,8 +45,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
     auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh.GetModelMatrix())));
     shader.setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
     // 平行光
-    if (lights.HasDirection())
-    {
+    if (lights.HasDirection()) {
         shader.setBool("u_activeDirectionalLight", true);
         shader.setFloatVec3("u_directionalLight.direction", lights.directional->m_direction);
         shader.setFloatVec3("u_directionalLight.color", lights.directional->get_color());
@@ -56,8 +53,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setFloat("u_directionalLight.specularIntensity", lights.directional->get_specular_intensity());
     }
     // 点光
-    if (lights.HasSpot())
-    {
+    if (lights.HasSpot()) {
         shader.setBool("u_activePointLight", true);
         shader.setFloatVec3("u_pointLight.pos", lights.point->GetPosition());
         shader.setFloatVec3("u_pointLight.color", lights.point->get_color());
@@ -68,8 +64,7 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setFloat("u_pointLight.kc", lights.point->m_kc);
     }
     // 聚光灯
-    if (lights.HasSpot())
-    {
+    if (lights.HasSpot()) {
         shader.setBool("u_activeSpotLight", true);
         shader.setFloatVec3("u_spotLight.pos", lights.spot->GetPosition());
         shader.setFloatVec3("u_spotLight.targetDirection", lights.spot->m_targetDirection);
@@ -79,12 +74,11 @@ void PhongMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera
         shader.setFloat("u_spotLight.specularIntensity", lights.spot->get_specular_intensity());
     }
     // 环境光
-    if (lights.HasAmbient())
-    {
+    if (lights.HasAmbient()) {
         shader.setFloatVec3("u_ambientColor", lights.ambient->get_color());
     }
     // 控制高光反射光斑大小
     shader.setFloat("u_shiness", this->m_shines);
     // 相机位置
-    shader.setFloatVec3("u_cameraPos", camera.m_Position);
+    shader.setFloatVec3("u_cameraPos", camera.get_position());
 }
