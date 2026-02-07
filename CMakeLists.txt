@@ -22,6 +22,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # dep
 set(lib_directory ${CMAKE_SOURCE_DIR}/cmake)
+include(${lib_directory}/spdlog.cmake)
 include(${lib_directory}/OpenGL.cmake)
 include(${lib_directory}/glad.cmake)
 include(${lib_directory}/glfw.cmake)
@@ -29,6 +30,14 @@ include(${lib_directory}/glm.cmake)
 include(${lib_directory}/stb.cmake)
 include(${lib_directory}/imgui.cmake)
 include(${lib_directory}/assimp.cmake)
+
+if(NOT OPENGL_VERSION_MAJOR MATCHES "^[0-9]+$")
+    message(FATAL_ERROR "OPENGL_VERSION_MAJOR must be numeric")
+endif()
+
+if(NOT OPENGL_VERSION_MINOR MATCHES "^[0-9]+$")
+    message(FATAL_ERROR "OPENGL_VERSION_MINOR must be numeric")
+endif()
 
 set(LIB_NAME ${PROJECT_NAME}-core)
 add_subdirectory(src)

@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "../../../include/application/camera/OrthographicCamera.h"
+#include "application/camera/OrthographicCamera.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 

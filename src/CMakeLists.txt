@@ -10,6 +10,7 @@ add_library(${LIB_NAME}
 target_include_directories(${LIB_NAME} PUBLIC ${HDR_DIR})
 
 target_link_libraries(${LIB_NAME}
+        PUBLIC spdlog
         PUBLIC glad
         PUBLIC glfw
         PUBLIC stb
@@ -27,3 +28,8 @@ add_custom_target(copy_shader
 
 # 构建时触发资源文件复制
 add_dependencies(${LIB_NAME} copy_shader)
+
+target_compile_definitions(${LIB_NAME} PRIVATE
+        OPENGL_VERSION_MAJOR=${OPENGL_VERSION_MAJOR}
+        OPENGL_VERSION_MINOR=${OPENGL_VERSION_MINOR}
+)

@@ -23,7 +23,28 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "FETCHCONTENT_QUIET": "OFF"
+        "FETCHCONTENT_QUIET": "OFF",
+        "OPENGL_VERSION_MAJOR": "4",
+        "OPENGL_VERSION_MINOR": "5"
+      }
+    },
+    {
+      "name": "mac-clang-debug",
+      "inherits": "base",
+      "displayName": "mac-clang-debug",
+      "binaryDir": "build/mac-clang-debug",
+      "toolchainFile": "cmake/toolchains/mac-clang.cmake",
+      "environment": {
+        "http_proxy": "http://127.0.0.1:7890",
+        "https_proxy": "http://127.0.0.1:7890",
+        "ALL_PROXY": "socks5://127.0.0.1:7890"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "FETCHCONTENT_QUIET": "OFF",
+        "GL_SILENCE_DEPRECATION": "ON",
+        "OPENGL_VERSION_MAJOR": "3",
+        "OPENGL_VERSION_MINOR": "3"
       }
     }
   ],
@@ -32,6 +53,10 @@
     {
       "name": "linux-gcc-debug",
       "configurePreset": "linux-gcc-debug"
+    },
+    {
+      "name": "mac-clang-debug",
+      "configurePreset": "mac-clang-debug"
     }
   ]
 }
