@@ -9,8 +9,6 @@
 #include <glm/glm.hpp>
 
 #include "glframework/Object.h"
-// Shader资源用了智能指针管理 就不能简单用前向声明了 必须引用头文件 让编译器明确知道类的结构
-#include "glframework/Shader.h"
 
 class Mesh;
 class Camera;

@@ -4,7 +4,8 @@
 
 #pragma once
 #include <memory>
-#include <glframework/Shader.h>
+
+#include "glframework/Shader.h"
 
 class Shader;
 class Renderer;
@@ -27,8 +28,7 @@ struct LightPack;
  * </ul>
  */
 // renderer只负责渲染 material负责选择shader/绑定纹理/上传uniform
-class Material
-{
+class Material {
 public:
     virtual ~Material() = default;
 
@@ -36,13 +36,29 @@ public:
     // 返回值设计成引用的考量
     // 1 不暴露资源所有权
     // 2 引用表示的是非空借用
-    virtual Shader& get_shader() const { return *this->m_shader; }
+    virtual Shader &get_shader() const { return *this->m_shader; }
+
     // 材质负责上传uniform给shader 渲染动作发起只由renderer负责
-    virtual void ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera,
-                               const LightPack& lights) const = 0;
+    virtual void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
+                               const LightPack &lights) const = 0;
+
+    bool get_depth_test() const { return m_enableDepthTest; }
+    void set_depth_test(const bool option) { m_enableDepthTest = option; }
+    GLenum get_depth_func() const { return m_depthFunc; }
+    void set_depth_func(const GLenum depth_func) { m_depthFunc = depth_func; }
+    bool get_depth_write() const { return m_depthWrite; }
+    void set_depth_write(const bool option) { m_depthWrite = option; }
 
 protected:
-    explicit Material(const std::shared_ptr<Shader>& shader) : m_shader(shader) {}
+    explicit Material(const std::shared_ptr<Shader> &shader) : m_shader(shader) {
+    }
+
     // todo 考虑到单个材质可能不止一个shader 所以shader成员暂时放在基类里面 以后需要扩展了可能需要下沉下子类
     std::shared_ptr<Shader> m_shader;
+
+    // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话后绘制的会覆盖先绘制的
+    bool m_enableDepthTest{true};
+    // 设置深度测试方法
+    GLenum m_depthFunc{GL_FALSE};
+    bool m_depthWrite{true};
 };

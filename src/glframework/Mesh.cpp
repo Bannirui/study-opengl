@@ -6,18 +6,29 @@
 
 #include "glframework/Shader.h"
 #include "glframework/geo/Geometry.h"
-
-#include <glframework/material/Material.h>
+#include "glframework/material/Material.h"
 
 Mesh::Mesh(std::shared_ptr<Geometry> geometry, std::shared_ptr<Material> material)
-    : Object(ObjectType::Mesh), m_geometry(std::move(geometry)), m_material(std::move(material))
-{
+    : Object(ObjectType::Mesh), m_geometry(std::move(geometry)), m_material(std::move(material)) {
 }
 
-void Mesh::Render(const Renderer& renderer, const Camera& camera, const LightPack& lights) const
-{
+void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPack &lights) const {
+    if (this->m_material->get_depth_test()) {
+        // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话后绘制的会覆盖先绘制的
+        glEnable(GL_DEPTH_TEST);
+        // 设置深度测试方法
+        glDepthFunc(this->m_material->get_depth_func());
+    } else {
+        glDisable(GL_DEPTH_TEST);
+    }
+    if (this->m_material->get_depth_write()) {
+        glDepthMask(GL_TRUE);
+    } else {
+        glDepthMask(GL_FALSE);
+    }
+
     // 用哪个shader
-    Shader& shader = m_material->get_shader();
+    Shader &shader = m_material->get_shader();
     // 更新shader的uniform变量
     shader.Bind();
     m_material->ApplyUniforms(shader, *this, camera, lights);

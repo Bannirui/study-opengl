@@ -18,11 +18,6 @@ void Renderer::setClearColor(glm::vec3 color)
 
 void Renderer::BeginFrame()
 {
-    // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话
-    // 后绘制的会覆盖先绘制的
-    glEnable(GL_DEPTH_TEST);
-    // 设置深度测试方法
-    glDepthFunc(GL_LESS);
     // 清理画布 每一帧都要清屏 防止残留前一帧图像 清理的时候也要清理深度缓存
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
