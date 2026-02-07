@@ -47,7 +47,7 @@ void InputDispatcher::resize(int w, int h) {
 }
 
 void InputDispatcher::key(int key, int action, int mods) {
-    XLOG_INFO("keyboard pressed, key:{} action:{} mods:{}", key, action, mods);
+    XLOG_INFO("keyboard pressed, key:{} action:{} 有没有ctrl/shift功能键:{}", static_cast<char>(key), action, mods);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         Application::setShouldClose(true);
     }

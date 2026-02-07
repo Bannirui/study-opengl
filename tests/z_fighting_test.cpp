@@ -109,7 +109,7 @@ int main() {
     lights.ambient = ambientLight;
     PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
-
+    // 相机控制器
     inputDispatcher.CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = inputDispatcher.get_CameraController();
 
