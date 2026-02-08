@@ -42,12 +42,12 @@ public:
     virtual void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
                                const LightPack &lights) const = 0;
 
-    bool get_depth_test() const { return m_enableDepthTest; }
-    void set_depth_test(const bool option) { m_enableDepthTest = option; }
-    GLenum get_depth_func() const { return m_depthFunc; }
-    void set_depth_func(const GLenum depth_func) { m_depthFunc = depth_func; }
-    bool get_depth_write() const { return m_depthWrite; }
-    void set_depth_write(const bool option) { m_depthWrite = option; }
+    bool get_depthTest() const { return m_enableDepthTest; }
+    void set_depthTest(const bool option) { m_enableDepthTest = option; }
+    GLenum get_depthFunc() const { return m_depthFunc; }
+    void set_depthFunc(const GLenum depth_func) { m_depthFunc = depth_func; }
+    bool get_depthWrite() const { return m_depthWrite; }
+    void set_depthWrite(const bool option) { m_depthWrite = option; }
 
     bool get_enablePolygonOffset() const { return m_enablePolygonOffset; }
     void set_enablePolygonOffset(bool option) { m_enablePolygonOffset = option; }
@@ -58,6 +58,23 @@ public:
     float get_polygonUnit() const { return m_polygonUnit; }
     void set_polygonUnit(float unit) { m_polygonUnit = unit; }
 
+    bool get_stencilTest() const { return m_enableStencilTest; }
+    void set_stencilTest(bool option) { m_enableStencilTest = option; }
+    uint32_t get_sFail() const { return m_sFail; }
+    void set_sFail(uint32_t val) { m_sFail = val; }
+    uint32_t get_zFail() const { return m_zFail; }
+    void set_zFail(uint32_t val) { m_zFail = val; }
+    uint32_t get_zPass() const { return m_zPass; }
+    void set_zPass(uint32_t val) { m_zPass = val; }
+    uint32_t get_stencilMask() const { return m_stencilMask; }
+    void set_stencilMask(uint32_t val) { m_stencilMask = val; }
+    uint32_t get_stencilFunc() const { return m_stencilFunc; }
+    void set_stencilFunc(uint32_t func) { m_stencilFunc = func; }
+    int get_stencilRef() const { return m_stencilRef; }
+    void set_stencilRef(int ref) { m_stencilRef = ref; }
+    uint32_t get_stencilFuncMask() const { return m_stencilFuncMask; }
+    void set_stencilFuncMask(uint32_t mask) { m_stencilFuncMask = mask; }
+
 protected:
     explicit Material(const std::shared_ptr<Shader> &shader) : m_shader(shader) {
     }
@@ -67,8 +84,7 @@ protected:
 
     // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话后绘制的会覆盖先绘制的
     bool m_enableDepthTest{true};
-    // 设置深度测试方法
-    GLenum m_depthFunc{GL_FALSE};
+    GLenum m_depthFunc{GL_FALSE}; // 设置深度测试方法
     bool m_depthWrite{true};
 
     // polygon offset
@@ -76,4 +92,14 @@ protected:
     uint32_t m_polygonOffsetType{GL_POLYGON_OFFSET_FILL};
     float m_polygonFactor{1.0f};
     float m_polygonUnit{1.0f};
+
+    // stencil
+    bool m_enableStencilTest{false};
+    uint32_t m_sFail{GL_KEEP}; // stencil fail
+    uint32_t m_zFail{GL_KEEP}; // stencil pass+depth fail
+    uint32_t m_zPass{GL_KEEP}; // stencil pass+depth pass
+    uint32_t m_stencilMask{0xff}; // control stencil write
+    uint32_t m_stencilFunc{GL_ALWAYS};
+    int m_stencilRef{0};
+    uint32_t m_stencilFuncMask{0xff};
 };

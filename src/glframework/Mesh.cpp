@@ -14,15 +14,15 @@ Mesh::Mesh(std::shared_ptr<Geometry> geometry, std::shared_ptr<Material> materia
 
 void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPack &lights) const {
     // depth
-    if (this->m_material->get_depth_test()) {
+    if (this->m_material->get_depthTest()) {
         // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话后绘制的会覆盖先绘制的
         glEnable(GL_DEPTH_TEST);
         // 设置深度测试方法
-        glDepthFunc(this->m_material->get_depth_func());
+        glDepthFunc(this->m_material->get_depthFunc());
     } else {
         glDisable(GL_DEPTH_TEST);
     }
-    if (this->m_material->get_depth_write()) {
+    if (this->m_material->get_depthWrite()) {
         glDepthMask(GL_TRUE);
     } else {
         glDepthMask(GL_FALSE);
@@ -34,6 +34,15 @@ void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPac
     } else {
         glDisable(GL_POLYGON_OFFSET_FILL);
         glDisable(GL_POLYGON_OFFSET_LINE);
+    }
+    // stencil
+    if (m_material->get_stencilTest()) {
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(m_material->get_sFail(), m_material->get_zFail(), m_material->get_zPass());
+        glStencilMask(m_material->get_stencilMask());
+        glStencilFunc(m_material->get_stencilFunc(), m_material->get_stencilRef(), m_material->get_stencilFuncMask());
+    } else {
+        glDisable(GL_STENCIL_TEST);
     }
 
     // 用哪个shader
