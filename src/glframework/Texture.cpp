@@ -5,45 +5,40 @@
 #include "glframework/Texture.h"
 
 #include <stb_image.h>
-#include <iostream>
 
 #include "err_check.h"
+#include "x_log.h"
 
 // 定义
-std::unordered_map<std::string, Texture*> Texture::m_TextureCache{};
+std::unordered_map<std::string, Texture *> Texture::m_TextureCache{};
 
-Texture* Texture::CreateTexture(const std::string& path, unsigned int uint)
-{
+Texture *Texture::CreateTexture(const std::string &path, unsigned int uint) {
     auto iter = m_TextureCache.find(path);
-    if (iter != m_TextureCache.end())
-    {
+    if (iter != m_TextureCache.end()) {
         // first is key, second is val
         return iter->second;
     }
-    auto texture         = new Texture(path, uint);
+    auto texture = new Texture(path, uint);
     m_TextureCache[path] = texture;
     return texture;
 }
 
-Texture* Texture::CreateTexture(const std::string& path, const uint8_t* dataIn, int widthIn, int heightIn,
-                                uint32_t uint)
-{
+Texture *Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, int widthIn, int heightIn,
+                                uint32_t uint) {
     auto iter = m_TextureCache.find(path);
     if (iter != m_TextureCache.end()) return iter->second;
-    auto texture         = new Texture(dataIn, widthIn, heightIn, uint);
+    auto texture = new Texture(dataIn, widthIn, heightIn, uint);
     m_TextureCache[path] = texture;
     return texture;
 }
 
-Texture::Texture(const std::string& path, int unit) : m_Uint(unit)
-{
+Texture::Texture(const std::string &path, int unit) : m_Uint(unit) {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
-    int            nrChannels;
-    unsigned char* data = stbi_load(path.c_str(), &m_Width, &m_Height, &nrChannels, STBI_default);
-    if (!data)
-    {
-        std::cout << "ERROR::TEXTURE::fail to read picture, " << path << std::endl;
+    int nrChannels;
+    unsigned char *data = stbi_load(path.c_str(), &m_Width, &m_Height, &nrChannels, STBI_default);
+    if (!data) {
+        XLOG_ERROR("TEXTURE::fail to read picture, {}", path);
         exit(EXIT_FAILURE);
     }
     // 创建纹理对象
@@ -72,26 +67,21 @@ Texture::Texture(const std::string& path, int unit) : m_Uint(unit)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-Texture::Texture(const uint8_t* dataIn, int widthIn, int heightIn, uint32_t uint)
-{
+Texture::Texture(const uint8_t *dataIn, int widthIn, int heightIn, uint32_t uint) {
     m_Uint = uint;
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
     // 图片大小 多少字节
     uint32_t dataSize = 0;
-    if (!heightIn)
-    {
+    if (!heightIn) {
         dataSize = widthIn;
-    }
-    else
-    {
+    } else {
         dataSize = widthIn * heightIn * 4;
     }
-    int            channels = 0;
-    unsigned char* data     = stbi_load_from_memory(dataIn, dataSize, &widthIn, &heightIn, &channels, STBI_default);
-    if (!data)
-    {
-        std::cerr << "ERROR::TEXTURE::fail to read picture from memory" << std::endl;
+    int channels = 0;
+    unsigned char *data = stbi_load_from_memory(dataIn, dataSize, &widthIn, &heightIn, &channels, STBI_default);
+    if (!data) {
+        XLOG_ERROR("TEXTURE::fail to read picture from memory");
         exit(EXIT_FAILURE);
     }
     GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_Texture));
@@ -107,19 +97,18 @@ Texture::Texture(const uint8_t* dataIn, int widthIn, int heightIn, uint32_t uint
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-Texture::~Texture()
-{
-    if (m_Texture != 0) glDeleteTextures(1, &m_Texture);
+Texture::~Texture() {
+    if (m_Texture != 0) {
+        glDeleteTextures(1, &m_Texture);
+    }
 }
 
-void Texture::Bind() const
-{
+void Texture::Bind() const {
     // OpenGL是状态机 不知道当前状态机的纹理单元 所以要先切换纹理单元 然后绑定纹理对象
     GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
     GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_Texture));
 }
 
-int Texture::GetUnit() const
-{
+int Texture::GetUnit() const {
     return m_Uint;
 }

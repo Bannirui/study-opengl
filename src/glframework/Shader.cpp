@@ -6,7 +6,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <iostream>
 #include <cstring>
 #include <array>
 #include <vector>
@@ -55,7 +54,7 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
         vertexCode = vShaderStream.str();
         fragmentCode = fShaderStream.str();
     } catch (std::ifstream::failure &e) {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESS: " << e.what() << std::endl;
+        XLOG_ERROR("SHADER::FILE_NOT_SUCCESS: {}", e.what());
         exit(EXIT_FAILURE);
     }
     const char *vShaderCode = vertexCode.c_str();
@@ -142,8 +141,8 @@ void Shader::checkCompileErrors(unsigned int shader, ShaderType type) {
         default:
             break;
     }
-    if (success) return;
-    std::cout << "ERROR::SHADER_ERROR of type: " << type << "\n" << errInfo << std::endl;
+    if (success) { return; }
+    XLOG_ERROR("SHADER_ERR of type: {}, {}", static_cast<int>(type), errInfo);
     assert(false);
 }
 
