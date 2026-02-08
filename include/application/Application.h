@@ -6,6 +6,8 @@
 
 #include <cstdint>
 
+#include "glm/vec4.hpp"
+
 #define glApp Application::getInstance()
 
 // 前向声明
@@ -38,6 +40,20 @@ public:
 
     void RegisterCallback();
 
+
+    // 整合imgui
+    void InitImGui();
+
+    /**
+     * 每一帧渲染gui
+     * <ul>
+     *   <li>开启当前imgui渲染</li>
+     *   <li>gui控件</li>
+     *   <li>执行ui渲染</li>
+     * </ul>
+     */
+    void RenderImGui();
+
     // 帧循环
     bool Update();
 
@@ -47,6 +63,9 @@ public:
 
     // 获取鼠标位置
     void GetMousePos(double *x, double *y);
+
+    glm::vec4 get_clearColor() const { return m_clearColor; }
+    void set_clearColor(const glm::vec4 &color) { m_clearColor = color; }
 
 private:
     Application() = default;
@@ -98,4 +117,6 @@ private:
     MouseScrollCallbackPtr m_MouseScrollCallback{nullptr};
     // 鼠标点击事件
     MouseBtnCallbackPtr m_MouseBtnCallback{nullptr};
+
+    glm::vec4 m_clearColor{0.0f};
 };

@@ -2,7 +2,6 @@
 // Created by dingrui on 25-6-23.
 //
 
-#include <iostream>
 #include <memory>
 
 #include <glm/glm.hpp>
@@ -24,16 +23,13 @@
 #include "glframework/renderer/light_pack.h"
 #include "input/input_dispatcher.h"
 
-const unsigned int SCR_WIDTH = 1600;
-const unsigned int SCR_HEIGHT = 800;
-
 int main() {
-    if (!glApp->Init(SCR_WIDTH, SCR_HEIGHT)) return -1;
+    if (!glApp->Init(1600, 800)) return -1;
     // 监听事件
     glApp->RegisterCallback();
 
     // 负责渲染
-    std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
+    Renderer renderer;
     // 物体
     // 球体
     std::vector<std::shared_ptr<Mesh> > meshes;
@@ -74,7 +70,7 @@ int main() {
 
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer->render(meshes, camera, lights);
+        renderer.render(meshes, camera, lights);
     }
     return 0;
 }

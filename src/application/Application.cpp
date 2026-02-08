@@ -6,9 +6,13 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 #include "x_log.h"
 #include "input/input_dispatcher.h"
+#include "glframework/x_config.h"
 
 // 初始化静态变量
 Application *Application::s_Instance = nullptr;
@@ -70,6 +74,35 @@ void Application::RegisterCallback() {
     m_MousePosCallback = InputDispatcher::OnCursor;
     m_MouseScrollCallback = InputDispatcher::OnScroll;
     m_MouseBtnCallback = InputDispatcher::OnMouse;
+}
+
+void Application::InitImGui() {
+    ImGui::CreateContext();
+    // 主题
+    ImGui::StyleColorsDark();
+    // imgui绑定glfw
+    ImGui_ImplGlfw_InitForOpenGL(glApp->getWindow(), true);
+    // imgui绑定opengl
+    ImGui_ImplOpenGL3_Init(X_GL_VERSION_STR);
+}
+
+void Application::RenderImGui() {
+    // 开启imgui的渲染
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    // 控件
+    ImGui::Begin("Settings");
+    ImGui::Text("hello world");
+    ImGui::Button("test btn", ImVec2(40, 20));
+    ImGui::ColorEdit3("clear color", reinterpret_cast<float *>(&m_clearColor));
+    ImGui::End();
+    // 渲染
+    ImGui::Render();
+    int display_w, display_h;
+    glfwGetWindowSize(glApp->getWindow(), &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 bool Application::Update() {

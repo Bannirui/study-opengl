@@ -26,11 +26,8 @@
 #include "glframework/renderer/light_pack.h"
 #include "input/input_dispatcher.h"
 
-const unsigned int SCR_WIDTH = 1600;
-const unsigned int SCR_HEIGHT = 800;
-
 int main() {
-    if (!glApp->Init(SCR_WIDTH, SCR_HEIGHT)) return -1;
+    if (!glApp->Init(1600, 800)) return -1;
     // 监听事件
     glApp->RegisterCallback();
 

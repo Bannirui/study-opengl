@@ -27,9 +27,6 @@
 #include "glframework/renderer/light_pack.h"
 #include "input/input_dispatcher.h"
 
-const unsigned int SCR_WIDTH = 1600;
-const unsigned int SCR_HEIGHT = 800;
-
 // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
 void meshTransform(const std::vector<std::shared_ptr<Mesh> > &meshes, const struct LightPack &lights) {
     float xPos = glm::sin(glfwGetTime()) + 2.0f;
@@ -42,7 +39,7 @@ void meshTransform(const std::vector<std::shared_ptr<Mesh> > &meshes, const stru
 }
 
 int main() {
-    if (!glApp->Init(SCR_WIDTH, SCR_HEIGHT)) return -1;
+    if (!glApp->Init(1600, 800)) return -1;
     // 监听事件
     glApp->RegisterCallback();
 
