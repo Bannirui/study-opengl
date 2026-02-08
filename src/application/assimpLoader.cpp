@@ -44,11 +44,11 @@ void AssimpLoader::processNode(aiNode *aiNode, const std::shared_ptr<Object> &pa
     // 解构位置 缩放 旋转
     glm::vec3 pos, eulerAngle, scale;
     Tool::decompose(localMatrix, pos, eulerAngle, scale);
-    myNode->SetPosition(pos);
+    myNode->set_position(pos);
     myNode->SetAngleX(eulerAngle.x);
     myNode->SetAngleX(eulerAngle.y);
     myNode->SetAngleX(eulerAngle.z);
-    myNode->SetScale(scale);
+    myNode->set_scale(scale);
     // 检查mesh
     for (int i = 0, sz = aiNode->mNumMeshes; i < sz; i++) {
         int meshId = aiNode->mMeshes[i];

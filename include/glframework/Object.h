@@ -16,49 +16,50 @@ class Camera;
 struct LightPack;
 
 // 区分是Object还是Mesh 决定要不要渲染
-enum class ObjectType
-{
+enum class ObjectType {
     Object,
     Mesh,
     Scene,
 };
 
 // 物体抽象 平移 缩放 转动
-class Object : public std::enable_shared_from_this<Object>
-{
+class Object : public std::enable_shared_from_this<Object> {
 public:
     Object();
+
     Object(ObjectType type);
+
     virtual ~Object() = default;
 
-    glm::vec3 GetPosition() const { return m_position; }
-    void      SetPosition(glm::vec3 pos);
-
+    glm::vec3 get_position() const { return m_position; }
+    void set_position(glm::vec3 pos) { m_position = pos; }
     // 增量旋转 在上一次基础上再旋转多少度
-    void SetRotationX(float angle);
-    void SetRotationY(float angle);
-    void SetRotationZ(float angle);
-
-    void SetScale(glm::vec3 scale);
-
+    void set_rotationX(float angle) { m_angle_x += angle; }
+    void set_rotationY(float angle) { m_angle_y += angle; }
+    void set_rotationZ(float angle) { m_angle_z += angle; }
+    void set_scale(glm::vec3 scale) { m_scale = scale; }
     // 设置旋转角度
-    void SetAngleX(float angle);
-    void SetAngleY(float angle);
-    void SetAngleZ(float angle);
+    void SetAngleX(float angle) { m_angle_x = angle; }
+    void SetAngleY(float angle) { m_angle_y = angle; }
+    void SetAngleZ(float angle) { m_angle_z = angle; }
 
     // 计算出model matrix
     glm::mat4 GetModelMatrix() const;
 
     // 父子关系
-    std::shared_ptr<Object>                     GetParent() const;
-    void                                        AddChild(const std::shared_ptr<Object> child);
-    const std::vector<std::shared_ptr<Object>>& GetChildren() const;
+    std::shared_ptr<Object> GetParent() const;
 
-    ObjectType GetType() const { return m_type; }
-    void       RemoveChild(const std::shared_ptr<Object>& child);
+    void AddChild(std::shared_ptr<Object> child);
+
+    const std::vector<std::shared_ptr<Object> > &GetChildren() const;
+
+    ObjectType get_type() const { return m_type; }
+
+    void RemoveChild(const std::shared_ptr<Object> &child);
 
     // Object是多态的 真正的渲染逻辑下沉到具体对象
-    virtual void Render(const Renderer&, const Camera&, const LightPack&) const {}
+    virtual void Render(const Renderer &, const Camera &, const LightPack &) const {
+    }
 
 protected:
     // 位置坐标 世界坐标系
@@ -74,7 +75,7 @@ protected:
 
     // 父子关系不是所有权的拥有关系 所以就用裸指针 不要用智能指针
     // 孩子节点
-    std::vector<std::shared_ptr<Object>> m_children;
+    std::vector<std::shared_ptr<Object> > m_children;
     // 父亲节点
     std::weak_ptr<Object> m_parent;
 

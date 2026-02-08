@@ -35,11 +35,11 @@ int main() {
     scene->AddChild(meshA);
 
     std::shared_ptr<Mesh> meshB = std::make_shared<Mesh>(geometry, material);
-    meshB->SetPosition(glm::vec3(2.0f, 0.5f, -1.0f));
+    meshB->set_position(glm::vec3(2.0f, 0.5f, -1.0f));
     scene->AddChild(meshB);
 
     std::shared_ptr<Mesh> meshC = std::make_shared<Mesh>(geometry, material);
-    meshC->SetPosition(glm::vec3(4.0f, 1.0f, -2.0f));
+    meshC->set_position(glm::vec3(4.0f, 1.0f, -2.0f));
     scene->AddChild(meshC);
 
     // 光线

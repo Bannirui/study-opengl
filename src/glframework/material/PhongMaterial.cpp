@@ -54,7 +54,7 @@ void PhongMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera
     // 点光
     if (lights.HasSpot()) {
         shader.setBool("u_activePointLight", true);
-        shader.setFloatVec3("u_pointLight.pos", lights.point->GetPosition());
+        shader.setFloatVec3("u_pointLight.pos", lights.point->get_position());
         shader.setFloatVec3("u_pointLight.color", lights.point->get_color());
         // 高光反射强度
         shader.setFloat("u_pointLight.specularIntensity", lights.point->get_specular_intensity());
@@ -65,7 +65,7 @@ void PhongMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera
     // 聚光灯
     if (lights.HasSpot()) {
         shader.setBool("u_activeSpotLight", true);
-        shader.setFloatVec3("u_spotLight.pos", lights.spot->GetPosition());
+        shader.setFloatVec3("u_spotLight.pos", lights.spot->get_position());
         shader.setFloatVec3("u_spotLight.targetDirection", lights.spot->m_targetDirection);
         shader.setFloatVec3("u_spotLight.color", lights.spot->get_color());
         shader.setFloat("u_spotLight.innerCos", glm::cos(glm::radians(lights.spot->m_innerAngle)));

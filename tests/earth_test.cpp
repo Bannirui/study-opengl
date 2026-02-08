@@ -45,7 +45,7 @@ int main() {
     earthMaterial->set_shines(16.0f);
     earthMaterial->set_diffuse(new Texture("asset/texture/earth.jpg", 1));
     std::shared_ptr<Mesh> earthMesh = std::make_shared<Mesh>(earthGeometry, earthMaterial);
-    earthMesh->SetPosition(glm::vec3(2.5f, 0.0f, 0.0f));
+    earthMesh->set_position(glm::vec3(2.5f, 0.0f, 0.0f));
     meshes.push_back(earthMesh);
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
@@ -66,7 +66,7 @@ int main() {
     // 窗体循环
     while (glApp->Update()) {
         cameraCtl->OnUpdate();
-        meshes[1]->SetRotationY(0.2f);
+        meshes[1]->set_rotationY(0.2f);
 
         // 每一帧清一次屏
         Renderer::BeginFrame();

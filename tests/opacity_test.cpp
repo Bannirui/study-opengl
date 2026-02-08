@@ -44,7 +44,7 @@ int main() {
     std::shared_ptr<PhongMaterial> materialB = std::make_shared<PhongMaterial>();
     materialB->set_diffuse(new Texture("asset/texture/earth.jpg", 1));
     std::shared_ptr<Mesh> meshB = std::make_shared<Mesh>(geometryB, materialB);
-    meshB->SetPosition(glm::vec3(5.0f, 0.0f, 0.0f));
+    meshB->set_position(glm::vec3(5.0f, 0.0f, 0.0f));
     scene->AddChild(meshB);
 
     // 光线

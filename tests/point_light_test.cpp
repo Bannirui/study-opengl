@@ -30,12 +30,12 @@
 // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
 void meshTransform(const std::vector<std::shared_ptr<Mesh> > &meshes, const struct LightPack &lights) {
     float xPos = glm::sin(glfwGetTime()) + 2.0f;
-    meshes[1]->SetPosition(glm::vec3(xPos, 0.0f, 0.0f));
+    meshes[1]->set_position(glm::vec3(xPos, 0.0f, 0.0f));
     if (lights.point) {
-        lights.point->SetPosition(meshes[1]->GetPosition());
+        lights.point->set_position(meshes[1]->get_position());
     }
-    meshes[0]->SetRotationX(1.0f);
-    meshes[0]->SetRotationY(0.2f);
+    meshes[0]->set_rotationX(1.0f);
+    meshes[0]->set_rotationY(0.2f);
 }
 
 int main() {
@@ -59,12 +59,12 @@ int main() {
     std::shared_ptr<Sphere> whiteObjGeometry = std::make_shared<Sphere>(0.1f);
     std::shared_ptr<WhiteMaterial> whiteObjMaterial = std::make_shared<WhiteMaterial>();
     std::shared_ptr<Mesh> whiteObjMesh = std::make_shared<Mesh>(whiteObjGeometry, whiteObjMaterial);
-    whiteObjMesh->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
+    whiteObjMesh->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
     meshes.push_back(whiteObjMesh);
     // 光线
     struct LightPack lights;
     std::shared_ptr<PointLight> point_light = std::make_shared<PointLight>();
-    point_light->SetPosition(whiteObjMesh->GetPosition());
+    point_light->set_position(whiteObjMesh->get_position());
     std::shared_ptr<AmbientLight> ambient_light = std::make_shared<AmbientLight>();
     ambient_light->set_color(glm::vec3(0.2f));
     lights.point = point_light;

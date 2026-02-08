@@ -56,8 +56,8 @@ int main() {
     materialABound->set_stencilRef(1);
     materialABound->set_stencilFuncMask(0xff);
     std::shared_ptr<Mesh> meshABound = std::make_shared<Mesh>(geometryA, materialABound);
-    meshABound->SetPosition(meshA->GetPosition());
-    meshABound->SetScale(glm::vec3(1.2f));
+    meshABound->set_position(meshA->get_position());
+    meshABound->set_scale(glm::vec3(1.2f));
     scene->AddChild(meshABound);
 
     std::shared_ptr<Sphere> geometryB = std::make_shared<Sphere>(2.0f);
@@ -72,7 +72,7 @@ int main() {
     materialB->set_stencilRef(1);
     materialB->set_stencilFuncMask(0xff);
     std::shared_ptr<Mesh> meshB = std::make_shared<Mesh>(geometryB, materialB);
-    meshB->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
+    meshB->set_position(glm::vec3(3.0f, 0.0f, 0.0f));
     scene->AddChild(meshB);
 
     std::shared_ptr<WhiteMaterial> materialBBound = std::make_shared<WhiteMaterial>();
@@ -85,8 +85,8 @@ int main() {
     materialBBound->set_stencilRef(1);
     materialBBound->set_stencilFuncMask(0xff);
     std::shared_ptr<Mesh> meshBBound = std::make_shared<Mesh>(geometryB, materialBBound);
-    meshBBound->SetPosition(meshB->GetPosition());
-    meshBBound->SetScale(glm::vec3(1.2f));
+    meshBBound->set_position(meshB->get_position());
+    meshBBound->set_scale(glm::vec3(1.2f));
     scene->AddChild(meshBBound);
 
     // 光线

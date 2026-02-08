@@ -44,13 +44,13 @@ int main() {
     boxMaterial->set_diffuse(new Texture("asset/texture/box.png", 0));
     boxMaterial->set_specular_mask(new Texture("asset/texture/sp_mask.png", 1));
     std::shared_ptr<Mesh> boxMesh = std::make_shared<Mesh>(boxGeometry, boxMaterial);
-    boxMesh->SetRotationY(-15.0f);
-    boxMesh->SetRotationX(15.0f);
+    boxMesh->set_rotationY(-15.0f);
+    boxMesh->set_rotationX(15.0f);
     // 白色物体
     std::shared_ptr<Sphere> whiteObjGeometry = std::make_shared<Sphere>(0.1f);
     std::shared_ptr<WhiteMaterial> whiteObjMaterial = std::make_shared<WhiteMaterial>();
     std::shared_ptr<Mesh> whiteObjMesh = std::make_shared<Mesh>(whiteObjGeometry, whiteObjMaterial);
-    whiteObjMesh->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
+    whiteObjMesh->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
 
     // todo
     boxMesh->AddChild(whiteObjMesh);
@@ -60,13 +60,13 @@ int main() {
     std::shared_ptr<SpotLight> spotLight = std::make_shared<SpotLight>();
     spotLight->m_innerAngle = 15.0f;
     spotLight->m_outerAngle = 30.0f;
-    spotLight->SetPosition(whiteObjMesh->GetPosition());
+    spotLight->set_position(whiteObjMesh->get_position());
 
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
 
     std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>();
-    pointLight->SetPosition(glm::vec3(0.0f, 0.0f, 1.5f));
+    pointLight->set_position(glm::vec3(0.0f, 0.0f, 1.5f));
     pointLight->set_specular_intensity(0.5f);
     pointLight->m_k2 = 0.017f;
     pointLight->m_k1 = 0.07f;

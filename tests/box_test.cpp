@@ -61,9 +61,9 @@ int main() {
     // 窗体循环
     while (glApp->Update()) {
         cameraCtl->OnUpdate();
-        meshes[0]->SetRotationX(0.1f);
-        meshes[0]->SetRotationY(0.05f);
-        meshes[0]->SetRotationZ(0.01f);
+        meshes[0]->set_rotationX(0.1f);
+        meshes[0]->set_rotationY(0.05f);
+        meshes[0]->set_rotationZ(0.01f);
 
         // 每一帧清一次屏
         Renderer::BeginFrame();
