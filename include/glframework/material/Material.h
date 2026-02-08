@@ -49,6 +49,15 @@ public:
     bool get_depth_write() const { return m_depthWrite; }
     void set_depth_write(const bool option) { m_depthWrite = option; }
 
+    bool get_enablePolygonOffset() const { return m_enablePolygonOffset; }
+    void set_enablePolygonOffset(bool option) { m_enablePolygonOffset = option; }
+    uint32_t get_polygonOffsetType() const { return m_polygonOffsetType; }
+    void set_polygonOffsetType(uint32_t type) { m_polygonOffsetType = type; }
+    float get_polygonFactor() const { return m_polygonFactor; }
+    void set_polygonFactor(float factor) { m_polygonFactor = factor; }
+    float get_polygonUnit() const { return m_polygonUnit; }
+    void set_polygonUnit(float unit) { m_polygonUnit = unit; }
+
 protected:
     explicit Material(const std::shared_ptr<Shader> &shader) : m_shader(shader) {
     }
@@ -61,4 +70,10 @@ protected:
     // 设置深度测试方法
     GLenum m_depthFunc{GL_FALSE};
     bool m_depthWrite{true};
+
+    // polygon offset
+    bool m_enablePolygonOffset{false};
+    uint32_t m_polygonOffsetType{GL_POLYGON_OFFSET_FILL};
+    float m_polygonFactor{1.0f};
+    float m_polygonUnit{1.0f};
 };

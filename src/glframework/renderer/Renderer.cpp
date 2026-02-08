@@ -20,6 +20,8 @@ void Renderer::BeginFrame() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_POLYGON_OFFSET_LINE);
     // 清理画布 每一帧都要清屏 防止残留前一帧图像 清理的时候也要清理深度缓存
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

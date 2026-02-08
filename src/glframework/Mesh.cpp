@@ -13,6 +13,7 @@ Mesh::Mesh(std::shared_ptr<Geometry> geometry, std::shared_ptr<Material> materia
 }
 
 void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPack &lights) const {
+    // depth
     if (this->m_material->get_depth_test()) {
         // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话后绘制的会覆盖先绘制的
         glEnable(GL_DEPTH_TEST);
@@ -25,6 +26,14 @@ void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPac
         glDepthMask(GL_TRUE);
     } else {
         glDepthMask(GL_FALSE);
+    }
+    // polygon offset
+    if (m_material->get_enablePolygonOffset()) {
+        glEnable(m_material->get_polygonOffsetType());
+        glPolygonOffset(m_material->get_polygonFactor(), m_material->get_polygonUnit());
+    } else {
+        glDisable(GL_POLYGON_OFFSET_FILL);
+        glDisable(GL_POLYGON_OFFSET_LINE);
     }
 
     // 用哪个shader
