@@ -99,6 +99,8 @@ uniform PointLight u_pointLight;
 // 环境光
 uniform vec3 u_ambientColor;
 
+uniform float u_opacity;
+
 out vec4 fragColor;
 
 /**
@@ -208,6 +210,7 @@ void main()
     // 计算光照的通用数据
     // 采样
     vec3 objectColor = texture(u_sampler, uv).rgb;
+    float alpha = texture(u_sampler, uv).a;
     // 法线向量归一
     vec3 normalN = normalize(normal);
     // 光源照射方向
@@ -225,5 +228,5 @@ void main()
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
     vec3 finalColor = ret + ambientColor;
-    fragColor = vec4(finalColor, 1.0f);
+    fragColor = vec4(finalColor, alpha * u_opacity);
 }

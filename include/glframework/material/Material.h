@@ -75,6 +75,16 @@ public:
     uint32_t get_stencilFuncMask() const { return m_stencilFuncMask; }
     void set_stencilFuncMask(uint32_t mask) { m_stencilFuncMask = mask; }
 
+    bool get_enableBlend() const { return m_enableBlend; }
+    void set_enableBlend(bool option) { m_enableBlend = option; }
+    uint32_t get_srcBlendFactor() const { return m_sBlendFactor; }
+    void set_srcBlendFactor(uint32_t factor) { m_sBlendFactor = factor; }
+    uint32_t get_destBlendFactor() const { return m_dBlendFactor; }
+    void set_destBlendFactor(uint32_t factor) { m_dBlendFactor = factor; }
+
+    float get_opacity() const { return m_opacity; }
+    void set_opacity(float val) { this->m_opacity = val; }
+
 protected:
     explicit Material(const std::shared_ptr<Shader> &shader) : m_shader(shader) {
     }
@@ -102,4 +112,12 @@ protected:
     uint32_t m_stencilFunc{GL_ALWAYS};
     int m_stencilRef{0};
     uint32_t m_stencilFuncMask{0xff};
+
+    // color blend
+    bool m_enableBlend{false};
+    uint32_t m_sBlendFactor{GL_SRC_ALPHA}; // src factor
+    uint32_t m_dBlendFactor{GL_ONE_MINUS_SRC_ALPHA}; // dest factor
+
+    // opacity
+    float m_opacity{1.0f}; // 0 is opacity, 1 is non-opacity
 };

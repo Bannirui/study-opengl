@@ -31,6 +31,9 @@ void Renderer::BeginFrame() {
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilMask(0xff);
 
+    // color blend, default is closed
+    glDisable(GL_BLEND);
+
     // 清理画布 每一帧都要清屏 防止残留前一帧图像 清理的时候也要清理深度缓存
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }

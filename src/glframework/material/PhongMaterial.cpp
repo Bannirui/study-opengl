@@ -81,4 +81,6 @@ void PhongMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera
     shader.setFloat("u_shiness", this->m_shines);
     // 相机位置
     shader.setFloatVec3("u_cameraPos", camera.get_position());
+    // opacity
+    shader.setFloat("u_opacity", this->m_opacity);
 }

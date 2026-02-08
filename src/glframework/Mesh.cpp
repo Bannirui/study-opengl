@@ -44,6 +44,13 @@ void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPac
     } else {
         glDisable(GL_STENCIL_TEST);
     }
+    // color blend
+    if (m_material->get_enableBlend()) {
+        glEnable(GL_BLEND);
+        glBlendFunc(m_material->get_srcBlendFactor(), m_material->get_destBlendFactor());
+    } else {
+        glDisable(GL_BLEND);
+    }
 
     // 用哪个shader
     Shader &shader = m_material->get_shader();
