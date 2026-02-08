@@ -4,8 +4,9 @@
 
 #include "glframework/Object.h"
 
-#include <iostream>
 #include <ostream>
+
+#include "x_log.h"
 
 Object::Object() : m_type(ObjectType::Object) {}
 
@@ -88,7 +89,7 @@ void Object::AddChild(const std::shared_ptr<Object> child)
     auto iter = std::find(m_children.begin(), m_children.end(), child);
     if (iter != m_children.end())
     {
-        std::cerr << "重复添加" << std::endl;
+        XLOG_ERROR("重复添加");
         return;
     }
     // 如果child原来有父节点 先从原父节点移除

@@ -12,7 +12,6 @@
 #include "glframework/light/PointLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/Mesh.h"
-
 #include "application/camera/Camera.h"
 
 PhongMaterial::PhongMaterial() : Material(std::make_shared<Shader>("asset/shader/phone_shader.glsl")) {

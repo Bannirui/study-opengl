@@ -208,7 +208,7 @@ void Shader::compile(const std::unordered_map<GLenum, std::string> &shaderSource
             std::vector<GLchar> infoLog(maxLength);
             GL_CALL_AND_CHECK_ERR(glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]));
             GL_CALL_AND_CHECK_ERR(glDeleteShader(shader));
-            std::cerr << infoLog.data() << std::endl;
+            XLOG_ERROR("{}", infoLog.data());
         }
         GL_CALL_AND_CHECK_ERR(glAttachShader(program, shader));
         glShaderIDs[glShaderIDIndex++] = shader;

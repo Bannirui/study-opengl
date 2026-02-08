@@ -5,7 +5,6 @@
 #pragma once
 #include <glad/glad.h>
 #include <cstddef>
-#include <vector>
 
 enum class VertexAttr
 {

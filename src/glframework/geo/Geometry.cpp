@@ -2,11 +2,9 @@
 // Created by dingrui on 25-7-20.
 //
 
-#include "../../../include/glframework/geo/Geometry.h"
+#include "glframework/geo/Geometry.h"
 
-#include <glm/ext/scalar_constants.hpp>
 #include <glm/glm.hpp>
-#include <vector>
 
 Geometry::~Geometry()
 {

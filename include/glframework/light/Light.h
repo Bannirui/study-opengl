@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "glframework/Core.h"
+#include <glm/glm.hpp>
 
 class Light
 {

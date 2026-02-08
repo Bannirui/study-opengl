@@ -6,8 +6,6 @@
 
 #include "glframework/material/Material.h"
 
-#include <memory>
-
 class Texture;
 
 // 平行光

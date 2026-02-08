@@ -8,7 +8,6 @@
 #include "glframework/Mesh.h"
 #include "glframework/Shader.h"
 #include "glframework/Texture.h"
-#include "glframework/geo/Geometry.h"
 #include "glframework/material/Material.h"
 
 void Renderer::setClearColor(glm::vec3 color) {

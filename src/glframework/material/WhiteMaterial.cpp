@@ -6,7 +6,6 @@
 
 #include "glframework/Mesh.h"
 #include "glframework/renderer/Renderer.h"
-
 #include "application/camera/Camera.h"
 
 WhiteMaterial::WhiteMaterial() : Material(std::make_shared<Shader>("asset/shader/white_shader.glsl")) {}

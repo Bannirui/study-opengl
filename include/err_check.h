@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
 #include <assert.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include "x_log.h"
 
 // 调用opengl的api后检查异常
 // glGetError拿到的opengl最近的一个错误
@@ -38,7 +38,7 @@
                     errMsg = "OPENGL::ERROR::UNKNOWN ERROR";     \
                     break;                                       \
             }                                                    \
-            std::cout << errMsg << std::endl;                    \
+            XLOG_ERROR("{}", errMsg);                            \
             assert(false);                                       \
         }                                                        \
     } while (0)

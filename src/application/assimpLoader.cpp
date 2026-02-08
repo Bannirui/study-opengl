@@ -106,8 +106,6 @@ std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
     std::shared_ptr<Model> geometry = std::make_shared<Model>(
         vertices, indices, static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal));
     std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>();
-    // material->set_depthTest(true);
-    // material->set_depthWrite(false);
     if (aiMesh->mMaterialIndex >= 0) {
         aiMaterial *aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
         Texture *diffuseTexture = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
