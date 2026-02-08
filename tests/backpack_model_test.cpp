@@ -67,19 +67,9 @@ void renderIMGUI() {
 }
 
 int main() {
-    if (!glApp->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
-
+    if (!glApp->Init(SCR_WIDTH, SCR_HEIGHT)) return -1;
     // 监听事件
-    InputDispatcher inputDispatcher(glApp);
-    glApp->set_resizeCallback(InputDispatcher::OnResize);
-    glApp->set_keyboardCallback(InputDispatcher::OnKey);
-    glApp->set_cursorPosCallback(InputDispatcher::OnCursor);
-    glApp->set_scrollCallback(InputDispatcher::OnScroll);
-    glApp->set_mouseBtnCallback(InputDispatcher::OnMouse);
-
-    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT));
-    // 清理画布的时候清成啥样
-    GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+    glApp->RegisterCallback();
 
     // 渲染器
     Renderer renderer;
@@ -101,16 +91,17 @@ int main() {
     struct LightPack lights;
     lights.directional = directionalLight;
     lights.ambient = ambientLight;
-    PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
+    InputDispatcher inputDispatcher(glApp);
     inputDispatcher.CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = inputDispatcher.get_CameraController();
 
     initIMGUI();
 
     // 窗体循环
-    while (glApp->update()) {
+    while (glApp->Update()) {
         cameraCtl->OnUpdate();
 
         renderer.setClearColor(clear_color);
@@ -121,7 +112,5 @@ int main() {
         // imgui渲染
         renderIMGUI();
     }
-    // 回收资源
-    glApp->destroy();
     return 0;
 }

@@ -30,27 +30,16 @@ public:
 
     static Application *getInstance();
 
-    uint32_t getWidth() const { return m_Width; }
-    uint32_t getHeight() const { return m_Height; }
+    uint32_t get_width() const { return m_Width; }
+    uint32_t get_height() const { return m_Height; }
 
     // glfw窗口初始化 glad函数加载
-    bool init(const uint32_t &width, const uint32_t &height);
+    bool Init(const uint32_t &width, const uint32_t &height);
+
+    void RegisterCallback();
 
     // 帧循环
-    bool update();
-
-    // glfw窗口关闭
-    void destroy();
-
-    // 设置窗口变化回调函数
-    void set_resizeCallback(ResizeCallback fn) { m_ResizeCallback = fn; }
-    // 设置键盘事件回调函数
-    void set_keyboardCallback(KeyboardCallback fn) { m_KeyboardCallback = fn; }
-    // 设置鼠标位置变化监听
-    void set_cursorPosCallback(MousePosCallbackPtr fn) { m_MousePosCallback = fn; }
-    // 设置鼠标滚轮缩放事件
-    void set_scrollCallback(MouseScrollCallbackPtr fn) { m_MouseScrollCallback = fn; }
-    void set_mouseBtnCallback(MouseBtnCallbackPtr fn) { m_MouseBtnCallback = fn; }
+    bool Update();
 
     static void setShouldClose(bool flag);
 
@@ -60,6 +49,11 @@ public:
     void GetMousePos(double *x, double *y);
 
 private:
+    Application() = default;
+
+    // glfw窗口关闭
+    void destroy();
+
     // glfw窗体事件回调
     // @Param window 哪个窗体发生了变化
     // @Param width 新的宽度
@@ -87,18 +81,21 @@ private:
     static Application *s_Instance;
     static bool s_shouldClose;
 
-    Application() = default;
-
     // 窗体宽度
     uint32_t m_Width{0};
     // 窗体高度
     uint32_t m_Height{0};
     // 窗体对象
     GLFWwindow *m_Window{nullptr};
+
     // 窗体大小变化回调的函数指针
     ResizeCallback m_ResizeCallback{nullptr};
+    // 设置键盘事件回调函数
     KeyboardCallback m_KeyboardCallback{nullptr};
+    // 设置鼠标位置变化监听
     MousePosCallbackPtr m_MousePosCallback{nullptr};
+    // 设置鼠标滚轮缩放事件
     MouseScrollCallbackPtr m_MouseScrollCallback{nullptr};
+    // 鼠标点击事件
     MouseBtnCallbackPtr m_MouseBtnCallback{nullptr};
 };

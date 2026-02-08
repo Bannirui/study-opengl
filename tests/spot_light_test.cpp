@@ -76,15 +76,9 @@ void renderIMGUI() {
 
 // 聚光灯 平行光 点光
 int main() {
-    if (!glApp->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
-
+    if (!glApp->Init(SCR_WIDTH, SCR_HEIGHT)) return -1;
     // 监听事件
-    InputDispatcher inputDispatcher(glApp);
-    glApp->set_resizeCallback(InputDispatcher::OnResize);
-    glApp->set_keyboardCallback(InputDispatcher::OnKey);
-    glApp->set_cursorPosCallback(InputDispatcher::OnCursor);
-    glApp->set_scrollCallback(InputDispatcher::OnScroll);
-    glApp->set_mouseBtnCallback(InputDispatcher::OnMouse);
+    glApp->RegisterCallback();
 
     // 渲染器
     Renderer renderer;
@@ -131,16 +125,17 @@ int main() {
 
     std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.2f));
-    PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
+    InputDispatcher inputDispatcher(glApp);
     inputDispatcher.CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = inputDispatcher.get_CameraController();
 
     initIMGUI();
 
     // 窗体循环
-    while (glApp->update()) {
+    while (glApp->Update()) {
         cameraCtl->OnUpdate();
 
         // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
@@ -159,7 +154,5 @@ int main() {
         // imgui渲染
         renderIMGUI();
     }
-    // 回收资源
-    glApp->destroy();
     return 0;
 }

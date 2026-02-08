@@ -4,8 +4,6 @@
 
 #include "input/input_dispatcher.h"
 
-#include <utility>
-
 #include "err_check.h"
 #include "x_log.h"
 #include "application/Application.h"

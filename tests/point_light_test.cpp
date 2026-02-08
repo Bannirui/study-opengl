@@ -42,19 +42,9 @@ void meshTransform(const std::vector<std::shared_ptr<Mesh> > &meshes, const stru
 }
 
 int main() {
-    if (!glApp->init(SCR_WIDTH, SCR_HEIGHT)) return -1;
+    if (!glApp->Init(SCR_WIDTH, SCR_HEIGHT)) return -1;
     // 监听事件
-    InputDispatcher inputDispatcher(glApp);
-
-    glApp->set_resizeCallback(InputDispatcher::OnResize);
-    glApp->set_keyboardCallback(InputDispatcher::OnKey);
-    glApp->set_cursorPosCallback(InputDispatcher::OnCursor);
-    glApp->set_scrollCallback(InputDispatcher::OnScroll);
-    glApp->set_mouseBtnCallback(InputDispatcher::OnMouse);
-
-    GL_CALL_AND_CHECK_ERR(glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT));
-    // 清理画布的时候清成啥样
-    GL_CALL_AND_CHECK_ERR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+    glApp->RegisterCallback();
 
     // 给渲染器准备好的就只需要 实体 光 相机
     std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
@@ -84,20 +74,20 @@ int main() {
     lights.ambient = ambient_light;
 
     // 相机
-    PerspectiveCamera camera(static_cast<float>(glApp->getWidth()) / static_cast<float>(glApp->getHeight()));
+    PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
+
+    InputDispatcher inputDispatcher(glApp);
     inputDispatcher.CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = inputDispatcher.get_CameraController();
 
     // 窗体循环
-    while (glApp->update()) {
+    while (glApp->Update()) {
         cameraCtl->OnUpdate();
         meshTransform(meshes, lights);
         // 每一帧清一次屏
         Renderer::BeginFrame();
         renderer->render(meshes, camera, lights);
     }
-    // 回收资源
-    glApp->destroy();
     return 0;
 }
