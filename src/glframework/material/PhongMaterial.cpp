@@ -17,11 +17,6 @@
 PhongMaterial::PhongMaterial() : Material(std::make_shared<Shader>("asset/shader/phone_shader.glsl")) {
 }
 
-PhongMaterial::~PhongMaterial() {
-    delete m_diffuse;
-    delete m_specularMask;
-}
-
 void PhongMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
                                   const LightPack &lights) const {
     if (m_diffuse) {
