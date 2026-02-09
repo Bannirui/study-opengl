@@ -85,6 +85,13 @@ public:
     float get_opacity() const { return m_opacity; }
     void set_opacity(float val) { this->m_opacity = val; }
 
+    bool get_enableFaceCull() const { return m_enableFaceCull; }
+    void set_enableFaceCull(bool option) { m_enableFaceCull = option; }
+    uint32_t get_faceCull_front() const { return m_faceCull_front; }
+    void set_faceCull_front(uint32_t front) { m_faceCull_front = front; }
+    uint32_t get_faceCull_cull() const { return m_faceCull_cull; }
+    void set_faceCull_cull(uint32_t which) { m_faceCull_cull = which; }
+
 protected:
     explicit Material(const std::shared_ptr<Shader> &shader) : m_shader(shader) {
     }
@@ -120,4 +127,9 @@ protected:
 
     // opacity
     float m_opacity{1.0f}; // 0 is opacity, 1 is non-opacity
+
+    // face culling
+    bool m_enableFaceCull{false};
+    uint32_t m_faceCull_front{GL_CCW}; // define which is front, clock-wise or counter-clock-wise
+    uint32_t m_faceCull_cull{GL_BACK}; // cull front or back
 };

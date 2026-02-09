@@ -51,6 +51,14 @@ void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPac
     } else {
         glDisable(GL_BLEND);
     }
+    // face culling
+    if (m_material->get_enableFaceCull()) {
+        glEnable(GL_CULL_FACE);
+        glFrontFace(m_material->get_faceCull_front());
+        glCullFace(m_material->get_faceCull_cull());
+    } else {
+        glDisable(GL_CULL_FACE);
+    }
 
     // 用哪个shader
     Shader &shader = m_material->get_shader();
