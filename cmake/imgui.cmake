@@ -3,8 +3,8 @@ include(FetchContent)
 # imgui
 FetchContent_Declare(
         imgui
-        GIT_REPOSITORY	https://github.com/Bannirui/imgui.git
-        GIT_TAG 	    fd75bdccb033e74afeba44f500edc8fcef7eb023
+        GIT_REPOSITORY	https://github.com/ocornut/imgui.git
+        GIT_TAG 	    master
 )
 # 下载依赖的源码
 FetchContent_MakeAvailable(imgui)

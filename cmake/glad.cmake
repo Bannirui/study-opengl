@@ -65,8 +65,8 @@ include(FetchContent)
 # glad
 FetchContent_Declare(
         glad
-        GIT_REPOSITORY https://github.com/Bannirui/glad.git
-        GIT_TAG 431786d8126e4f383a81e36f47b61a5d52a1c20d
+        GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+        GIT_TAG glad2
 )
 
 if (UNIX)

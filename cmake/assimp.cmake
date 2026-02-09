@@ -1,7 +1,7 @@
 include(FetchContent)
 FetchContent_Declare(
         assimp
-        GIT_REPOSITORY	https://github.com/Bannirui/assimp.git
-        GIT_TAG 	    59bc03d931270b6354690512d0c881eec8b97678
+        GIT_REPOSITORY	https://github.com/assimp/assimp.git
+        GIT_TAG 	    master
 )
 FetchContent_MakeAvailable(assimp)
