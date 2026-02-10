@@ -12,28 +12,25 @@
 #include <cmath>
 #endif
 
-Sphere::Sphere(float radius)
-{
+Sphere::Sphere(float radius) {
     // xyz坐标
-    std::vector<GLfloat> positions{};
+    std::vector<float> positions{};
     // uv坐标
-    std::vector<GLfloat> uvs{};
+    std::vector<float> uvs{};
     // 法线
-    std::vector<GLfloat> normals{};
+    std::vector<float> normals{};
     // 切线
-    std::vector<GLfloat> tangents{};
+    std::vector<float> tangents{};
     // 索引
-    std::vector<GLuint> indices{};
+    std::vector<uint32_t> indices{};
 
     // 纬线数量
     int numLatLines = 60;
     // 经线数量
     int numLongLines = 60;
-    for (int i = 0; i <= numLatLines; i++)
-    {
-        for (int j = 0; j <= numLongLines; j++)
-        {
-            float phi   = i * glm::pi<float>() / numLatLines;
+    for (int i = 0; i <= numLatLines; i++) {
+        for (int j = 0; j <= numLongLines; j++) {
+            float phi = i * glm::pi<float>() / numLatLines;
             float theta = j * 2 * glm::pi<float>() / numLongLines;
             // 定点坐标
             float y = radius * std::cos(phi);
@@ -43,8 +40,8 @@ Sphere::Sphere(float radius)
             positions.push_back(y);
             positions.push_back(z);
             // uv坐标
-            float u = 1.0 - (float)j / (float)numLongLines;
-            float v = 1.0 - (float)i / (float)numLatLines;
+            float u = 1.0 - (float) j / (float) numLongLines;
+            float v = 1.0 - (float) i / (float) numLatLines;
             uvs.push_back(u);
             uvs.push_back(v);
             // 顶点坐标(x,y,z) 法线就是(0,0,0)到顶点 但是此时不是归一的法线向量 在fs中使用的时候要先归一化
@@ -55,10 +52,8 @@ Sphere::Sphere(float radius)
     }
 
     // 没有=号 顶点索引
-    for (int i = 0; i < numLatLines; i++)
-    {
-        for (int j = 0; j < numLongLines; j++)
-        {
+    for (int i = 0; i < numLatLines; i++) {
+        for (int j = 0; j < numLongLines; j++) {
             int p1 = i * (numLongLines + 1) + j;
             int p2 = p1 + numLongLines + 1;
             int p3 = p1 + 1;
@@ -76,8 +71,7 @@ Sphere::Sphere(float radius)
     // 切线
     tangents.resize(positions.size());
     // 以三角形为单位进行indices的遍历
-    for (long unsigned int i = 0; i < indices.size(); i += 3)
-    {
+    for (long unsigned int i = 0; i < indices.size(); i += 3) {
         // 取出当前三角形的三个顶点的索引
         int idx0 = indices[i];
         int idx1 = indices[i + 1];
@@ -103,7 +97,7 @@ Sphere::Sphere(float radius)
         tangent.x = f * (duv1.y * e0.x - duv0.y * e1.x);
         tangent.y = f * (duv1.y * e0.y - duv0.y * e1.y);
         tangent.z = f * (duv1.y * e0.z - duv0.y * e1.z);
-        tangent   = glm::normalize(tangent);
+        tangent = glm::normalize(tangent);
 
         // 针对本三角形的三个顶点的normal 使tangent正交化(三个不同的tangent）
         auto normal0 = glm::normalize(glm::vec3(normals[idx0 * 3], normals[idx0 * 3 + 1], normals[idx0 * 3 + 2]));
@@ -128,19 +122,17 @@ Sphere::Sphere(float radius)
         tangents[idx2 * 3 + 2] += tangent2.z;
     }
     // 对每个顶点的最终tangent累加值进行normalize
-    for (long unsigned int i = 0; i < tangents.size(); i += 3)
-    {
+    for (long unsigned int i = 0; i < tangents.size(); i += 3) {
         glm::vec3 tangent = glm::vec3(tangents[i], tangents[i + 1], tangents[i + 2]);
-        tangent           = glm::normalize(tangent);
-        tangents[i]       = tangent.x;
-        tangents[i + 1]   = tangent.y;
-        tangents[i + 2]   = tangent.z;
+        tangent = glm::normalize(tangent);
+        tangents[i] = tangent.x;
+        tangents[i + 1] = tangent.y;
+        tangents[i + 2] = tangent.z;
     }
     // 合并顶点属性
-    std::vector<GLfloat> vertices;
-    size_t               vertexCount = positions.size() / 3;
-    for (size_t i = 0; i < vertexCount; ++i)
-    {
+    std::vector<float> vertices;
+    size_t vertexCount = positions.size() / 3;
+    for (size_t i = 0; i < vertexCount; ++i) {
         // position
         vertices.push_back(positions[i * 3 + 0]);
         vertices.push_back(positions[i * 3 + 1]);
@@ -158,8 +150,9 @@ Sphere::Sphere(float radius)
         vertices.push_back(tangents[i * 3 + 2]);
     }
     // 数据灌到gl状态机
-    setupBuffers(vertices.data(), sizeof(GLfloat) * vertices.size(),
-                 static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal |
-                                           VertexAttr::Tangent),
-                 indices.data(), sizeof(GLuint) * indices.size());
+    VertexLayout layout{};
+    layout.posDim = VertexPosDim::k3D;
+    layout.attrs = VertexAttr::kTexCoord | VertexAttr::kNormal | VertexAttr::kTangent;
+    Geometry::SetupBuffers(vertices.data(), sizeof(float) * vertices.size(), layout, indices.data(),
+                           sizeof(uint32_t) * indices.size());
 }

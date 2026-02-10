@@ -6,36 +6,71 @@
 #include <glad/glad.h>
 #include <cstddef>
 
-enum class VertexAttr
-{
-    // xyz坐标
-    Position = 1 << 0,
-    // uv坐标
-    TexCoord = 1 << 1,
-    // 颜色
-    Color = 1 << 2,
-    // 法线
-    Normal = 1 << 3,
-    // 切线
-    Tangent = 1 << 4,
+enum class VertexPosDim: uint8_t {
+    kNone = 0, // no need stride
+    k2D = 2, // vertex xy pos, stride equals 2*float
+    k3D = 3, // vertex xyz pos, stride equals 3*float
 };
-inline VertexAttr operator|(VertexAttr a, VertexAttr b)
-{
-    return static_cast<VertexAttr>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+
+enum class VertexAttr: uint32_t {
+    kNone = 0,
+    // uv坐标
+    kTexCoord = 1 << 0,
+    // 颜色
+    kColor = 1 << 1,
+    // 法线
+    kNormal = 1 << 2,
+    // 切线
+    kTangent = 1 << 3,
+};
+
+struct VertexLayout {
+    // xyz坐标
+    VertexPosDim posDim;
+    VertexAttr attrs;
+};
+
+inline VertexAttr operator|(VertexAttr x, VertexAttr y) {
+    return static_cast<VertexAttr>(static_cast<uint32_t>(x) | static_cast<uint32_t>(y));
 }
 
-using VertexLayout = uint32_t;
+inline VertexAttr operator&(VertexAttr x, VertexAttr y) {
+    return static_cast<VertexAttr>(static_cast<uint32_t>(x) & static_cast<uint32_t>(y));
+}
 
-class Geometry
-{
+inline VertexAttr &operator|=(VertexAttr &x, VertexAttr y) {
+    x = x | y;
+    return x;
+}
+
+inline bool Has(VertexAttr value, VertexAttr flag) {
+    return (value & flag) != VertexAttr::kNone;
+}
+
+using VertexAttrMask = VertexAttr;
+
+struct AttrDesc {
+    VertexAttr attr; // attribute, uv 颜色 法线 切线
+    uint32_t components; // how many float for the attribute
+};
+
+constexpr AttrDesc kAttrTable[] = {
+    {VertexAttr::kTexCoord, 2}, // uv, stride 2*floats
+    {VertexAttr::kColor, 3}, // rgb, stride 3*floats
+    {VertexAttr::kNormal, 3}, // xyz, stride 3*floats
+    {VertexAttr::kTangent, 3}, // xyz, stride 3*floats
+};
+
+class Geometry {
 public:
     virtual ~Geometry();
 
-    GLint    GetVAO() const { return m_VAO; }
-    uint32_t GetIndicesCnt() const { return m_IndicesCnt; }
+    GLint get_VAO() const { return m_VAO; }
+    uint32_t get_IndicesCnt() const { return m_IndicesCnt; }
 
 protected:
     Geometry() = default;
+
     /**
      * @param vertices vbo
      * @param vertSz 多少个byte
@@ -43,8 +78,8 @@ protected:
      * @param indices ebo
      * @param indexSz 多少个byte
      */
-    void setupBuffers(const void* vertices, size_t vertSz, VertexLayout layout, const uint32_t* indices,
-                      size_t indexSz);
+    virtual void SetupBuffers(const void *vertices, size_t vertSz, VertexLayout layout, const uint32_t *indices,
+                              size_t indexSz);
 
 protected:
     GLuint m_VAO{0};

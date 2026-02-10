@@ -103,8 +103,10 @@ std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
             indices.push_back(face.mIndices[j]);
         }
     }
-    std::shared_ptr<Model> geometry = std::make_shared<Model>(
-        vertices, indices, static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal));
+    VertexLayout layout{};
+    layout.posDim = VertexPosDim::k3D;
+    layout.attrs = VertexAttr::kTexCoord | VertexAttr::kNormal;
+    std::shared_ptr<Model> geometry = std::make_shared<Model>(vertices, indices, layout);
     std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>();
     if (aiMesh->mMaterialIndex >= 0) {
         aiMaterial *aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];

@@ -6,82 +6,70 @@
 
 #include <glm/glm.hpp>
 
-Geometry::~Geometry()
-{
-    if (m_VAO != 0) glDeleteVertexArrays(1, &m_VAO);
-    if (m_VBO != 0) glDeleteBuffers(1, &m_VBO);
-    if (m_EBO != 0) glDeleteBuffers(1, &m_EBO);
+Geometry::~Geometry() {
+    if (m_VAO != 0) { glDeleteVertexArrays(1, &m_VAO); }
+    if (m_VBO != 0) { glDeleteBuffers(1, &m_VBO); }
+    if (m_EBO != 0) { glDeleteBuffers(1, &m_EBO); }
 }
 
-void Geometry::setupBuffers(const void* vertices, size_t vertSz, VertexLayout layout, const uint32_t* indices,
-                            size_t indexSz)
-{
+void Geometry::SetupBuffers(const void *vertices, size_t vertSz, VertexLayout layout, const uint32_t *indices,
+                            size_t indexSz) {
     glGenBuffers(1, &m_VBO);
     glGenBuffers(1, &m_EBO);
     glGenVertexArrays(1, &m_VAO);
 
     glBindVertexArray(m_VAO);
 
+    // VBO
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, vertSz, vertices, GL_STATIC_DRAW);
 
+    // EBO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSz, indices, GL_STATIC_DRAW);
 
-    size_t stride = 0;
+    // calculate stride
     // xyz
-    if (layout & static_cast<uint32_t>(VertexAttr::Position)) stride += 3 * sizeof(float);
-    // uv
-    if (layout & static_cast<uint32_t>(VertexAttr::TexCoord)) stride += 2 * sizeof(float);
-    // 颜色
-    if (layout & static_cast<uint32_t>(VertexAttr::Color)) stride += 3 * sizeof(float);
-    // 法线
-    if (layout & static_cast<uint32_t>(VertexAttr::Normal)) stride += 3 * sizeof(float);
-    // 切线
-    if (layout & static_cast<uint32_t>(VertexAttr::Tangent)) stride += 3 * sizeof(float);
+    size_t stride = static_cast<uint32_t>(layout.posDim) * sizeof(float);
+    // for uv, 颜色rgb, 法线normal, 切线tangent
+    for (const auto &desc: kAttrTable) {
+        if (Has(layout.attrs, desc.attr)) {
+            stride += desc.components * sizeof(float);
+        }
+    }
+    // setup vertex attributes
     size_t offset = 0;
-    GLuint index  = 0;
-    // xyz
-    if (layout & static_cast<uint32_t>(VertexAttr::Position))
+    GLuint index = 0;
     {
+        // xyz
         glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
+        glVertexAttribPointer(
+            index,
+            static_cast<uint32_t>(layout.posDim),
+            GL_FLOAT,
+            GL_FALSE,
+            stride,
+            reinterpret_cast<void *>(offset)
+        );
+        offset += static_cast<uint32_t>(layout.posDim) * sizeof(float);
         index++;
     }
-    // uv
-    if (layout & static_cast<uint32_t>(VertexAttr::TexCoord))
-    {
+    // other attributes, uv 颜色 法线 切线
+    for (const auto &desc: kAttrTable) {
+        if (!Has(layout.attrs, desc.attr)) { continue; }
         glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 2, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 2 * sizeof(float);
+        glVertexAttribPointer(
+            index,
+            desc.components,
+            GL_FLOAT,
+            GL_FALSE,
+            stride,
+            reinterpret_cast<void *>(offset)
+        );
+        offset += desc.components * sizeof(float);
         index++;
     }
-    // 颜色
-    if (layout & static_cast<uint32_t>(VertexAttr::Color))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    // 法线
-    if (layout & static_cast<uint32_t>(VertexAttr::Normal))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    // 切线
-    if (layout & static_cast<uint32_t>(VertexAttr::Tangent))
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-        offset += 3 * sizeof(float);
-        index++;
-    }
-    m_IndicesCnt = indexSz / sizeof(unsigned int);
+    m_IndicesCnt = indexSz / sizeof(uint32_t);
     // 解绑VAO
     glBindVertexArray(0);
 }

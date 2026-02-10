@@ -66,9 +66,9 @@ void Mesh::Render(const Renderer &renderer, const Camera &camera, const LightPac
     shader.Bind();
     m_material->ApplyUniforms(shader, *this, camera, lights);
     // 绑定VAO
-    glBindVertexArray(m_geometry->GetVAO());
+    glBindVertexArray(m_geometry->get_VAO());
     // 执行绘制指令
-    glDrawElements(GL_TRIANGLES, m_geometry->GetIndicesCnt(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_geometry->get_IndicesCnt(), GL_UNSIGNED_INT, 0);
     // 解绑VAO
     glBindVertexArray(0);
     shader.Unbind();

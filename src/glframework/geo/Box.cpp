@@ -3,8 +3,7 @@
 //
 #include "glframework/geo/Box.h"
 
-Box::Box(float sz)
-{
+Box::Box(float sz) {
     float half = sz / 2.0f;
     // clang-format off
     float vertices[] = {
@@ -49,7 +48,8 @@ Box::Box(float sz)
         20, 21, 22, 22, 23, 20   // Left face
     };
     // clang-format on
-    setupBuffers(vertices, sizeof(vertices),
-                 static_cast<VertexLayout>(VertexAttr::Position | VertexAttr::TexCoord | VertexAttr::Normal), indices,
-                 sizeof(indices));
+    VertexLayout layout{};
+    layout.posDim = VertexPosDim::k3D;
+    layout.attrs = VertexAttr::kTexCoord | VertexAttr::kNormal;
+    Geometry::SetupBuffers(vertices, sizeof(vertices), layout, indices, sizeof(indices));
 }
