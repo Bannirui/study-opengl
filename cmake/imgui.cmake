@@ -4,7 +4,8 @@ include(FetchContent)
 FetchContent_Declare(
         imgui
         GIT_REPOSITORY	https://github.com/ocornut/imgui.git
-        GIT_TAG 	    master
+        GIT_TAG 	    v1.92.5
+        GIT_PROGRESS TRUE
 )
 # 下载依赖的源码
 FetchContent_MakeAvailable(imgui)

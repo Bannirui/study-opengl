@@ -4,7 +4,8 @@ include(FetchContent)
 FetchContent_Declare(
         glm
         GIT_REPOSITORY	https://github.com/icaven/glm.git
-        GIT_TAG 	    master
+        GIT_TAG 	    dca38025fba63bb9284023e6de55f756b9e37cec
+        GIT_PROGRESS TRUE
 )
 # 下载依赖的源码
 FetchContent_MakeAvailable(glm)

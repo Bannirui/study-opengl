@@ -1,0 +1,20 @@
+//
+// Created by dingrui on 25-7-24.
+//
+
+#pragma once
+
+#include "Material.h"
+#include "glframework/Texture.h"
+
+class ScreenMaterial : public Material {
+public:
+    explicit ScreenMaterial();
+
+    void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera, const LightPack &lights) const override;
+
+    void set_screenTexture(std::shared_ptr<Texture> texture);
+
+private:
+    std::shared_ptr<Texture> m_screenTexture;
+};

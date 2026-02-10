@@ -39,7 +39,7 @@ void Geometry::SetupBuffers(const void *vertices, size_t vertSz, VertexLayout la
     }
     // setup vertex attributes
     size_t offset = 0;
-    GLuint index = 0;
+    uint32_t index = 0;
     {
         // xyz
         glEnableVertexAttribArray(index);

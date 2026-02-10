@@ -16,6 +16,7 @@
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/material/opacity_mask_material.h"
 #include "glframework/material/PhongMaterial.h"
+#include "glframework/material/screen_material.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input_dispatcher.h"
@@ -31,9 +32,9 @@ int main() {
     std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 
     std::shared_ptr<ScreenPlane> geometry = std::make_shared<ScreenPlane>();
-    std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>();
-    material->set_diffuse(new Texture("asset/texture/grass.jpg", 0));
-    material->set_enableFaceCull(true);
+    std::shared_ptr<ScreenMaterial> material = std::make_shared<ScreenMaterial>();
+    std::shared_ptr<Texture> texture = std::make_shared<Texture>("asset/texture/grass.jpg", 1);
+    material->set_screenTexture(texture);
     std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(geometry, material);
     scene->AddChild(mesh);
 

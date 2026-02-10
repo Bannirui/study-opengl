@@ -27,6 +27,7 @@ enum class VertexAttr: uint32_t {
 struct VertexLayout {
     // xyz坐标
     VertexPosDim posDim;
+    // uv坐标 颜色 法线 切线
     VertexAttr attrs;
 };
 
