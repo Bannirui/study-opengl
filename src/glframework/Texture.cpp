@@ -32,6 +32,27 @@ Texture *Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, 
     return texture;
 }
 
+void Texture::CreateColorAttach(uint32_t width, uint32_t height, uint32_t uint, Texture *texture) {
+    if (!texture) { return; }
+}
+
+void Texture::CreateDepthStencilAttach(uint32_t width, uint32_t height, uint32_t uint, Texture *texture) {
+    if (!texture) { return; }
+    uint32_t depthStencil;
+    glGenTextures(1, &depthStencil);
+    glBindTexture(GL_TEXTURE_2D, depthStencil);
+
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH24_STENCIL8, static_cast<int>(width), static_cast<int>(height), 0,
+                 GL_DEPTH_STENCIL,GL_UNSIGNED_INT_24_8, nullptr);
+
+    glad_glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glad_glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    texture->m_Texture = depthStencil;
+    texture->m_Width = width;
+    texture->m_Height = height;
+    texture->m_Uint = uint;
+}
+
 Texture::Texture(const std::string &path, uint32_t unit) : m_Uint(unit) {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);

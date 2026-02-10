@@ -22,6 +22,18 @@ public:
                                   uint32_t uint);
 
     /**
+     * @param texture out param
+     */
+    static void CreateColorAttach(uint32_t width, uint32_t height, uint32_t uint, Texture *texture);
+
+    /**
+     * @param texture out param
+     */
+    static void CreateDepthStencilAttach(uint32_t width, uint32_t height, uint32_t uint, Texture *texture);
+
+    Texture() = default;
+
+    /**
      * @param path 图片路径
      * @param unit 要绑到哪个纹理单元
      */
