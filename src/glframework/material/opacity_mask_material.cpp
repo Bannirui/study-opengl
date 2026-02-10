@@ -24,12 +24,12 @@ void OpacityMaskMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const 
         // 将纹理对象跟纹理单元绑定
         m_diffuse->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
-        shader.setInt("u_sampler", m_diffuse->GetUnit());
+        shader.setU32("u_sampler", m_diffuse->get_unit());
     }
     // 高光蒙版贴图
     if (m_opacityMask) {
         m_opacityMask->Bind();
-        shader.setInt("u_opacityMaskSampler", m_opacityMask->GetUnit());
+        shader.setU32("u_opacityMaskSampler", m_opacityMask->get_unit());
     }
     // 模型变换矩阵 aPos模型->世界空间
     shader.setMat4("u_model", glm::value_ptr(mesh.GetModelMatrix()));

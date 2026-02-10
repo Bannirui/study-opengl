@@ -12,7 +12,7 @@
 // 定义
 std::unordered_map<std::string, Texture *> Texture::m_TextureCache{};
 
-Texture *Texture::CreateTexture(const std::string &path, unsigned int uint) {
+Texture *Texture::CreateTexture(const std::string &path, uint32_t uint) {
     auto iter = m_TextureCache.find(path);
     if (iter != m_TextureCache.end()) {
         // first is key, second is val
@@ -23,7 +23,7 @@ Texture *Texture::CreateTexture(const std::string &path, unsigned int uint) {
     return texture;
 }
 
-Texture *Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, int widthIn, int heightIn,
+Texture *Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn,
                                 uint32_t uint) {
     auto iter = m_TextureCache.find(path);
     if (iter != m_TextureCache.end()) return iter->second;
@@ -32,11 +32,12 @@ Texture *Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, 
     return texture;
 }
 
-Texture::Texture(const std::string &path, int unit) : m_Uint(unit) {
+Texture::Texture(const std::string &path, uint32_t unit) : m_Uint(unit) {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
     int nrChannels;
-    unsigned char *data = stbi_load(path.c_str(), &m_Width, &m_Height, &nrChannels, STBI_default);
+    unsigned char *data = stbi_load(path.c_str(), reinterpret_cast<int *>(&m_Width), reinterpret_cast<int *>(&m_Height),
+                                    &nrChannels, STBI_default);
     if (!data) {
         XLOG_ERROR("TEXTURE::fail to read picture, {}", path);
         exit(EXIT_FAILURE);
@@ -67,7 +68,7 @@ Texture::Texture(const std::string &path, int unit) : m_Uint(unit) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-Texture::Texture(const uint8_t *dataIn, int widthIn, int heightIn, uint32_t uint) {
+Texture::Texture(const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn, uint32_t uint) {
     m_Uint = uint;
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
@@ -79,7 +80,8 @@ Texture::Texture(const uint8_t *dataIn, int widthIn, int heightIn, uint32_t uint
         dataSize = widthIn * heightIn * 4;
     }
     int channels = 0;
-    unsigned char *data = stbi_load_from_memory(dataIn, dataSize, &widthIn, &heightIn, &channels, STBI_default);
+    unsigned char *data = stbi_load_from_memory(dataIn, dataSize, reinterpret_cast<int *>(&widthIn),
+                                                reinterpret_cast<int *>(&heightIn), &channels, STBI_default);
     if (!data) {
         XLOG_ERROR("TEXTURE::fail to read picture from memory");
         exit(EXIT_FAILURE);
@@ -97,6 +99,17 @@ Texture::Texture(const uint8_t *dataIn, int widthIn, int heightIn, uint32_t uint
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
+Texture::Texture(uint32_t width, uint32_t height, uint32_t uint)
+    : m_Width(width), m_Height(height), m_Uint(uint) {
+    glGenTextures(1, &m_Texture);
+    glActiveTexture(GL_TEXTURE0 + m_Uint);
+    glBindTexture(GL_TEXTURE_2D, m_Texture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA, static_cast<int>(m_Width), static_cast<int>(m_Height), 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
 Texture::~Texture() {
     if (m_Texture != 0) {
         glDeleteTextures(1, &m_Texture);
@@ -107,8 +120,4 @@ void Texture::Bind() const {
     // OpenGL是状态机 不知道当前状态机的纹理单元 所以要先切换纹理单元 然后绑定纹理对象
     GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
     GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_Texture));
-}
-
-int Texture::GetUnit() const {
-    return m_Uint;
 }

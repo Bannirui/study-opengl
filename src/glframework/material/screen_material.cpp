@@ -20,6 +20,6 @@ void ScreenMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camer
         // 将纹理对象跟纹理单元绑定
         m_screenTexture->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
-        shader.setInt("u_screenTextureSampler", m_screenTexture->GetUnit());
+        shader.setInt("u_screenTextureSampler", m_screenTexture->get_unit());
     }
 }
