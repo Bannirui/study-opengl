@@ -33,7 +33,6 @@
       "inherits": "base",
       "displayName": "mac-clang-debug",
       "binaryDir": "build/mac-clang-debug",
-      "toolchainFile": "cmake/toolchains/mac-clang.cmake",
       "environment": {
         "http_proxy": "http://127.0.0.1:7890",
         "https_proxy": "http://127.0.0.1:7890",

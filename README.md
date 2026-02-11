@@ -28,6 +28,8 @@ study OpenGL and make note
   - `sudo apt install libxi-dev`
 - zlib `sudo apt install pkg-config zlib1g-dev`
 
+> cmake preset中不能给mac平台设置toolchainFile，会导致误判CMAKE_CROSSCOMPILING=TRUE进而找OpenGL的时候没有在mac的host路径上找
+
 ### 1 NDC(Normalized Device Coordinate)
 
 当屏幕尺寸或者比例发生变化时，显示要跟随屏幕一起拉伸

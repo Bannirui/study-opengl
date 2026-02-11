@@ -24,12 +24,10 @@
 #include "glframework/material/PhongMaterial.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
-#include "input/input_dispatcher.h"
+#include "input/input.h"
 
 int main() {
     if (!glApp->Init(1600, 800)) return -1;
-    // 监听事件
-    glApp->RegisterCallback();
 
     std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
     // 渲染列表
@@ -54,9 +52,9 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    InputDispatcher inputDispatcher(glApp);
-    inputDispatcher.CreateCameraController<TrackballCameraController>(camera);
-    auto cameraCtl = inputDispatcher.get_CameraController();
+    Input* input=glApp->get_input();
+    input->CreateCameraController<TrackballCameraController>(camera);
+    auto cameraCtl = input->get_CameraController();
 
     // 窗体循环
     while (glApp->Update()) {
