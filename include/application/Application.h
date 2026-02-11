@@ -8,7 +8,7 @@
 
 #include "glm/vec4.hpp"
 
-#define glApp Application::getInstance()
+#define glApp Application::get_instance()
 
 // 前向声明
 struct GLFWwindow;
@@ -20,7 +20,7 @@ class Application
 public:
     ~Application();
 
-    static Application *getInstance();
+    static Application *get_instance();
 
     uint32_t get_width() const { return m_Width; }
     uint32_t get_height() const { return m_Height; }
@@ -31,7 +31,7 @@ public:
     bool Update();
 
     // 整合imgui
-    void InitImGui();
+    static void InitImGui();
     /**
      * 每一帧渲染gui
      * <ul>
@@ -44,22 +44,22 @@ public:
 
     static void setShouldClose(bool flag) { s_shouldClose = flag; };
 
-    GLFWwindow *getWindow() const { return m_Window; }
+    GLFWwindow *get_window() const { return m_Window; }
     Input* get_input() const { return m_input.get(); }
 
     // 获取鼠标位置
-    void GetMousePos(double *x, double *y);
+    void GetMousePos(double *x, double *y) const;
 
     glm::vec4 get_clearColor() const { return m_clearColor; }
     void set_clearColor(const glm::vec4 &color) { m_clearColor = color; }
 
 private:
     Application() = default;
-    void registerCallback();
+    void registerCallback() const;
     // 处理输入 不是回调类的事件
     void processInput();
     // glfw窗口关闭
-    void destroy();
+    static void destroy();
 
     // glfw窗体事件回调->Application转发给Input
     /**

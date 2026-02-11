@@ -22,7 +22,7 @@ Application::~Application() {
     destroy();
 }
 
-Application *Application::getInstance() {
+Application *Application::get_instance() {
     if (s_Instance == nullptr) { s_Instance = new Application(); }
     return s_Instance;
 }
@@ -41,9 +41,6 @@ bool Application::Init(const uint32_t &width, const uint32_t &height) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_VERSION_MINOR);
     // 使用核心模式
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
     // 创建窗体对象
     m_Window = glfwCreateWindow(m_Width, m_Height, "LearnOpenGL", nullptr, nullptr);
     if (!m_Window) { return false; }
@@ -63,8 +60,8 @@ bool Application::Init(const uint32_t &width, const uint32_t &height) {
 }
 
 bool Application::Update() {
-    if (glfwWindowShouldClose(m_Window)) return false;
-    if (s_shouldClose) glfwSetWindowShouldClose(m_Window, true);
+    if (glfwWindowShouldClose(m_Window)) { return false; }
+    if (s_shouldClose) { glfwSetWindowShouldClose(m_Window, true); }
     // 处理输入 不是回调类
     processInput();
     // 接收并分发窗口消息
@@ -79,7 +76,7 @@ void Application::InitImGui() {
     // 主题
     ImGui::StyleColorsDark();
     // imgui绑定glfw
-    ImGui_ImplGlfw_InitForOpenGL(glApp->getWindow(), true);
+    ImGui_ImplGlfw_InitForOpenGL(glApp->get_window(), true);
     // imgui绑定opengl
     ImGui_ImplOpenGL3_Init(X_GL_VERSION_STR);
 }
@@ -98,16 +95,16 @@ void Application::RenderImGui() {
     // 渲染
     ImGui::Render();
     int display_w, display_h;
-    glfwGetWindowSize(glApp->getWindow(), &display_w, &display_h);
+    glfwGetWindowSize(glApp->get_window(), &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Application::GetMousePos(double *x, double *y) {
+void Application::GetMousePos(double *x, double *y) const {
     glfwGetCursorPos(m_Window, x, y);
 }
 
-void Application::registerCallback() {
+void Application::registerCallback() const {
     glfwSetFramebufferSizeCallback(m_Window, framebufferSizeCallbackDispatch);
     glfwSetKeyCallback(m_Window, keyboardCallbackDispatch);
     glfwSetCursorPosCallback(m_Window, mousePosCallbackDispatch);
