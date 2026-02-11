@@ -46,11 +46,20 @@ void Renderer::render(const std::vector<std::shared_ptr<Mesh> > &meshes, const C
     }
 }
 
-void Renderer::render(const std::shared_ptr<Object> &object, const Camera &camera, const LightPack &lights) const {
+void Renderer::render(Object &object, const Camera &camera, const LightPack &lights) const {
     // object是mesh还是其他具体类型 renderer不再需要感知 直接把渲染动作转交给object就行
-    object->Render(*this, camera, lights);
+    object.Render(*this, camera, lights);
     // 递归子节点
-    for (const auto &child: object->GetChildren()) {
-        render(child, camera, lights);
+    for (const auto &child: object.get_children()) {
+        render(*child, camera, lights);
     }
+}
+
+void Renderer::Render(Object &object, const Camera &camera, const LightPack &lights,
+                      uint32_t fbo) const {
+    // active FBO
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    render(object, camera, lights);
+    // de-active FBO
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }

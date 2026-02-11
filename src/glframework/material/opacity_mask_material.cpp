@@ -14,8 +14,7 @@
 #include "glframework/Mesh.h"
 #include "application/camera/Camera.h"
 
-OpacityMaskMaterial::OpacityMaskMaterial() : Material(
-    std::make_shared<Shader>("asset/shader/phone_opacity_mask.glsl")) {
+OpacityMaskMaterial::OpacityMaskMaterial() : Material("asset/shader/phone_opacity_mask.glsl") {
 }
 
 void OpacityMaskMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,

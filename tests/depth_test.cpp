@@ -22,22 +22,19 @@ int main() {
     if (!glApp->Init(1600, 800)) return -1;
     // 渲染器
     Renderer renderer;
-
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-
+    Scene scene;
     std::shared_ptr<Plane> geometry = std::make_unique<Plane>(5.0f, 5.0f);
     std::shared_ptr<DepthMaterial> material = std::make_shared<DepthMaterial>();
+    std::unique_ptr<Mesh> meshA = std::make_unique<Mesh>(geometry, material);
+    scene.AddChild(std::move(meshA));
 
-    std::shared_ptr<Mesh> meshA = std::make_shared<Mesh>(geometry, material);
-    scene->AddChild(meshA);
-
-    std::shared_ptr<Mesh> meshB = std::make_shared<Mesh>(geometry, material);
+    std::unique_ptr<Mesh> meshB = std::make_unique<Mesh>(geometry, material);
     meshB->set_position(glm::vec3(2.0f, 0.5f, -1.0f));
-    scene->AddChild(meshB);
+    scene.AddChild(std::move(meshB));
 
-    std::shared_ptr<Mesh> meshC = std::make_shared<Mesh>(geometry, material);
+    std::unique_ptr<Mesh> meshC = std::make_unique<Mesh>(geometry, material);
     meshC->set_position(glm::vec3(4.0f, 1.0f, -2.0f));
-    scene->AddChild(meshC);
+    scene.AddChild(std::move(meshC));
 
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
@@ -52,7 +49,7 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    Input* input = glApp->get_input();
+    Input *input = glApp->get_input();
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
 

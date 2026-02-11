@@ -18,11 +18,10 @@
 #include "application/assimpLoader.h"
 #include "x_log.h"
 
-std::shared_ptr<Object> AssimpLoader::load(const std::string &path) {
+std::unique_ptr<Object> AssimpLoader::load(const std::string &path) {
     // for example, the path is `asset/fbx/monkey.fbx`, the parent path is `asset/fbx/`
     std::size_t lastIndex = path.find_last_of("\\/");
     auto rootPath = path.substr(0, lastIndex + 1);
-    std::shared_ptr<Object> root = std::make_shared<Object>();
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals);
     // 验证
@@ -30,35 +29,35 @@ std::shared_ptr<Object> AssimpLoader::load(const std::string &path) {
         XLOG_ERROR("模型读取失败");
         return nullptr;
     }
-    processNode(scene->mRootNode, root, scene, rootPath);
+    // create root, owned by caller
+    std::unique_ptr<Object> root = std::make_unique<Object>(ObjectType::Object);
+    processNode(scene->mRootNode, *root, scene, rootPath);
     return root;
 }
 
-void AssimpLoader::processNode(aiNode *aiNode, const std::shared_ptr<Object> &parent, const aiScene *aiScene,
+void AssimpLoader::processNode(aiNode *aiNode, Object &parent, const aiScene *aiScene,
                                const std::string &textureParentPath) {
-    // 创建当前节点
-    std::shared_ptr<Object> myNode = std::make_shared<Object>();
-    // 加入父节点
-    parent->AddChild(myNode);
+    // 创建当前节点 加入父节点
+    Object *cur = parent.AddChild(std::make_unique<Object>(ObjectType::Object));
     auto localMatrix = getMat4f(aiNode->mTransformation);
     // 解构位置 缩放 旋转
     glm::vec3 pos, eulerAngle, scale;
     Tool::decompose(localMatrix, pos, eulerAngle, scale);
-    myNode->set_position(pos);
-    myNode->SetAngleX(eulerAngle.x);
-    myNode->SetAngleX(eulerAngle.y);
-    myNode->SetAngleX(eulerAngle.z);
-    myNode->set_scale(scale);
+    cur->set_position(pos);
+    cur->SetAngleX(eulerAngle.x);
+    cur->SetAngleX(eulerAngle.y);
+    cur->SetAngleX(eulerAngle.z);
+    cur->set_scale(scale);
     // 检查mesh
     for (int i = 0, sz = aiNode->mNumMeshes; i < sz; i++) {
         int meshId = aiNode->mMeshes[i];
         aiMesh *aiMesh = aiScene->mMeshes[meshId];
-        std::shared_ptr<Mesh> myMesh = processMesh(aiMesh, aiScene, textureParentPath);
-        myNode->AddChild(myMesh);
+        std::unique_ptr<Mesh> myMesh = processMesh(aiMesh, aiScene, textureParentPath);
+        cur->AddChild(std::move(myMesh));
     }
     // 孩子
     for (int i = 0, sz = aiNode->mNumChildren; i < sz; i++) {
-        processNode(aiNode->mChildren[i], myNode, aiScene, textureParentPath);
+        processNode(aiNode->mChildren[i], *cur, aiScene, textureParentPath);
     }
 }
 
@@ -74,10 +73,13 @@ glm::mat4 AssimpLoader::getMat4f(aiMatrix4x4 val) {
     return ret;
 }
 
-std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *aiScene,
+std::unique_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *aiScene,
                                                 const std::string &textureParentPath) {
     std::vector<float> vertices;
+    // pos(3)+uv(2)+normal(3)
+    vertices.reserve(aiMesh->mNumVertices * 8);
     std::vector<uint32_t> indices;
+    // vertices
     for (int i = 0, sz = aiMesh->mNumVertices; i < sz; i++) {
         // 顶点
         vertices.push_back(aiMesh->mVertices[i].x);
@@ -106,8 +108,8 @@ std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
     VertexLayout layout{};
     layout.posDim = VertexPosDim::k3D;
     layout.attrs = VertexAttr::kTexCoord | VertexAttr::kNormal;
-    std::shared_ptr<Model> geometry = std::make_shared<Model>(vertices, indices, layout);
-    std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>();
+    std::unique_ptr<Model> geometry = std::make_unique<Model>(vertices, indices, layout);
+    std::unique_ptr<PhongMaterial> material = std::make_unique<PhongMaterial>();
     if (aiMesh->mMaterialIndex >= 0) {
         aiMaterial *aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
         Texture *diffuseTexture = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
@@ -121,7 +123,7 @@ std::shared_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
             material->set_specular_mask(specularMask);
         }
     }
-    return std::make_shared<Mesh>(geometry, material);
+    return std::make_unique<Mesh>(std::move(geometry), std::move(material));
 }
 
 Texture *AssimpLoader::processTexture(const aiMaterial *aiMaterial, const aiTextureType &type, const aiScene *aiScene,

@@ -56,6 +56,7 @@ public:
 
     void Bind() const;
 
+    uint32_t get_texture() const { return m_Texture; }
     /**
      * @return 纹理对象绑定的纹理单元是哪个
      */

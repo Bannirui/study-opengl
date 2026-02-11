@@ -1,3 +1,5 @@
+#include "glframework/framebuffer/frame_buffer.h"
+
 #include <memory>
 
 #include <glm/glm.hpp>
@@ -11,12 +13,11 @@
 #include "glframework/Scene.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
-#include "glframework/geo/Plane.h"
-#include "glframework/geo/Sphere.h"
+#include "glframework/geo/ScreenPlane.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/material/PhongMaterial.h"
-#include "glframework/material/WhiteMaterial.h"
+#include "glframework/material/screen_material.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
@@ -27,33 +28,36 @@ int main() {
     // 渲染器
     Renderer renderer;
 
-    Scene scene;
-    std::shared_ptr<Box> geometryA = std::make_shared<Box>(4.0f);
-    std::shared_ptr<PhongMaterial> materialA = std::make_shared<PhongMaterial>();
-    materialA->set_diffuse(new Texture("asset/texture/box.png", 0));
-    materialA->set_enableBlend(true);
-    materialA->set_depthWrite(false);
-    materialA->set_opacity(0.3f);
-    std::unique_ptr<Mesh> meshA = std::make_unique<Mesh>(geometryA, materialA);
-    scene.AddChild(std::move(meshA));
+    Scene sceneOffline;
+    Scene sceneDisplay;
 
-    std::shared_ptr<Sphere> geometryB = std::make_shared<Sphere>(2.0f);
-    std::shared_ptr<PhongMaterial> materialB = std::make_shared<PhongMaterial>();
-    materialB->set_diffuse(new Texture("asset/texture/earth.jpg", 1));
-    std::unique_ptr<Mesh> meshB = std::make_unique<Mesh>(geometryB, materialB);
-    meshB->set_position(glm::vec3(5.0f, 0.0f, 0.0f));
-    scene.AddChild(std::move(meshB));
+    std::shared_ptr<FrameBuffer> frameBuffer = std::make_shared<FrameBuffer>(glApp->get_width(), glApp->get_height());
+
+    std::shared_ptr<Box> geometry1 = std::make_shared<Box>();
+    std::shared_ptr<PhongMaterial> material1 = std::make_shared<PhongMaterial>();
+    std::shared_ptr<Texture> texture1 = std::make_shared<Texture>("asset/texture/grass.jpg", 1);
+    material1->set_diffuse(texture1.get());
+    std::unique_ptr<Mesh> mesh1 = std::make_unique<Mesh>(geometry1, material1);
+    sceneOffline.AddChild(std::move(mesh1));
+
+    std::shared_ptr<ScreenPlane> geometry2 = std::make_shared<ScreenPlane>();
+    std::shared_ptr<ScreenMaterial> material2 = std::make_shared<ScreenMaterial>();
+    Texture *texture2 = frameBuffer->get_colorAttach();
+    material2->set_screenTexture(texture2);
+    std::unique_ptr<Mesh> mesh2 = std::make_unique<Mesh>(geometry2, material2);
+    sceneDisplay.AddChild(std::move(mesh2));
 
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     // 光源从右后方
-    directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
-    directionalLight->set_specular_intensity(1.0f);
+    directionalLight->m_direction = glm::vec3(-1.0f);
+    directionalLight->set_specular_intensity(0.1f);
     std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
-    ambientLight->set_color(glm::vec3(0.2f));
+    ambientLight->set_color(glm::vec3(0.1f));
     struct LightPack lights;
     lights.directional = directionalLight;
     lights.ambient = ambientLight;
+    // 相机
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
@@ -71,7 +75,10 @@ int main() {
         renderer.setClearColor(glApp->get_clearColor());
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer.render(scene, camera, lights);
+        // pass1, renderer to FBO
+        renderer.Render(sceneOffline, camera, lights, frameBuffer->get_FBO());
+        // pass2, renderer to display
+        renderer.render(sceneDisplay, camera, lights);
 
         // imgui渲染
         glApp->RenderImGui();

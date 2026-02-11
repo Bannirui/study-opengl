@@ -10,7 +10,7 @@
 class PointLight : public Light, public Object
 {
 public:
-    PointLight() = default;
+    PointLight();
     ~PointLight() override = default;
 
 public:

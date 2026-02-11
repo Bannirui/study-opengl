@@ -23,15 +23,13 @@ int main() {
     glApp->set_clearColor(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f));
     // 渲染器
     Renderer renderer;
-
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-
+    Scene scene;
     std::shared_ptr<Plane> geometry = std::make_shared<Plane>(4.0f, 4.0f);
     std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>();
     material->set_diffuse(new Texture("asset/texture/grass.jpg", 0));
     material->set_enableFaceCull(true);
-    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(geometry, material);
-    scene->AddChild(mesh);
+    std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(geometry, material);
+    scene.AddChild(std::move(mesh));
 
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
@@ -47,7 +45,7 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    Input* input = glApp->get_input();
+    Input *input = glApp->get_input();
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
     cameraCtl->SetScaleSpeed(1.0f);

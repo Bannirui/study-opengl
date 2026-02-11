@@ -8,10 +8,11 @@
 #include "glframework/renderer/Renderer.h"
 #include "application/camera/Camera.h"
 
-DepthMaterial::DepthMaterial() : Material(std::make_shared<Shader>("asset/shader/depth_shader.glsl")) {}
+DepthMaterial::DepthMaterial() : Material("asset/shader/depth_shader.glsl") {
+}
 
-void DepthMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) const
-{
+void DepthMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
+                                  const LightPack &lights) const {
     // mvp变换矩阵
     shader.setMat4("u_model", glm::value_ptr(mesh.GetModelMatrix()));
     shader.setMat4("u_view", glm::value_ptr(camera.GetViewMatrix()));

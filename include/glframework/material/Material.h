@@ -93,11 +93,11 @@ public:
     void set_faceCull_cull(uint32_t which) { m_faceCull_cull = which; }
 
 protected:
-    explicit Material(const std::shared_ptr<Shader> &shader) : m_shader(shader) {
+    Material(const std::string &shaderPath) : m_shader(std::make_unique<Shader>(shaderPath)) {
     }
 
     // todo 考虑到单个材质可能不止一个shader 所以shader成员暂时放在基类里面 以后需要扩展了可能需要下沉下子类
-    std::shared_ptr<Shader> m_shader;
+    std::unique_ptr<Shader> m_shader;
 
     // 设置当前帧绘制的必要gl状态机参数 开启deep testing 不开启深度缓存的话后绘制的会覆盖先绘制的
     bool m_enableDepthTest{true};

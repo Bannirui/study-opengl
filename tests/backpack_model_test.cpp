@@ -23,13 +23,13 @@ int main() {
     // 渲染器
     Renderer renderer;
     // 渲染场景
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>();
+    Scene scene;
     auto model = AssimpLoader::load("asset/fbx/backpack/backpack.obj");
-    scene->AddChild(model);
+    scene.AddChild(std::move(model));
     // 有个初始角度方便观察
     // todo 现在没有生效 应该是因为加载进来的模型自带了世界坐标 我在渲染的时候并没有把模型自己的坐标系因素也加进来
-    scene->SetAngleX(30.0f);
-    scene->SetAngleY(30.0f);
+    scene.SetAngleX(30.0f);
+    scene.SetAngleY(30.0f);
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     // 光源从右后方
@@ -43,7 +43,7 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    Input* input = glApp->get_input();
+    Input *input = glApp->get_input();
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
 

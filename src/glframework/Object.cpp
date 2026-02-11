@@ -6,9 +6,6 @@
 
 #include "x_log.h"
 
-Object::Object() : m_type(ObjectType::Object) {
-}
-
 Object::Object(ObjectType type) : m_type(type) {
 }
 
@@ -26,43 +23,33 @@ glm::mat4 Object::GetModelMatrix() const {
     return transform;
 }
 
-std::shared_ptr<Object> Object::GetParent() const {
-    return m_parent.lock();
-}
-
-void Object::AddChild(const std::shared_ptr<Object> child) {
-    assert(child);
+Object *Object::AddChild(std::unique_ptr<Object> child) {
+    if (!child) { return nullptr; }
     // 不能加自己
-    if (child.get() == this) {
-        return;
-    }
+    if (child.get() == this) { return nullptr; }
     // 已经是我的孩子了
-    if (child->m_parent.lock().get() == this) {
-        return;
-    }
+    if (child->m_parent == this) { return nullptr; }
     // 检查是否加入过
     auto iter = std::find(m_children.begin(), m_children.end(), child);
     if (iter != m_children.end()) {
         XLOG_ERROR("重复添加");
-        return;
+        return child.get();
     }
     // 如果child原来有父节点 先从原父节点移除
-    if (auto oldParent = child->m_parent.lock()) {
-        oldParent->RemoveChild(child);
+    if (auto oldParent = child->m_parent) {
+        oldParent->RemoveChild(child.get());
     }
     // 建立联系
-    m_children.push_back(child);
-    child->m_parent = shared_from_this();
+    child->m_parent = this;
+    Object *raw = child.get();
+    m_children.push_back(std::move(child));
+    return raw;
 }
 
-const std::vector<std::shared_ptr<Object> > &Object::GetChildren() const {
-    return m_children;
-}
-
-void Object::RemoveChild(const std::shared_ptr<Object> &child) {
-    auto iter = std::find(m_children.begin(), m_children.end(), child);
-    if (iter != m_children.end()) {
-        (*iter)->m_parent.reset();
-        m_children.erase(iter);
+void Object::RemoveChild(Object *child) {
+    auto it = std::remove_if(m_children.begin(), m_children.end(),
+                             [child](const std::unique_ptr<Object> &ptr) { return ptr.get() == child; });
+    if (it != m_children.end()) {
+        m_children.erase(it, m_children.end());
     }
 }

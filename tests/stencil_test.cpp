@@ -27,9 +27,7 @@ int main() {
     glApp->set_clearColor(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f));
     // 渲染器
     Renderer renderer;
-
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-
+    Scene scene;
     std::shared_ptr<Box> geometryA = std::make_shared<Box>(4.0f);
     std::shared_ptr<PhongMaterial> materialA = std::make_shared<PhongMaterial>();
     materialA->set_diffuse(new Texture("asset/texture/box.png", 0));
@@ -41,8 +39,8 @@ int main() {
     materialA->set_stencilFunc(GL_ALWAYS);
     materialA->set_stencilRef(1);
     materialA->set_stencilFuncMask(0xff);
-    std::shared_ptr<Mesh> meshA = std::make_shared<Mesh>(geometryA, materialA);
-    scene->AddChild(meshA);
+    std::unique_ptr<Mesh> meshA = std::make_unique<Mesh>(geometryA, materialA);
+    scene.AddChild(std::move(meshA));
 
     std::shared_ptr<WhiteMaterial> materialABound = std::make_shared<WhiteMaterial>();
     materialABound->set_stencilTest(true);
@@ -53,10 +51,10 @@ int main() {
     materialABound->set_stencilFunc(GL_NOTEQUAL);
     materialABound->set_stencilRef(1);
     materialABound->set_stencilFuncMask(0xff);
-    std::shared_ptr<Mesh> meshABound = std::make_shared<Mesh>(geometryA, materialABound);
+    std::unique_ptr<Mesh> meshABound = std::make_unique<Mesh>(geometryA, materialABound);
     meshABound->set_position(meshA->get_position());
     meshABound->set_scale(glm::vec3(1.2f));
-    scene->AddChild(meshABound);
+    scene.AddChild(std::move(meshABound));
 
     std::shared_ptr<Sphere> geometryB = std::make_shared<Sphere>(2.0f);
     std::shared_ptr<PhongMaterial> materialB = std::make_shared<PhongMaterial>();
@@ -69,9 +67,9 @@ int main() {
     materialB->set_stencilFunc(GL_ALWAYS);
     materialB->set_stencilRef(1);
     materialB->set_stencilFuncMask(0xff);
-    std::shared_ptr<Mesh> meshB = std::make_shared<Mesh>(geometryB, materialB);
+    std::unique_ptr<Mesh> meshB = std::make_unique<Mesh>(geometryB, materialB);
     meshB->set_position(glm::vec3(3.0f, 0.0f, 0.0f));
-    scene->AddChild(meshB);
+    scene.AddChild(std::move(meshB));
 
     std::shared_ptr<WhiteMaterial> materialBBound = std::make_shared<WhiteMaterial>();
     materialBBound->set_stencilTest(true);
@@ -82,10 +80,10 @@ int main() {
     materialBBound->set_stencilFunc(GL_NOTEQUAL);
     materialBBound->set_stencilRef(1);
     materialBBound->set_stencilFuncMask(0xff);
-    std::shared_ptr<Mesh> meshBBound = std::make_shared<Mesh>(geometryB, materialBBound);
+    std::unique_ptr<Mesh> meshBBound = std::make_unique<Mesh>(geometryB, materialBBound);
     meshBBound->set_position(meshB->get_position());
     meshBBound->set_scale(glm::vec3(1.2f));
-    scene->AddChild(meshBBound);
+    scene.AddChild(std::move(meshBBound));
 
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
@@ -100,7 +98,7 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    Input* input = glApp->get_input();
+    Input *input = glApp->get_input();
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
     cameraCtl->SetScaleSpeed(1.0f);

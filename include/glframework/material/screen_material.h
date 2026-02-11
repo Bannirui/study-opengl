@@ -13,8 +13,8 @@ public:
 
     void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera, const LightPack &lights) const override;
 
-    void set_screenTexture(std::shared_ptr<Texture> texture);
+    void set_screenTexture(Texture *texture) { m_screenTexture = texture; }
 
 private:
-    std::shared_ptr<Texture> m_screenTexture;
+    Texture *m_screenTexture;
 };

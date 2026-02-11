@@ -23,11 +23,9 @@ enum class ObjectType {
 };
 
 // 物体抽象 平移 缩放 转动
-class Object : public std::enable_shared_from_this<Object> {
+class Object {
 public:
-    Object();
-
-    Object(ObjectType type);
+    explicit Object(ObjectType type);
 
     virtual ~Object() = default;
 
@@ -47,15 +45,17 @@ public:
     glm::mat4 GetModelMatrix() const;
 
     // 父子关系
-    std::shared_ptr<Object> GetParent() const;
+    Object *get_parent() const { return m_parent; }
 
-    void AddChild(std::shared_ptr<Object> child);
+    /**
+     * @return the child's raw pointer
+     */
+    Object *AddChild(std::unique_ptr<Object> child);
 
-    const std::vector<std::shared_ptr<Object> > &GetChildren() const;
-
+    const std::vector<std::unique_ptr<Object> > &get_children() const { return m_children; }
     ObjectType get_type() const { return m_type; }
 
-    void RemoveChild(const std::shared_ptr<Object> &child);
+    void RemoveChild(Object *child);
 
     // Object是多态的 真正的渲染逻辑下沉到具体对象
     virtual void Render(const Renderer &, const Camera &, const LightPack &) const {
@@ -73,11 +73,11 @@ protected:
     // 在xyz3个方向的缩放
     glm::vec3 m_scale{1.0f};
 
-    // 父子关系不是所有权的拥有关系 所以就用裸指针 不要用智能指针
+private:
     // 孩子节点
-    std::vector<std::shared_ptr<Object> > m_children;
+    std::vector<std::unique_ptr<Object> > m_children;
     // 父亲节点
-    std::weak_ptr<Object> m_parent;
+    Object *m_parent{nullptr};
 
     // 类型标识 将来渲染的时候看这个类型决定是不是需要渲染
     // 用const修饰语义是在构造后类型不应该再发生改变

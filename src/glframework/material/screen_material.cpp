@@ -7,11 +7,7 @@
 #include "glframework/renderer/Renderer.h"
 
 ScreenMaterial::ScreenMaterial()
-    : Material(std::make_shared<Shader>("asset/shader/screen.glsl")) {
-}
-
-void ScreenMaterial::set_screenTexture(std::shared_ptr<Texture> texture) {
-    m_screenTexture = std::move(texture);
+    : Material("asset/shader/screen.glsl") {
 }
 
 void ScreenMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,

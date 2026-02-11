@@ -33,25 +33,26 @@ int main() {
     // 渲染器
     std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>();
     // 场景
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>();
+    Scene scene;
     // 箱子
     std::shared_ptr<Box> boxGeometry = std::make_shared<Box>();
     std::shared_ptr<PhongMaterial> boxMaterial = std::make_shared<PhongMaterial>();
     boxMaterial->set_shines(32.0f);
     boxMaterial->set_diffuse(new Texture("asset/texture/box.png", 0));
     boxMaterial->set_specular_mask(new Texture("asset/texture/sp_mask.png", 1));
-    std::shared_ptr<Mesh> boxMesh = std::make_shared<Mesh>(boxGeometry, boxMaterial);
+    std::unique_ptr<Mesh> boxMesh = std::make_unique<Mesh>(boxGeometry, boxMaterial);
     boxMesh->set_rotationY(-15.0f);
     boxMesh->set_rotationX(15.0f);
     // 白色物体
     std::shared_ptr<Sphere> whiteObjGeometry = std::make_shared<Sphere>(0.1f);
     std::shared_ptr<WhiteMaterial> whiteObjMaterial = std::make_shared<WhiteMaterial>();
-    std::shared_ptr<Mesh> whiteObjMesh = std::make_shared<Mesh>(whiteObjGeometry, whiteObjMaterial);
+    std::unique_ptr<Mesh> whiteObjMesh = std::make_unique<Mesh>(std::move(whiteObjGeometry),
+                                                                std::move(whiteObjMaterial));
     whiteObjMesh->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
 
     // todo
-    boxMesh->AddChild(whiteObjMesh);
-    scene->AddChild(boxMesh);
+    boxMesh->AddChild(std::move(whiteObjMesh));
+    scene.AddChild(std::move(boxMesh));
 
     // 光线
     std::shared_ptr<SpotLight> spotLight = std::make_shared<SpotLight>();
@@ -82,7 +83,7 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    Input* input = glApp->get_input();
+    Input *input = glApp->get_input();
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
 

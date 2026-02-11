@@ -14,7 +14,7 @@
 #include "glframework/Mesh.h"
 #include "application/camera/Camera.h"
 
-PhongMaterial::PhongMaterial() : Material(std::make_shared<Shader>("asset/shader/phone_shader.glsl")) {
+PhongMaterial::PhongMaterial() : Material("asset/shader/phone_shader.glsl") {
 }
 
 void PhongMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
