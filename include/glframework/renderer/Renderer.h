@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <glm/glm.hpp>
 
 #include "glframework/Object.h"
@@ -34,9 +32,7 @@ public:
      * @param object the root
      * @param camera 相机 需要知道从哪儿看的
      * @param lights 光源 至于具体的光源是啥不用关注
+     * @param fboId render to specific FBO
      */
-    void Render(Object &object, const Camera &camera, const LightPack &lights) const;
-
-    // render to specific FBO
-    void Render(Object &object, const Camera &camera, const LightPack &lights, uint32_t fbo) const;
+    void Render(Object &object, const Camera &camera, const LightPack &lights, uint32_t fboId = 0) const;
 };

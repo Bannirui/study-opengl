@@ -16,5 +16,5 @@ public:
     void set_screenTexture(Texture *texture) { m_screenTexture = texture; }
 
 private:
-    Texture *m_screenTexture;
+    Texture *m_screenTexture{nullptr};
 };

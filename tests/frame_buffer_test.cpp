@@ -14,6 +14,7 @@
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/geo/ScreenPlane.h"
+#include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/material/PhongMaterial.h"
@@ -42,10 +43,7 @@ int main() {
 
     std::shared_ptr<ScreenPlane> geometry2 = std::make_shared<ScreenPlane>();
     std::shared_ptr<ScreenMaterial> material2 = std::make_shared<ScreenMaterial>();
-    Texture *texture2 = frameBuffer.get_colorAttach();
-    if (texture2) {
-        material2->set_screenTexture(texture2);
-    }
+    material2->set_screenTexture(frameBuffer.get_colorAttach());
     std::unique_ptr<Mesh> mesh2 = std::make_unique<Mesh>(std::move(geometry2), std::move(material2));
     sceneDisplay.AddChild(std::move(mesh2));
 
