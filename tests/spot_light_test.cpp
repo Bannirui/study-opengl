@@ -33,31 +33,32 @@ int main() {
     // 渲染器
     Renderer renderer;
     // 渲染列表
-    std::vector<std::shared_ptr<Mesh> > meshes;
+    Object root(ObjectType::Object);
     // 箱子
     std::shared_ptr<Box> boxGeometry = std::make_shared<Box>();
     std::shared_ptr<PhongMaterial> boxMaterial = std::make_shared<PhongMaterial>();
     boxMaterial->set_shines(32.0f);
     boxMaterial->set_diffuse(new Texture("asset/texture/box.png", 0));
     boxMaterial->set_specular_mask(new Texture("asset/texture/sp_mask.png", 1));
-    std::shared_ptr<Mesh> boxMesh = std::make_shared<Mesh>(boxGeometry, boxMaterial);
+    std::unique_ptr<Mesh> boxMesh = std::make_unique<Mesh>(std::move(boxGeometry), std::move(boxMaterial));
     // 缩小箱子 让它跟白球大小相对差别不那么大
     boxMesh->set_scale(glm::vec3(0.8f));
     // 初始的时候让箱子有个偏角观察全貌
     boxMesh->SetAngleX(30.0f);
     boxMesh->SetAngleY(45.0f);
-    meshes.push_back(boxMesh);
+    root.AddChild(std::move(boxMesh));
     // 白色物体
     std::shared_ptr<Sphere> whiteObjGeometry = std::make_shared<Sphere>(0.1f);
     std::shared_ptr<WhiteMaterial> whiteObjMaterial = std::make_shared<WhiteMaterial>();
-    std::shared_ptr<Mesh> whiteObjMesh = std::make_shared<Mesh>(whiteObjGeometry, whiteObjMaterial);
+    std::unique_ptr<Mesh> whiteObjMesh = std::make_unique<Mesh>(std::move(whiteObjGeometry),
+                                                                std::move(whiteObjMaterial));
     whiteObjMesh->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
-    meshes.push_back(whiteObjMesh);
+    Object *whiteMeshPtr = root.AddChild(std::move(whiteObjMesh));
     // 光线
     std::shared_ptr<SpotLight> spotLight = std::make_shared<SpotLight>();
     spotLight->m_innerAngle = 15.0f;
     spotLight->m_outerAngle = 30.0f;
-    spotLight->set_position(whiteObjMesh->get_position());
+    spotLight->set_position(whiteMeshPtr->get_position());
 
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -78,7 +79,7 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    Input* input=glApp->get_input();
+    Input *input = glApp->get_input();
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
 
@@ -90,17 +91,17 @@ int main() {
 
         // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
         float xPos = glm::sin(glfwGetTime()) + 2.0f;
-        meshes[1]->set_position(glm::vec3(xPos, 0.0f, 0.0f));
+        root.get_children()[1]->set_position(glm::vec3(xPos, 0.0f, 0.0f));
         if (lights.spot) {
-            lights.spot->set_position(meshes[1]->get_position());
+            lights.spot->set_position(root.get_children()[1]->get_position());
         }
         // 每个帧在x轴上旋转
-        meshes[0]->set_rotationY(0.5f);
+        root.get_children()[0]->set_rotationY(0.5f);
 
         renderer.setClearColor(glApp->get_clearColor());
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer.render(meshes, camera, lights);
+        renderer.render(root, camera, lights);
         // imgui渲染
         glApp->RenderImGui();
     }

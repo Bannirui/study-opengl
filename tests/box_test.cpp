@@ -2,7 +2,6 @@
 // Created by dingrui on 25-6-23.
 //
 
-#include <iostream>
 #include <memory>
 
 #include <glm/glm.hpp>
@@ -17,7 +16,6 @@
 #include "glframework/Mesh.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
-#include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/light/PointLight.h"
@@ -29,17 +27,18 @@
 int main() {
     if (!glApp->Init(1600, 800)) return -1;
 
-    std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
+    Renderer renderer;
+    // the root
+    Object object(ObjectType::Object);
     // 渲染列表
-    std::vector<std::shared_ptr<Mesh> > meshes;
     // 箱子
     std::shared_ptr<Box> boxGeometry = std::make_shared<Box>();
     std::shared_ptr<PhongMaterial> boxMaterial = std::make_shared<PhongMaterial>();
     boxMaterial->set_shines(32.0f);
     boxMaterial->set_diffuse(new Texture("asset/texture/box.png", 0));
     boxMaterial->set_specular_mask(new Texture("asset/texture/sp_mask.png", 1));
-    std::shared_ptr<Mesh> boxMesh = std::make_shared<Mesh>(boxGeometry, boxMaterial);
-    meshes.push_back(boxMesh);
+    std::unique_ptr<Mesh> boxMesh = std::make_unique<Mesh>(boxGeometry, boxMaterial);
+    object.AddChild(std::move(boxMesh));
     // 光线
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
     directionalLight->m_direction = glm::vec3(-1.0f, 0.0f, 0.0f);
@@ -52,20 +51,20 @@ int main() {
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器
-    Input* input=glApp->get_input();
+    Input *input = glApp->get_input();
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
 
     // 窗体循环
     while (glApp->Update()) {
         cameraCtl->OnUpdate();
-        meshes[0]->set_rotationX(0.1f);
-        meshes[0]->set_rotationY(0.05f);
-        meshes[0]->set_rotationZ(0.01f);
+        object.get_children()[0]->set_rotationX(0.1f);
+        object.get_children()[0]->set_rotationY(0.05f);
+        object.get_children()[0]->set_rotationZ(0.01f);
 
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer->render(meshes, camera, lights);
+        renderer.render(object, camera, lights);
     }
     return 0;
 }

@@ -28,15 +28,13 @@ public:
     static void BeginFrame();
 
     /**
+     * render entire scene from root, and the children
      * 每次调用都会渲染一帧
      * 只要给renderer相机和光源就行
-     * @param meshes 要渲染的物体对象
+     * @param object the root
      * @param camera 相机 需要知道从哪儿看的
      * @param lights 光源 至于具体的光源是啥不用关注
      */
-    void render(const std::vector<std::shared_ptr<Mesh> > &meshes, const Camera &camera, const LightPack &lights) const;
-
-    // render entire scene from root, and the children
     void render(Object &object, const Camera &camera, const LightPack &lights) const;
 
     // render to specific FBO

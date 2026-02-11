@@ -37,15 +37,6 @@ void Renderer::BeginFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void Renderer::render(const std::vector<std::shared_ptr<Mesh> > &meshes, const Camera &camera,
-                      const LightPack &lights) const {
-    // 遍历mesh绘制
-    for (const std::shared_ptr<Mesh> &mesh: meshes) {
-        // mesh自己去渲染自己
-        mesh->Render(*this, camera, lights);
-    }
-}
-
 void Renderer::render(Object &object, const Camera &camera, const LightPack &lights) const {
     // object是mesh还是其他具体类型 renderer不再需要感知 直接把渲染动作转交给object就行
     object.Render(*this, camera, lights);
