@@ -35,7 +35,7 @@ public:
      * @param camera 相机 需要知道从哪儿看的
      * @param lights 光源 至于具体的光源是啥不用关注
      */
-    void render(Object &object, const Camera &camera, const LightPack &lights) const;
+    void Render(Object &object, const Camera &camera, const LightPack &lights) const;
 
     // render to specific FBO
     void Render(Object &object, const Camera &camera, const LightPack &lights, uint32_t fbo) const;

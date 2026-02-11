@@ -37,12 +37,12 @@ void Renderer::BeginFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void Renderer::render(Object &object, const Camera &camera, const LightPack &lights) const {
+void Renderer::Render(Object &object, const Camera &camera, const LightPack &lights) const {
     // object是mesh还是其他具体类型 renderer不再需要感知 直接把渲染动作转交给object就行
     object.Render(*this, camera, lights);
     // 递归子节点
     for (const auto &child: object.get_children()) {
-        render(*child, camera, lights);
+        Render(*child, camera, lights);
     }
 }
 
@@ -50,7 +50,7 @@ void Renderer::Render(Object &object, const Camera &camera, const LightPack &lig
                       uint32_t fbo) const {
     // active FBO
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    render(object, camera, lights);
+    Render(object, camera, lights);
     // de-active FBO
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

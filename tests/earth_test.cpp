@@ -67,7 +67,7 @@ int main() {
 
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer.render(root, camera, lights);
+        renderer.Render(root, camera, lights);
     }
     return 0;
 }

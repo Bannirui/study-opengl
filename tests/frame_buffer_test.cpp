@@ -31,20 +31,22 @@ int main() {
     Scene sceneOffline;
     Scene sceneDisplay;
 
-    std::shared_ptr<FrameBuffer> frameBuffer = std::make_shared<FrameBuffer>(glApp->get_width(), glApp->get_height());
+    FrameBuffer frameBuffer(glApp->get_width(), glApp->get_height());
 
     std::shared_ptr<Box> geometry1 = std::make_shared<Box>();
     std::shared_ptr<PhongMaterial> material1 = std::make_shared<PhongMaterial>();
-    std::shared_ptr<Texture> texture1 = std::make_shared<Texture>("asset/texture/grass.jpg", 1);
-    material1->set_diffuse(texture1.get());
-    std::unique_ptr<Mesh> mesh1 = std::make_unique<Mesh>(geometry1, material1);
+    Texture texture1("asset/texture/grass.jpg", 1);
+    material1->set_diffuse(&texture1);
+    std::unique_ptr<Mesh> mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
     sceneOffline.AddChild(std::move(mesh1));
 
     std::shared_ptr<ScreenPlane> geometry2 = std::make_shared<ScreenPlane>();
     std::shared_ptr<ScreenMaterial> material2 = std::make_shared<ScreenMaterial>();
-    Texture *texture2 = frameBuffer->get_colorAttach();
-    material2->set_screenTexture(texture2);
-    std::unique_ptr<Mesh> mesh2 = std::make_unique<Mesh>(geometry2, material2);
+    Texture *texture2 = frameBuffer.get_colorAttach();
+    if (texture2) {
+        material2->set_screenTexture(texture2);
+    }
+    std::unique_ptr<Mesh> mesh2 = std::make_unique<Mesh>(std::move(geometry2), std::move(material2));
     sceneDisplay.AddChild(std::move(mesh2));
 
     // 光线
@@ -76,9 +78,9 @@ int main() {
         // 每一帧清一次屏
         Renderer::BeginFrame();
         // pass1, renderer to FBO
-        renderer.Render(sceneOffline, camera, lights, frameBuffer->get_FBO());
+        renderer.Render(sceneOffline, camera, lights, frameBuffer.get_FBO());
         // pass2, renderer to display
-        renderer.render(sceneDisplay, camera, lights);
+        renderer.Render(sceneDisplay, camera, lights);
 
         // imgui渲染
         glApp->RenderImGui();

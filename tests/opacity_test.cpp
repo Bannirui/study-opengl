@@ -71,7 +71,7 @@ int main() {
         renderer.setClearColor(glApp->get_clearColor());
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer.render(scene, camera, lights);
+        renderer.Render(scene, camera, lights);
 
         // imgui渲染
         glApp->RenderImGui();
