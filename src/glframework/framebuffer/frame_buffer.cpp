@@ -33,6 +33,6 @@ FrameBuffer::FrameBuffer(uint32_t width, uint32_t height)
 
 FrameBuffer::~FrameBuffer() {
     if (m_FBO) {
-        glDeleteBuffers(1, &m_FBO);
+        glDeleteFramebuffers(1, &m_FBO);
     }
 }

@@ -14,7 +14,6 @@
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/geo/ScreenPlane.h"
-#include "glframework/geo/Sphere.h"
 #include "glframework/light/AmbientLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/material/PhongMaterial.h"
