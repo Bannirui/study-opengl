@@ -4,6 +4,7 @@
 
 #include "glframework/renderer/Renderer.h"
 
+#include "application/Application.h"
 #include "application/camera/Camera.h"
 #include "glframework/Mesh.h"
 #include "glframework/Shader.h"
@@ -14,7 +15,8 @@ void Renderer::setClearColor(glm::vec3 color) {
     glClearColor(color.r, color.g, color.b, 1.0f);
 }
 
-void Renderer::BeginFrame() {
+void Renderer::BeginFrame()
+{
     // must open all the depth options in advance, guarantee glClean command execute succ
     // depth test
     glEnable(GL_DEPTH_TEST);
@@ -37,9 +39,13 @@ void Renderer::BeginFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void Renderer::Render(Object &object, const Camera &camera, const LightPack &lights, uint32_t fboId) const {
-    // active FBO
-    glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+void Renderer::BeginFrame(uint32_t width, uint32_t height)
+{
+    glViewport(0, 0, width, height);
+    BeginFrame();
+}
+
+void Renderer::Render(Object &object, const Camera &camera, const LightPack &lights) const {
     // object是mesh还是其他具体类型 renderer不再需要感知 直接把渲染动作转交给object就行
     object.Render(*this, camera, lights);
     // 递归子节点

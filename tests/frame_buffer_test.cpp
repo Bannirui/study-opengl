@@ -72,11 +72,15 @@ int main() {
         cameraCtl->OnUpdate();
 
         renderer.setClearColor(glApp->get_clearColor());
+        // pass1, renderer to FBO 渲染到我自己的Frame Buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer.get_FBO());
         // 每一帧清一次屏
-        Renderer::BeginFrame();
-        // pass1, renderer to FBO
-        renderer.Render(sceneOffline, camera, lights, frameBuffer.get_FBO());
-        // pass2, renderer to display
+        Renderer::BeginFrame(frameBuffer.get_width(), frameBuffer.get_height());
+        renderer.Render(sceneOffline, camera, lights);
+
+        // pass2, renderer to display 渲染到默认Frame Buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        Renderer::BeginFrame(glApp->get_width(), glApp->get_height());
         renderer.Render(sceneDisplay, camera, lights);
 
         // imgui渲染

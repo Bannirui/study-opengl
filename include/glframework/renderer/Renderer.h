@@ -24,6 +24,7 @@ public:
 
     // 绘画的时候只管一帧 在递归过程中误用会导致渲染不全
     static void BeginFrame();
+    static void BeginFrame(uint32_t width, uint32_t height);
 
     /**
      * render entire scene from root, and the children
@@ -32,7 +33,6 @@ public:
      * @param object the root
      * @param camera 相机 需要知道从哪儿看的
      * @param lights 光源 至于具体的光源是啥不用关注
-     * @param fboId render to specific FBO
      */
-    void Render(Object &object, const Camera &camera, const LightPack &lights, uint32_t fboId = 0) const;
+    void Render(Object &object, const Camera &camera, const LightPack &lights) const;
 };
