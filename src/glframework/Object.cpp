@@ -27,18 +27,8 @@ Object *Object::AddChild(std::unique_ptr<Object> child) {
     if (!child) { return nullptr; }
     // 不能加自己
     if (child.get() == this) { return nullptr; }
-    // 已经是我的孩子了
-    if (child->m_parent == this) { return nullptr; }
-    // 检查是否加入过
-    auto iter = std::find(m_children.begin(), m_children.end(), child);
-    if (iter != m_children.end()) {
-        XLOG_ERROR("重复添加");
-        return child.get();
-    }
-    // 如果child原来有父节点 先从原父节点移除
-    if (auto oldParent = child->m_parent) {
-        oldParent->RemoveChild(child.get());
-    }
+    // 可能已经是我的孩子了 先从它父节点断开关系
+    if (auto oldParent = child->m_parent) { oldParent->RemoveChild(child.get()); }
     // 建立联系
     child->m_parent = this;
     Object *raw = child.get();
