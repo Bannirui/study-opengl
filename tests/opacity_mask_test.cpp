@@ -1,7 +1,6 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "application/Application.h"
 #include "application/camera/CameraController.h"
@@ -26,24 +25,26 @@ int main() {
     Renderer renderer;
 
     Scene scene;
-    std::shared_ptr<Plane> geometry = std::make_shared<Plane>(4.0f, 4.0f);
-    std::shared_ptr<OpacityMaskMaterial> material = std::make_shared<OpacityMaskMaterial>();
-    material->set_diffuse(new Texture("asset/texture/grass.jpg", 0));
-    material->set_opacityMask(new Texture("asset/texture/grass_mask.png", 1));
+    std::unique_ptr<Plane> geometry = std::make_unique<Plane>(4.0f, 4.0f);
+    std::unique_ptr<OpacityMaskMaterial> material = std::make_unique<OpacityMaskMaterial>();
+    Texture diffuse("asset/texture/grass.jpg", 0);
+    material->set_diffuse(&diffuse);
+    Texture opacityMask("asset/texture/grass_mask.png", 1);
+    material->set_opacityMask(&opacityMask);
     material->set_enableBlend(true);
     std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(std::move(geometry), std::move(material));
     scene.AddChild(std::move(mesh));
 
     // 光线
-    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
+    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
     // 光源从右后方
-    directionalLight->m_direction = glm::vec3(-1.0f);
+    directionalLight->set_direction(glm::vec3(-1.0f));
     directionalLight->set_specular_intensity(0.1f);
-    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.1f));
     struct LightPack lights;
-    lights.directional = directionalLight;
-    lights.ambient = ambientLight;
+    lights.directional = std::move(directionalLight);
+    lights.ambient = std::move(ambientLight);
     // 相机
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));

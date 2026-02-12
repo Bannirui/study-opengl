@@ -3,7 +3,6 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "application/Application.h"
 #include "application/camera/CameraController.h"
@@ -27,35 +26,34 @@ int main() {
     glApp->set_clearColor(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f));
     // 渲染器
     Renderer renderer;
-
     Scene sceneOffline;
     Scene sceneDisplay;
 
     FrameBuffer frameBuffer(glApp->get_width(), glApp->get_height());
 
-    std::shared_ptr<Box> geometry1 = std::make_shared<Box>();
-    std::shared_ptr<PhongMaterial> material1 = std::make_shared<PhongMaterial>();
+    std::unique_ptr<Box> geometry1 = std::make_unique<Box>();
+    std::unique_ptr<PhongMaterial> material1 = std::make_unique<PhongMaterial>();
     Texture texture1("asset/texture/grass.jpg", 1);
     material1->set_diffuse(&texture1);
     std::unique_ptr<Mesh> mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
     sceneOffline.AddChild(std::move(mesh1));
 
-    std::shared_ptr<ScreenPlane> geometry2 = std::make_shared<ScreenPlane>();
-    std::shared_ptr<ScreenMaterial> material2 = std::make_shared<ScreenMaterial>();
+    std::unique_ptr<ScreenPlane> geometry2 = std::make_unique<ScreenPlane>();
+    std::unique_ptr<ScreenMaterial> material2 = std::make_unique<ScreenMaterial>();
     material2->set_screenTexture(frameBuffer.get_colorAttach());
     std::unique_ptr<Mesh> mesh2 = std::make_unique<Mesh>(std::move(geometry2), std::move(material2));
     sceneDisplay.AddChild(std::move(mesh2));
 
     // 光线
-    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
+    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
     // 光源从右后方
-    directionalLight->m_direction = glm::vec3(-1.0f);
+    directionalLight->set_direction(glm::vec3(-1.0f));
     directionalLight->set_specular_intensity(0.1f);
-    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.1f));
     struct LightPack lights;
-    lights.directional = directionalLight;
-    lights.ambient = ambientLight;
+    lights.directional = std::move(directionalLight);
+    lights.ambient = std::move(ambientLight);
     // 相机
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));

@@ -1,7 +1,6 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "application/Application.h"
 #include "application/camera/CameraController.h"
@@ -23,29 +22,33 @@ int main() {
     // 渲染器
     Renderer renderer;
     Scene scene;
-    std::shared_ptr<Plane> geometry = std::make_unique<Plane>(5.0f, 5.0f);
-    std::shared_ptr<DepthMaterial> material = std::make_shared<DepthMaterial>();
-    std::unique_ptr<Mesh> meshA = std::make_unique<Mesh>(geometry, material);
+    std::unique_ptr<Plane> geometryA = std::make_unique<Plane>(5.0f, 5.0f);
+    std::unique_ptr<DepthMaterial> materialA = std::make_unique<DepthMaterial>();
+    std::unique_ptr<Mesh> meshA = std::make_unique<Mesh>(std::move(geometryA), std::move(materialA));
     scene.AddChild(std::move(meshA));
 
-    std::unique_ptr<Mesh> meshB = std::make_unique<Mesh>(geometry, material);
+    std::unique_ptr<Plane> geometryB = std::make_unique<Plane>(5.0f, 5.0f);
+    std::unique_ptr<DepthMaterial> materialB = std::make_unique<DepthMaterial>();
+    std::unique_ptr<Mesh> meshB = std::make_unique<Mesh>(std::move(geometryB), std::move(materialB));
     meshB->set_position(glm::vec3(2.0f, 0.5f, -1.0f));
     scene.AddChild(std::move(meshB));
 
-    std::unique_ptr<Mesh> meshC = std::make_unique<Mesh>(geometry, material);
+    std::unique_ptr<Plane> geometryC = std::make_unique<Plane>(5.0f, 5.0f);
+    std::unique_ptr<DepthMaterial> materialC = std::make_unique<DepthMaterial>();
+    std::unique_ptr<Mesh> meshC = std::make_unique<Mesh>(std::move(geometryC), std::move(materialC));
     meshC->set_position(glm::vec3(4.0f, 1.0f, -2.0f));
     scene.AddChild(std::move(meshC));
 
     // 光线
-    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
+    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
     // 光源从右后方
-    directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
+    directionalLight->set_direction(glm::vec3(-1.0f, -1.0f, -1.0f));
     directionalLight->set_specular_intensity(1.0f);
-    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.2f));
     struct LightPack lights;
-    lights.directional = directionalLight;
-    lights.ambient = ambientLight;
+    lights.directional = std::move(directionalLight);
+    lights.ambient = std::move(ambientLight);
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器

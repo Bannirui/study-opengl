@@ -45,8 +45,8 @@ void AssimpLoader::processNode(aiNode *aiNode, Object &parent, const aiScene *ai
     Tool::decompose(localMatrix, pos, eulerAngle, scale);
     cur->set_position(pos);
     cur->SetAngleX(eulerAngle.x);
-    cur->SetAngleX(eulerAngle.y);
-    cur->SetAngleX(eulerAngle.z);
+    cur->SetAngleY(eulerAngle.y);
+    cur->SetAngleZ(eulerAngle.z);
     cur->set_scale(scale);
     // 检查mesh
     for (int i = 0, sz = aiNode->mNumMeshes; i < sz; i++) {
@@ -130,28 +130,30 @@ Texture *AssimpLoader::processTexture(const aiMaterial *aiMaterial, const aiText
                                       const std::string &textureParentPath) {
     // this path is relative to model
     aiString aiPath;
-    aiMaterial->Get(AI_MATKEY_TEXTURE(type, 0), aiPath);
-    if (!aiPath.length) {
-        return nullptr;
+    if (aiMaterial->Get(AI_MATKEY_TEXTURE(type, 0), aiPath) != AI_SUCCESS) { return nullptr; }
+    // 相对
+    std::string relative = aiPath.C_Str();
+    std::replace(relative.begin(), relative.end(), '\\', '/');
+    // 绝对
+    std::filesystem::path fullPath = std::filesystem::path(textureParentPath) / relative;
+    fullPath = fullPath.lexically_normal();
+    std::string key = fullPath.string();
+    // 缓存
+    if (Texture::s_TextureCache.count(key)) {
+        return Texture::s_TextureCache[key].get();
     }
-    std::string s = aiPath.C_Str();
-    std::replace(s.begin(), s.end(), '\\', '/');
-    // Boundary conversion
-    std::filesystem::path texPath = std::filesystem::path(s);
-    // Combine with model directory
-    texPath = (textureParentPath / texPath).lexically_normal();
-    const aiTexture *aiTexture = aiScene->GetEmbeddedTexture(texPath.string().c_str());
-    Texture *texture = nullptr;
-    if (aiTexture) {
+    // 创建
+    Texture* raw = nullptr;
+    const aiTexture *embed = aiScene->GetEmbeddedTexture(aiPath.C_Str());
+    if (embed) {
         // the texture is in memory
-        unsigned char *dataIn = reinterpret_cast<unsigned char *>(aiTexture->pcData);
-        uint32_t width = aiTexture->mWidth;
-        uint32_t height = aiTexture->mHeight;
-        texture = Texture::CreateTexture(texPath.string(), dataIn, width, height, 0);
+        unsigned char *dataIn = reinterpret_cast<unsigned char *>(embed->pcData);
+        uint32_t width = embed->mWidth;
+        uint32_t height = embed->mHeight;
+        raw = Texture::CreateTexture(key, dataIn, width, height, 0);
     } else {
         // the texture is in disk
-        std::string fullPath = textureParentPath + aiPath.C_Str();
-        texture = Texture::CreateTexture(fullPath, 0);
+        raw = Texture::CreateTexture(key, 0);
     }
-    return texture;
+    return raw;
 }

@@ -1,7 +1,6 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "err_check.h"
 #include "application/Application.h"
@@ -31,15 +30,15 @@ int main() {
     scene.SetAngleX(30.0f);
     scene.SetAngleY(30.0f);
     // 光线
-    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
+    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
     // 光源从右后方
-    directionalLight->m_direction = glm::vec3(-1.0f, -1.0f, -1.0f);
+    directionalLight->set_direction(glm::vec3(-1.0f, -1.0f, -1.0f));
     directionalLight->set_specular_intensity(1.0f);
-    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.2f));
     struct LightPack lights;
-    lights.directional = directionalLight;
-    lights.ambient = ambientLight;
+    lights.directional = std::move(directionalLight);
+    lights.ambient = std::move(ambientLight);
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
     // 相机控制器

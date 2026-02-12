@@ -1,7 +1,6 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "application/Application.h"
 #include "application/camera/PerspectiveCamera.h"
@@ -24,23 +23,23 @@ int main() {
     Renderer renderer;
 
     Scene scene;
-    std::shared_ptr<ScreenPlane> geometry = std::make_shared<ScreenPlane>();
-    std::shared_ptr<ScreenMaterial> material = std::make_shared<ScreenMaterial>();
+    std::unique_ptr<ScreenPlane> geometry = std::make_unique<ScreenPlane>();
+    std::unique_ptr<ScreenMaterial> material = std::make_unique<ScreenMaterial>();
     Texture texture("asset/texture/grass.jpg", 1);
     material->set_screenTexture(&texture);
     std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(std::move(geometry), std::move(material));
     scene.AddChild(std::move(mesh));
 
     // 光线
-    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
+    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
     // 光源从右后方
-    directionalLight->m_direction = glm::vec3(-1.0f);
+    directionalLight->set_direction(glm::vec3(-1.0f));
     directionalLight->set_specular_intensity(0.1f);
-    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.1f));
     struct LightPack lights;
-    lights.directional = directionalLight;
-    lights.ambient = ambientLight;
+    lights.directional = std::move(directionalLight);
+    lights.ambient = std::move(ambientLight);
     // 相机
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));

@@ -10,25 +10,24 @@
 #include "x_log.h"
 
 // 定义
-std::unordered_map<std::string, Texture *> Texture::m_TextureCache{};
+std::unordered_map<std::string, std::unique_ptr<Texture>> Texture::s_TextureCache{};
 
 Texture *Texture::CreateTexture(const std::string &path, uint32_t uint) {
-    auto iter = m_TextureCache.find(path);
-    if (iter != m_TextureCache.end()) {
-        // first is key, second is val
-        return iter->second;
+    if (s_TextureCache.count(path)) {
+        return s_TextureCache[path].get();
     }
-    auto texture = new Texture(path, uint);
-    m_TextureCache[path] = texture;
+    Texture* texture = new Texture(path, uint);
+    s_TextureCache[path] = std::unique_ptr<Texture>(texture);
     return texture;
 }
 
 Texture *Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn,
                                 uint32_t uint) {
-    auto iter = m_TextureCache.find(path);
-    if (iter != m_TextureCache.end()) return iter->second;
-    auto texture = new Texture(dataIn, widthIn, heightIn, uint);
-    m_TextureCache[path] = texture;
+    if (s_TextureCache.count(path)) {
+        return s_TextureCache[path].get();
+    }
+    Texture* texture = new Texture(dataIn, widthIn, heightIn, uint);
+    s_TextureCache[path] = std::unique_ptr<Texture>(texture);
     return texture;
 }
 

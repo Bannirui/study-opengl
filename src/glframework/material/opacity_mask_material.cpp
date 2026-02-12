@@ -41,7 +41,7 @@ void OpacityMaskMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const 
     // 平行光
     if (lights.HasDirection()) {
         shader.setBool("u_activeDirectionalLight", true);
-        shader.setFloatVec3("u_directionalLight.direction", lights.directional->m_direction);
+        shader.setFloatVec3("u_directionalLight.direction", lights.directional->get_direction());
         shader.setFloatVec3("u_directionalLight.color", lights.directional->get_color());
         // 高光反射强度
         shader.setFloat("u_directionalLight.specularIntensity", lights.directional->get_specular_intensity());

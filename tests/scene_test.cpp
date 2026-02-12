@@ -5,7 +5,6 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "err_check.h"
 #include "application/Application.h"
@@ -29,55 +28,54 @@
 #include "input/input.h"
 
 int main() {
-    if (!glApp->Init(1600, 800)) return -1;
+    if (!glApp->Init(1600, 800)) { return -1; }
     // 渲染器
-    std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>();
+    Renderer renderer;
     // 场景
     Scene scene;
     // 箱子
-    std::shared_ptr<Box> boxGeometry = std::make_shared<Box>();
-    std::shared_ptr<PhongMaterial> boxMaterial = std::make_shared<PhongMaterial>();
-    boxMaterial->set_shines(32.0f);
-    boxMaterial->set_diffuse(new Texture("asset/texture/box.png", 0));
-    boxMaterial->set_specular_mask(new Texture("asset/texture/sp_mask.png", 1));
-    std::unique_ptr<Mesh> boxMesh = std::make_unique<Mesh>(boxGeometry, boxMaterial);
-    boxMesh->set_rotationY(-15.0f);
-    boxMesh->set_rotationX(15.0f);
+    std::unique_ptr<Box> geometryA = std::make_unique<Box>();
+    std::unique_ptr<PhongMaterial> materialA = std::make_unique<PhongMaterial>();
+    materialA->set_shines(32.0f);
+    Texture boxDiffuse("asset/texture/box.png", 0);
+    materialA->set_diffuse(&boxDiffuse);
+    Texture boxSpecularMask("asset/texture/sp_mask.png", 1);
+    materialA->set_specular_mask(&boxSpecularMask);
+    std::unique_ptr<Mesh> meshA = std::make_unique<Mesh>(std::move(geometryA), std::move(materialA));
+    meshA->set_rotationY(-15.0f);
+    meshA->set_rotationX(15.0f);
+    scene.AddChild(std::move(meshA));
     // 白色物体
-    std::shared_ptr<Sphere> whiteObjGeometry = std::make_shared<Sphere>(0.1f);
-    std::shared_ptr<WhiteMaterial> whiteObjMaterial = std::make_shared<WhiteMaterial>();
-    std::unique_ptr<Mesh> whiteObjMesh = std::make_unique<Mesh>(std::move(whiteObjGeometry),
-                                                                std::move(whiteObjMaterial));
-    whiteObjMesh->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
-
-    // todo
-    boxMesh->AddChild(std::move(whiteObjMesh));
-    scene.AddChild(std::move(boxMesh));
+    std::unique_ptr<Sphere> geometryB = std::make_unique<Sphere>(0.1f);
+    std::unique_ptr<WhiteMaterial> materialB = std::make_unique<WhiteMaterial>();
+    std::unique_ptr<Mesh> meshB = std::make_unique<Mesh>(std::move(geometryB), std::move(materialB));
+    meshB->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
+    Object* meshBRaw = scene.AddChild(std::move(meshB));
 
     // 光线
-    std::shared_ptr<SpotLight> spotLight = std::make_shared<SpotLight>();
+    std::unique_ptr<SpotLight> spotLight = std::make_unique<SpotLight>();
     spotLight->m_innerAngle = 15.0f;
     spotLight->m_outerAngle = 30.0f;
-    spotLight->set_position(whiteObjMesh->get_position());
+    spotLight->set_position(meshBRaw->get_position());
 
-    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
-    directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
+    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
+    directionalLight->set_direction(glm::vec3(1.0f, 0.0f, 0.0f));
 
-    std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>();
+    std::unique_ptr<PointLight> pointLight = std::make_unique<PointLight>();
     pointLight->set_position(glm::vec3(0.0f, 0.0f, 1.5f));
     pointLight->set_specular_intensity(0.5f);
     pointLight->m_k2 = 0.017f;
     pointLight->m_k1 = 0.07f;
     pointLight->m_kc = 1.0f;
 
-    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.2f));
 
     struct LightPack lights;
-    lights.directional = directionalLight;
-    lights.point = pointLight;
-    lights.spot = spotLight;
-    lights.ambient = ambientLight;
+    lights.directional = std::move(directionalLight);
+    lights.point = std::move(pointLight);
+    lights.spot = std::move(spotLight);
+    lights.ambient = std::move(ambientLight);
 
     // 相机
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
@@ -93,10 +91,10 @@ int main() {
     while (glApp->Update()) {
         cameraCtl->OnUpdate();
 
-        renderer->setClearColor(glApp->get_clearColor());
+        renderer.setClearColor(glApp->get_clearColor());
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer->Render(scene, camera, lights);
+        renderer.Render(scene, camera, lights);
 
         // imgui渲染
         glApp->RenderImGui();

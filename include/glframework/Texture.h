@@ -63,13 +63,14 @@ public:
     uint32_t get_unit() const { return m_Uint; }
     void set_uint(const uint32_t unit) { m_Uint = unit; }
 
+public:
+    // 声明纹理缓存
+    static std::unordered_map<std::string, std::unique_ptr<Texture>> s_TextureCache;
+
 private:
     uint32_t m_Texture{0};
     uint32_t m_Width{0};
     uint32_t m_Height{0};
     // 纹理单元
     uint32_t m_Uint{0};
-
-    // 声明纹理缓存
-    static std::unordered_map<std::string, Texture *> m_TextureCache;
 };

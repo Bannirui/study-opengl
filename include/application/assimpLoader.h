@@ -26,6 +26,9 @@ private:
     static std::unique_ptr<Mesh> processMesh(aiMesh *aiMesh, const aiScene *aiScene,
                                              const std::string &textureParentPath);
 
+    /**
+     * @return 非owning指针
+     */
     static Texture *processTexture(const aiMaterial *aiMaterial, const aiTextureType &type, const aiScene *aiScene,
                                    const std::string &textureParentPath);
 };

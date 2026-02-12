@@ -5,7 +5,6 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "err_check.h"
 #include "application/Application.h"
@@ -26,55 +25,58 @@
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
+#include "glframework/Scene.h"
 
 // 聚光灯 平行光 点光
 int main() {
-    if (!glApp->Init(1600, 800)) return -1;
+    if (!glApp->Init(1600, 800)) { return -1; }
     // 渲染器
     Renderer renderer;
     // 渲染列表
-    Object root(ObjectType::Object);
+    Scene scene;
     // 箱子
-    std::shared_ptr<Box> boxGeometry = std::make_shared<Box>();
-    std::shared_ptr<PhongMaterial> boxMaterial = std::make_shared<PhongMaterial>();
+    std::unique_ptr<Box> boxGeometry = std::make_unique<Box>();
+    std::unique_ptr<PhongMaterial> boxMaterial = std::make_unique<PhongMaterial>();
     boxMaterial->set_shines(32.0f);
-    boxMaterial->set_diffuse(new Texture("asset/texture/box.png", 0));
-    boxMaterial->set_specular_mask(new Texture("asset/texture/sp_mask.png", 1));
+    Texture boxDiffuse("asset/texture/box.png", 0);
+    boxMaterial->set_diffuse(&boxDiffuse);
+    Texture boxSpecularMask("asset/texture/sp_mask.png", 1);
+    boxMaterial->set_specular_mask(&boxSpecularMask);
     std::unique_ptr<Mesh> boxMesh = std::make_unique<Mesh>(std::move(boxGeometry), std::move(boxMaterial));
     // 缩小箱子 让它跟白球大小相对差别不那么大
     boxMesh->set_scale(glm::vec3(0.8f));
     // 初始的时候让箱子有个偏角观察全貌
     boxMesh->SetAngleX(30.0f);
     boxMesh->SetAngleY(45.0f);
-    root.AddChild(std::move(boxMesh));
+    scene.AddChild(std::move(boxMesh));
     // 白色物体
-    std::shared_ptr<Sphere> whiteObjGeometry = std::make_shared<Sphere>(0.1f);
-    std::shared_ptr<WhiteMaterial> whiteObjMaterial = std::make_shared<WhiteMaterial>();
+    std::unique_ptr<Sphere> whiteObjGeometry = std::make_unique<Sphere>(0.1f);
+    std::unique_ptr<WhiteMaterial> whiteObjMaterial = std::make_unique<WhiteMaterial>();
     std::unique_ptr<Mesh> whiteObjMesh = std::make_unique<Mesh>(std::move(whiteObjGeometry),
                                                                 std::move(whiteObjMaterial));
     whiteObjMesh->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
-    Object *whiteMeshPtr = root.AddChild(std::move(whiteObjMesh));
+    Object *whiteMeshPtr = scene.AddChild(std::move(whiteObjMesh));
     // 光线
-    std::shared_ptr<SpotLight> spotLight = std::make_shared<SpotLight>();
+    std::unique_ptr<SpotLight> spotLight = std::make_unique<SpotLight>();
     spotLight->m_innerAngle = 15.0f;
     spotLight->m_outerAngle = 30.0f;
     spotLight->set_position(whiteMeshPtr->get_position());
 
-    std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
-    directionalLight->m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
+    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
+    directionalLight->set_direction(glm::vec3(1.0f, 0.0f, 0.0f));
 
-    std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>();
+    std::unique_ptr<PointLight> pointLight = std::make_unique<PointLight>();
     pointLight->set_position(glm::vec3(0.0f, 0.0f, 1.5f));
     pointLight->set_specular_intensity(0.5f);
     pointLight->m_k2 = 0.017f;
     pointLight->m_k1 = 0.07f;
     pointLight->m_kc = 1.0f;
     struct LightPack lights;
-    lights.directional = directionalLight;
-    lights.point = pointLight;
-    lights.spot = spotLight;
+    lights.directional = std::move(directionalLight);
+    lights.point = std::move(pointLight);
+    lights.spot = std::move(spotLight);
 
-    std::shared_ptr<AmbientLight> ambientLight = std::make_shared<AmbientLight>();
+    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
     ambientLight->set_color(glm::vec3(0.2f));
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
@@ -91,17 +93,17 @@ int main() {
 
         // 点光跟着白球的位置 让白球运动起来 点光位置就会变化
         float xPos = glm::sin(glfwGetTime()) + 2.0f;
-        root.get_children()[1]->set_position(glm::vec3(xPos, 0.0f, 0.0f));
+        scene.get_children()[1]->set_position(glm::vec3(xPos, 0.0f, 0.0f));
         if (lights.spot) {
-            lights.spot->set_position(root.get_children()[1]->get_position());
+            lights.spot->set_position(scene.get_children()[1]->get_position());
         }
         // 每个帧在x轴上旋转
-        root.get_children()[0]->set_rotationY(0.5f);
+        scene.get_children()[0]->set_rotationY(0.5f);
 
         renderer.setClearColor(glApp->get_clearColor());
         // 每一帧清一次屏
         Renderer::BeginFrame();
-        renderer.Render(root, camera, lights);
+        renderer.Render(scene, camera, lights);
         // imgui渲染
         glApp->RenderImGui();
     }
