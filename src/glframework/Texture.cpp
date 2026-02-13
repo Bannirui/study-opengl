@@ -10,24 +10,24 @@
 #include "x_log.h"
 
 // 定义
-std::unordered_map<std::string, std::unique_ptr<Texture>> Texture::s_TextureCache{};
+std::unordered_map<std::string, std::shared_ptr<Texture>> Texture::s_TextureCache{};
 
-Texture *Texture::CreateTexture(const std::string &path, uint32_t uint) {
+std::shared_ptr<Texture> Texture::CreateTexture(const std::string &path, uint32_t uint) {
     if (s_TextureCache.count(path)) {
-        return s_TextureCache[path].get();
+        return s_TextureCache[path];
     }
-    Texture* texture = new Texture(path, uint);
-    s_TextureCache[path] = std::unique_ptr<Texture>(texture);
+    auto texture = std::make_shared<Texture>(path, uint);
+    s_TextureCache[path] = texture;
     return texture;
 }
 
-Texture *Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn,
+std::shared_ptr<Texture> Texture::CreateTexture(const std::string &path, const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn,
                                 uint32_t uint) {
     if (s_TextureCache.count(path)) {
-        return s_TextureCache[path].get();
+        return s_TextureCache[path];
     }
-    Texture* texture = new Texture(dataIn, widthIn, heightIn, uint);
-    s_TextureCache[path] = std::unique_ptr<Texture>(texture);
+    auto texture = std::make_shared<Texture>(dataIn, widthIn, heightIn, uint);
+    s_TextureCache[path] = texture;
     return texture;
 }
 
@@ -109,8 +109,9 @@ Texture::Texture(const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn, uin
     GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_Texture));
     GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
     GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_Texture));
+    GLenum internalFormat = (channels == 4) ? GL_RGBA : GL_RGB;
     GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
-    GL_CALL_AND_CHECK_ERR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, data));
+    GL_CALL_AND_CHECK_ERR(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, data));
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

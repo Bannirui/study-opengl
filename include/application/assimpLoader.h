@@ -29,6 +29,6 @@ private:
     /**
      * @return 非owning指针
      */
-    static Texture *processTexture(const aiMaterial *aiMaterial, const aiTextureType &type, const aiScene *aiScene,
+    static std::shared_ptr<Texture> processTexture(const aiMaterial *aiMaterial, const aiTextureType &type, const aiScene *aiScene,
                                    const std::string &textureParentPath);
 };

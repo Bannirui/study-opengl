@@ -27,75 +27,97 @@
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
 
-int main() {
-    if (!glApp->Init(1600, 800)) { return -1; }
-    // 渲染器
-    Renderer renderer;
-    // 场景
-    Scene scene;
-    // 箱子
-    std::unique_ptr<Box> geometryA = std::make_unique<Box>();
-    std::unique_ptr<PhongMaterial> materialA = std::make_unique<PhongMaterial>();
-    materialA->set_shines(32.0f);
-    Texture boxDiffuse("asset/texture/box.png", 0);
-    materialA->set_diffuse(&boxDiffuse);
-    Texture boxSpecularMask("asset/texture/sp_mask.png", 1);
-    materialA->set_specular_mask(&boxSpecularMask);
-    std::unique_ptr<Mesh> meshA = std::make_unique<Mesh>(std::move(geometryA), std::move(materialA));
-    meshA->set_rotationY(-15.0f);
-    meshA->set_rotationX(15.0f);
-    scene.AddChild(std::move(meshA));
-    // 白色物体
-    std::unique_ptr<Sphere> geometryB = std::make_unique<Sphere>(0.1f);
-    std::unique_ptr<WhiteMaterial> materialB = std::make_unique<WhiteMaterial>();
-    std::unique_ptr<Mesh> meshB = std::make_unique<Mesh>(std::move(geometryB), std::move(materialB));
-    meshB->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
-    Object* meshBRaw = scene.AddChild(std::move(meshB));
+class App : public Application
+{
+public:
+    App() = default;
 
-    // 光线
-    std::unique_ptr<SpotLight> spotLight = std::make_unique<SpotLight>();
-    spotLight->m_innerAngle = 15.0f;
-    spotLight->m_outerAngle = 30.0f;
-    spotLight->set_position(meshBRaw->get_position());
+public:
+    void OnInit() override
+    {
+        m_renderer = std::make_unique<Renderer>();
+        m_scene    = std::make_unique<Scene>();
 
-    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
-    directionalLight->set_direction(glm::vec3(1.0f, 0.0f, 0.0f));
+        // 箱子
+        auto geometry1 = std::make_unique<Box>();
+        auto material1 = std::make_unique<PhongMaterial>();
+        material1->set_shines(32.0f);
+        auto texture1 = std::make_shared<Texture>("asset/texture/box.png", 0);
+        material1->set_diffuse(texture1);
+        auto texture2 = std::make_shared<Texture>("asset/texture/sp_mask.png", 1);
+        material1->set_specular_mask(texture2);
+        auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
+        mesh1->set_rotationY(-15.0f);
+        mesh1->set_rotationX(15.0f);
+        m_scene->AddChild(std::move(mesh1));
+        // 白色物体
+        auto geometry2 = std::make_unique<Sphere>(0.1f);
+        auto material2 = std::make_unique<WhiteMaterial>();
+        auto mesh2     = std::make_unique<Mesh>(std::move(geometry2), std::move(material2));
+        mesh2->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
+        m_scene->AddChild(std::move(mesh2));
+        // 光线
+        m_lights.spot               = std::make_unique<SpotLight>();
+        m_lights.spot->m_innerAngle = 15.0f;
+        m_lights.spot->m_outerAngle = 30.0f;
+        m_lights.spot->set_position(m_scene->get_children()[1]->get_position());
 
-    std::unique_ptr<PointLight> pointLight = std::make_unique<PointLight>();
-    pointLight->set_position(glm::vec3(0.0f, 0.0f, 1.5f));
-    pointLight->set_specular_intensity(0.5f);
-    pointLight->m_k2 = 0.017f;
-    pointLight->m_k1 = 0.07f;
-    pointLight->m_kc = 1.0f;
+        m_lights.directional = std::make_unique<DirectionalLight>();
+        m_lights.directional->set_direction(glm::vec3(1.0f, 0.0f, 0.0f));
 
-    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
-    ambientLight->set_color(glm::vec3(0.2f));
+        m_lights.ambient = std::make_unique<AmbientLight>();
+        m_lights.ambient->set_color(glm::vec3(0.2f));
 
-    struct LightPack lights;
-    lights.directional = std::move(directionalLight);
-    lights.point = std::move(pointLight);
-    lights.spot = std::move(spotLight);
-    lights.ambient = std::move(ambientLight);
+        m_lights.point = std::make_unique<PointLight>();
+        m_lights.point->set_position(glm::vec3(0.0f, 0.0f, 1.5f));
+        m_lights.point->set_specular_intensity(0.5f);
+        m_lights.point->m_k2 = 0.017f;
+        m_lights.point->m_k1 = 0.07f;
+        m_lights.point->m_kc = 1.0f;
 
-    // 相机
-    PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
-    camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
-    // 相机控制器
-    Input *input = glApp->get_input();
-    input->CreateCameraController<TrackballCameraController>(camera);
-    auto cameraCtl = input->get_CameraController();
+        // 相机
+        m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));
+        m_camera->set_position(glm::vec3(0.0f, 0.0f, 5.0f));
 
-    // 窗体循环
-    while (glApp->Update()) {
-        cameraCtl->OnUpdate();
-
-        renderer.setClearColor(glApp->get_clearColor());
-        // 每一帧清一次屏
-        Renderer::BeginFrame();
-        renderer.Render(scene, camera, lights);
-
-        // imgui渲染
-        glApp->RenderImGui();
+        // 相机控制器
+        m_input = std::make_unique<Input>();
+        m_input->CreateCameraController<TrackballCameraController>(*m_camera);
+        m_cameraController = m_input->get_CameraController();
+        m_cameraController->SetScaleSpeed(1.0f);
     }
+    void OnUpdate(float dt) override
+    {
+        if (m_cameraController)
+        {
+            m_cameraController->OnUpdate();
+            m_scene->get_children()[1]->set_rotationY(0.05f);
+        }
+    }
+    void OnRender() override
+    {
+        m_renderer->setClearColor(m_clearColor);
+
+        Renderer::BeginFrame(m_Width, m_Height);
+        m_renderer->Render(*m_scene, *m_camera, m_lights);
+    }
+
+private:
+    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<Scene>    m_scene;
+
+    std::unique_ptr<PerspectiveCamera> m_camera;
+    CameraController*                  m_cameraController{nullptr};
+
+    LightPack m_lights{};
+};
+
+int main()
+{
+    App app;
+    if (!app.Init(1200, 800))
+    {
+        return -1;
+    }
+    app.Run();
     return 0;
 }

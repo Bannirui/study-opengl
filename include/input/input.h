@@ -36,7 +36,7 @@ public:
      */
     void OnScroll(double xOffset, double yOffset) const;
     // 鼠标点击
-    void OnMouse(int button, int action, int mods) const;
+    void OnMouse(int button, int action, int mods, double curX, double curY) const;
 
 private:
     std::unique_ptr<CameraController> m_cameraCtl;

@@ -13,7 +13,7 @@ public:
     ~DirectionalLight() override         = default;
 
     glm::vec3 get_direction() const { return m_direction; }
-    void      set_direction(const glm::vec3& m_direction) { this->m_direction = m_direction; }
+    void      set_direction(const glm::vec3& direction) { this->m_direction = direction; }
 
 private:
     // 光照向的方向

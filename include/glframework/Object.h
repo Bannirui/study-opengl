@@ -47,10 +47,7 @@ public:
     // 父子关系
     Object *get_parent() const { return m_parent; }
 
-    /**
-     * @return the child's raw pointer
-     */
-    Object *AddChild(std::unique_ptr<Object> child);
+    void AddChild(std::unique_ptr<Object> child);
 
     const std::vector<std::unique_ptr<Object> > &get_children() const { return m_children; }
     ObjectType get_type() const { return m_type; }

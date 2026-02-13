@@ -18,53 +18,77 @@
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
 
-int main() {
-    if (!glApp->Init(1200, 800)) return -1;
-    glApp->set_clearColor(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f));
-    // 渲染器
-    Renderer renderer;
+class App : public Application
+{
+public:
+    App() = default;
 
-    Scene scene;
-    std::unique_ptr<Plane> geometry = std::make_unique<Plane>(4.0f, 4.0f);
-    std::unique_ptr<OpacityMaskMaterial> material = std::make_unique<OpacityMaskMaterial>();
-    Texture diffuse("asset/texture/grass.jpg", 0);
-    material->set_diffuse(&diffuse);
-    Texture opacityMask("asset/texture/grass_mask.png", 1);
-    material->set_opacityMask(&opacityMask);
-    material->set_enableBlend(true);
-    std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(std::move(geometry), std::move(material));
-    scene.AddChild(std::move(mesh));
+public:
+    void OnInit() override
+    {
+        m_renderer = std::make_unique<Renderer>();
+        scene      = std::make_unique<Scene>();
 
-    // 光线
-    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
-    // 光源从右后方
-    directionalLight->set_direction(glm::vec3(-1.0f));
-    directionalLight->set_specular_intensity(0.1f);
-    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
-    ambientLight->set_color(glm::vec3(0.1f));
-    struct LightPack lights;
-    lights.directional = std::move(directionalLight);
-    lights.ambient = std::move(ambientLight);
-    // 相机
-    PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
-    camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
-    // 相机控制器
-    Input *input = glApp->get_input();
-    input->CreateCameraController<TrackballCameraController>(camera);
-    auto cameraCtl = input->get_CameraController();
-    cameraCtl->SetScaleSpeed(1.0f);
+        auto geometry1 = std::make_unique<Plane>(5.0f, 5.0f);
+        auto material1 = std::make_unique<OpacityMaskMaterial>();
+        auto texture1  = std::make_shared<Texture>("asset/texture/grass.jpg", 0);
+        material1->set_diffuse(texture1);
+        auto texture2 = std::make_shared<Texture>("asset/texture/grass_mask.png", 1);
+        material1->set_opacityMask(texture2);
+        material1->set_enableBlend(true);
+        auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
+        scene->AddChild(std::move(mesh1));
 
-    // 窗体循环
-    while (glApp->Update()) {
-        cameraCtl->OnUpdate();
+        // 光线
+        m_lights.directional = std::make_unique<DirectionalLight>();
+        // 光源从右后方
+        m_lights.directional->set_direction(glm::vec3(-1.0f));
+        m_lights.directional->set_specular_intensity(1.0f);
+        m_lights.ambient = std::make_unique<AmbientLight>();
+        m_lights.ambient->set_color(glm::vec3(0.2f));
 
-        renderer.setClearColor(glApp->get_clearColor());
-        // 每一帧清一次屏
-        Renderer::BeginFrame();
-        renderer.Render(scene, camera, lights);
+        // 相机
+        m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));
+        m_camera->set_position(glm::vec3(0.0f, 0.0f, 5.0f));
 
-        // imgui渲染
-        glApp->RenderImGui();
+        // 相机控制器
+        m_input = std::make_unique<Input>();
+        m_input->CreateCameraController<TrackballCameraController>(*m_camera);
+        m_cameraController = m_input->get_CameraController();
+        m_cameraController->SetScaleSpeed(1.0f);
     }
+    void OnUpdate(float dt) override
+    {
+        if (m_cameraController)
+        {
+            m_cameraController->OnUpdate();
+        }
+    }
+    void OnRender() override
+    {
+        m_renderer->setClearColor(m_clearColor);
+
+        Renderer::BeginFrame(m_Width, m_Height);
+        m_renderer->Render(*scene, *m_camera, m_lights);
+    }
+
+private:
+    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<Scene>    scene;
+
+    std::unique_ptr<PerspectiveCamera> m_camera;
+    CameraController*                  m_cameraController{nullptr};
+
+    LightPack m_lights{};
+};
+
+int main()
+{
+    App app;
+    if (!app.Init(1200, 800))
+    {
+        return -1;
+    }
+    app.Run();
     return 0;
 }

@@ -38,7 +38,7 @@ std::unique_ptr<Object> AssimpLoader::load(const std::string &path) {
 void AssimpLoader::processNode(aiNode *aiNode, Object &parent, const aiScene *aiScene,
                                const std::string &textureParentPath) {
     // 创建当前节点 加入父节点
-    Object *cur = parent.AddChild(std::make_unique<Object>(ObjectType::Object));
+    auto cur = std::make_unique<Object>(ObjectType::Object);
     auto localMatrix = getMat4f(aiNode->mTransformation);
     // 解构位置 缩放 旋转
     glm::vec3 pos, eulerAngle, scale;
@@ -59,6 +59,7 @@ void AssimpLoader::processNode(aiNode *aiNode, Object &parent, const aiScene *ai
     for (int i = 0, sz = aiNode->mNumChildren; i < sz; i++) {
         processNode(aiNode->mChildren[i], *cur, aiScene, textureParentPath);
     }
+    parent.AddChild(std::move(cur));
 }
 
 glm::mat4 AssimpLoader::getMat4f(aiMatrix4x4 val) {
@@ -112,12 +113,12 @@ std::unique_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
     std::unique_ptr<PhongMaterial> material = std::make_unique<PhongMaterial>();
     if (aiMesh->mMaterialIndex >= 0) {
         aiMaterial *aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
-        Texture *diffuseTexture = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
+        auto diffuseTexture = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
         if (diffuseTexture) {
             diffuseTexture->set_uint(0);
             material->set_diffuse(diffuseTexture);
         }
-        Texture *specularMask = processTexture(aiMaterial, aiTextureType_SPECULAR, aiScene, textureParentPath);
+        auto specularMask = processTexture(aiMaterial, aiTextureType_SPECULAR, aiScene, textureParentPath);
         if (specularMask) {
             specularMask->set_uint(1);
             material->set_specular_mask(specularMask);
@@ -126,7 +127,7 @@ std::unique_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
     return std::make_unique<Mesh>(std::move(geometry), std::move(material));
 }
 
-Texture *AssimpLoader::processTexture(const aiMaterial *aiMaterial, const aiTextureType &type, const aiScene *aiScene,
+std::shared_ptr<Texture> AssimpLoader::processTexture(const aiMaterial *aiMaterial, const aiTextureType &type, const aiScene *aiScene,
                                       const std::string &textureParentPath) {
     // this path is relative to model
     aiString aiPath;
@@ -140,20 +141,18 @@ Texture *AssimpLoader::processTexture(const aiMaterial *aiMaterial, const aiText
     std::string key = fullPath.string();
     // 缓存
     if (Texture::s_TextureCache.count(key)) {
-        return Texture::s_TextureCache[key].get();
+        return Texture::s_TextureCache[key];
     }
     // 创建
-    Texture* raw = nullptr;
     const aiTexture *embed = aiScene->GetEmbeddedTexture(aiPath.C_Str());
     if (embed) {
         // the texture is in memory
         unsigned char *dataIn = reinterpret_cast<unsigned char *>(embed->pcData);
         uint32_t width = embed->mWidth;
         uint32_t height = embed->mHeight;
-        raw = Texture::CreateTexture(key, dataIn, width, height, 0);
+        return Texture::CreateTexture(key, dataIn, width, height, 0);
     } else {
         // the texture is in disk
-        raw = Texture::CreateTexture(key, 0);
+        return Texture::CreateTexture(key, 0);
     }
-    return raw;
 }

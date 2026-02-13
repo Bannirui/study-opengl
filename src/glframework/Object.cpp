@@ -23,17 +23,15 @@ glm::mat4 Object::GetModelMatrix() const {
     return transform;
 }
 
-Object *Object::AddChild(std::unique_ptr<Object> child) {
-    if (!child) { return nullptr; }
+void Object::AddChild(std::unique_ptr<Object> child) {
+    if (!child) { return; }
     // 不能加自己
-    if (child.get() == this) { return nullptr; }
+    if (child.get() == this) { return; }
     // 可能已经是我的孩子了 先从它父节点断开关系
     if (auto oldParent = child->m_parent) { oldParent->RemoveChild(child.get()); }
     // 建立联系
     child->m_parent = this;
-    Object *raw = child.get();
     m_children.push_back(std::move(child));
-    return raw;
 }
 
 void Object::RemoveChild(Object *child) {

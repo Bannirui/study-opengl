@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 
 #include "application/Application.h"
-#include "application/camera/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/TrackballCameraController.h"
 #include "glframework/Mesh.h"
@@ -17,50 +16,72 @@
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
 
-int main() {
-    if (!glApp->Init(1200, 800)) return -1;
-    glApp->set_clearColor(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f));
-    // 渲染器
-    Renderer renderer;
-    Scene scene;
-    std::unique_ptr<Plane> geometry = std::make_unique<Plane>(4.0f, 4.0f);
-    std::unique_ptr<PhongMaterial> material = std::make_unique<PhongMaterial>();
-    Texture diffuse("asset/texture/grass.jpg", 0);
-    material->set_diffuse(&diffuse);
-    material->set_enableFaceCull(true);
-    std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(std::move(geometry), std::move(material));
-    scene.AddChild(std::move(mesh));
+class App : public Application
+{
+public:
+    App() = default;
+    void OnInit() override
+    {
+        m_renderer = std::make_unique<Renderer>();
+        m_scene    = std::make_unique<Scene>();
 
-    // 光线
-    DirectionalLight directionalLight;
-    // 光源从右后方
-    directionalLight.set_direction(glm::vec3(-1.0f));
-    directionalLight.set_specular_intensity(0.1f);
-    AmbientLight ambientLight;
-    ambientLight.set_color(glm::vec3(0.1f));
-    struct LightPack lights;
-    lights.directional = std::unique_ptr<DirectionalLight>(&directionalLight);
-    lights.ambient = std::unique_ptr<AmbientLight>(&ambientLight);
-    // 相机
-    PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
-    camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
-    // 相机控制器
-    Input *input = glApp->get_input();
-    input->CreateCameraController<TrackballCameraController>(camera);
-    auto cameraCtl = input->get_CameraController();
-    cameraCtl->SetScaleSpeed(1.0f);
+        auto geometry1 = std::make_unique<Plane>(4.0f, 4.0f);
+        auto material1 = std::make_unique<PhongMaterial>();
+        auto texture1  = std::make_shared<Texture>("asset/texture/grass.jpg", 0);
+        material1->set_diffuse(texture1);
+        material1->set_enableFaceCull(true);
+        auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
+        m_scene->AddChild(std::move(mesh1));
 
-    // 窗体循环
-    while (glApp->Update()) {
-        cameraCtl->OnUpdate();
+        // 光线
+        m_lights.directional = std::make_unique<DirectionalLight>();
+        m_lights.directional->set_direction(glm::vec3(1.0f));
+        m_lights.directional->set_specular_intensity(0.1f);
 
-        renderer.setClearColor(glApp->get_clearColor());
-        // 每一帧清一次屏
-        Renderer::BeginFrame();
-        renderer.Render(scene, camera, lights);
+        m_lights.ambient = std::make_unique<AmbientLight>();
+        m_lights.ambient->set_color(glm::vec3(0.2f));
 
-        // imgui渲染
-        glApp->RenderImGui();
+        m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));
+        m_camera->set_position(glm::vec3(0.0f, 0.0f, 5.0f));
+        // 相机控制器
+        m_input = std::make_unique<Input>();
+        m_input->CreateCameraController<TrackballCameraController>(*m_camera);
+        m_cameraController = m_input->get_CameraController();
+        m_cameraController->SetScaleSpeed(1.0f);
     }
+    void OnUpdate(float dt) override
+    {
+        if (m_cameraController)
+        {
+            m_cameraController->OnUpdate();
+        }
+    }
+    void OnRender() override
+    {
+        m_renderer->setClearColor(m_clearColor);
+
+        Renderer::BeginFrame();
+        m_renderer->Render(*m_scene, *m_camera, m_lights);
+    }
+
+private:
+    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<Scene>    m_scene;
+
+    std::unique_ptr<PerspectiveCamera> m_camera;
+    CameraController*                  m_cameraController{nullptr};
+
+    LightPack m_lights{};
+};
+
+int main()
+{
+    App app;
+    if (!app.Init(1200, 800))
+    {
+        return -1;
+    }
+    app.Run();
+
     return 0;
 }

@@ -22,50 +22,80 @@
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
+#include "glframework/Scene.h"
 
-int main() {
-    if (!glApp->Init(1600, 800)) return -1;
+class App : public Application
+{
+public:
+    App() = default;
 
-    Renderer renderer;
-    // the root
-    Object object(ObjectType::Object);
-    // 渲染列表
-    // 箱子
-    Box boxGeometry;
-    PhongMaterial boxMaterial;
-    boxMaterial.set_shines(32.0f);
-    Texture diffuseTexture("asset/texture/box.png", 0);
-    boxMaterial.set_diffuse(&diffuseTexture);
-    Texture specularMask("asset/texture/sp_mask.png", 1);
-    boxMaterial.set_specular_mask(&specularMask);
-    std::unique_ptr<Mesh> boxMesh = std::make_unique<Mesh>(std::unique_ptr<Box>(&boxGeometry), std::unique_ptr<PhongMaterial>(&boxMaterial));
-    object.AddChild(std::move(boxMesh));
-    // 光线
-    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
-    directionalLight->set_direction(glm::vec3(-1.0f, 0.0f, 0.0f));
-    std::unique_ptr<AmbientLight> ambient_light = std::make_unique<AmbientLight>();
-    ambient_light->set_color(glm::vec3(0.8f));
-    struct LightPack lights;
-    lights.directional = std::move(directionalLight);
-    lights.ambient = std::move(ambient_light);
-    // 相机
-    PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
-    camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
-    // 相机控制器
-    Input *input = glApp->get_input();
-    input->CreateCameraController<TrackballCameraController>(camera);
-    auto cameraCtl = input->get_CameraController();
+public:
+    void OnInit() override
+    {
+        m_renderer     = std::make_unique<Renderer>();
+        m_scene        = std::make_unique<Scene>();
+        auto geometry1 = std::make_unique<Box>(5.0f);
+        auto material1 = std::make_unique<PhongMaterial>();
+        auto texture1  = std::make_shared<Texture>("asset/texture/box.png", 0);
+        material1->set_diffuse(texture1);
+        material1->set_shines(32.0f);
+        auto texture2 = std::make_shared<Texture>("asset/texture/sp_mask.png", 1);
+        material1->set_specular_mask(texture2);
+        auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
+        m_scene->AddChild(std::move(mesh1));
 
-    // 窗体循环
-    while (glApp->Update()) {
-        cameraCtl->OnUpdate();
-        object.get_children()[0]->set_rotationX(0.1f);
-        object.get_children()[0]->set_rotationY(0.05f);
-        object.get_children()[0]->set_rotationZ(0.01f);
+        // 光线
+        m_lights.directional = std::make_unique<DirectionalLight>();
+        // 光源从右后方
+        m_lights.directional->set_direction(glm::vec3(-1.0f, 0.0f, 0.0f));
+        m_lights.ambient = std::make_unique<AmbientLight>();
+        m_lights.ambient->set_color(glm::vec3(0.9f));
 
-        // 每一帧清一次屏
-        Renderer::BeginFrame();
-        renderer.Render(object, camera, lights);
+        // 相机
+        m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));
+        m_camera->set_position(glm::vec3(0.0f, 0.0f, 5.0f));
+
+        // 相机控制器
+        m_input = std::make_unique<Input>();
+        m_input->CreateCameraController<TrackballCameraController>(*m_camera);
+        m_cameraController = m_input->get_CameraController();
+        m_cameraController->SetScaleSpeed(1.0f);
     }
+    void OnUpdate(float dt) override
+    {
+        if (m_cameraController)
+        {
+            m_cameraController->OnUpdate();
+            m_scene->get_children()[0]->set_rotationX(0.1f);
+            m_scene->get_children()[0]->set_rotationY(0.05f);
+            m_scene->get_children()[0]->set_rotationZ(0.01f);
+        }
+    }
+    void OnRender() override
+    {
+        m_renderer->setClearColor(m_clearColor);
+
+        Renderer::BeginFrame(m_Width, m_Height);
+        m_renderer->Render(*m_scene, *m_camera, m_lights);
+    }
+
+private:
+    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<Scene>    m_scene;
+
+    std::unique_ptr<PerspectiveCamera> m_camera;
+    CameraController*                  m_cameraController{nullptr};
+
+    LightPack m_lights{};
+};
+
+int main()
+{
+    App app;
+    if (!app.Init(1200, 800))
+    {
+        return -1;
+    }
+    app.Run();
     return 0;
 }

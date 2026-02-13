@@ -9,15 +9,24 @@
 
 class Texture;
 
-class FrameBuffer {
+class FrameBuffer
+{
 public:
     FrameBuffer(uint32_t width, uint32_t height);
 
     ~FrameBuffer();
 
+    // forbid copy
+    FrameBuffer(const FrameBuffer&)      = delete;
+    FrameBuffer& operator=(FrameBuffer&) = delete;
+
+    // allow move sconstructor
+    FrameBuffer(FrameBuffer&& other) noexcept ;
+    FrameBuffer& operator=(FrameBuffer&& other) noexcept ;
+
     uint32_t get_FBO() const { return m_FBO; }
-    Texture *get_colorAttach() const { return m_colorAttach.get(); };
-    Texture *get_depthStencilAttach() const { return m_depthStencilAttach.get(); };
+    Texture* get_colorAttach() const { return m_colorAttach.get(); };
+    Texture* get_depthStencilAttach() const { return m_depthStencilAttach.get(); };
 
     uint32_t get_width() const { return m_width; }
     uint32_t get_height() const { return m_height; }

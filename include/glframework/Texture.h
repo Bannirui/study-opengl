@@ -14,12 +14,12 @@ public:
     /**
      * from picture file
      */
-    static Texture *CreateTexture(const std::string &path, uint32_t uint);
+    static std::shared_ptr<Texture> CreateTexture(const std::string &path, uint32_t uint);
 
     /**
      * from stbi, memory data
      */
-    static Texture *CreateTexture(const std::string &path, const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn,
+    static std::shared_ptr<Texture> CreateTexture(const std::string &path, const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn,
                                   uint32_t uint);
 
     /**
@@ -66,7 +66,7 @@ public:
 
 public:
     // 声明纹理缓存
-    static std::unordered_map<std::string, std::unique_ptr<Texture>> s_TextureCache;
+    static std::unordered_map<std::string, std::shared_ptr<Texture>> s_TextureCache;
 
 private:
     uint32_t m_Texture{0};
