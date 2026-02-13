@@ -49,8 +49,6 @@ int main() {
     auto cameraCtl = input->get_CameraController();
     cameraCtl->SetScaleSpeed(1.0f);
 
-    glApp->InitImGui();
-
     // 窗体循环
     while (glApp->Update()) {
         cameraCtl->OnUpdate();

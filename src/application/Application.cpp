@@ -56,6 +56,9 @@ bool Application::Init(const uint32_t &width, const uint32_t &height) {
     glfwSetWindowUserPointer(m_Window, this);
     // 对glfw窗体事件监听
     registerCallback();
+
+    // 整合imgui
+    initImGui();
     return true;
 }
 
@@ -69,16 +72,6 @@ bool Application::Update() {
     // 双缓冲 每一帧都执行切换双缓存的动作
     glfwSwapBuffers(m_Window);
     return true;
-}
-
-void Application::InitImGui() {
-    ImGui::CreateContext();
-    // 主题
-    ImGui::StyleColorsDark();
-    // imgui绑定glfw
-    ImGui_ImplGlfw_InitForOpenGL(glApp->get_window(), true);
-    // imgui绑定opengl
-    ImGui_ImplOpenGL3_Init(X_GL_VERSION_STR);
 }
 
 void Application::RenderImGui() {
@@ -154,4 +147,14 @@ void Application::mouseBtnCallbackDispatch(GLFWwindow *window, int button, int a
     if (app && app->m_input) {
         app->m_input->OnMouse(button, action, mods);
     }
+}
+
+void Application::initImGui() {
+    ImGui::CreateContext();
+    // 主题
+    ImGui::StyleColorsDark();
+    // imgui绑定glfw
+    ImGui_ImplGlfw_InitForOpenGL(glApp->get_window(), true);
+    // imgui绑定opengl
+    ImGui_ImplOpenGL3_Init(X_GL_VERSION_STR);
 }

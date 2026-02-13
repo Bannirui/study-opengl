@@ -46,8 +46,6 @@ int main() {
     input->CreateCameraController<TrackballCameraController>(camera);
     auto cameraCtl = input->get_CameraController();
 
-    glApp->InitImGui();
-
     // 窗体循环
     while (glApp->Update()) {
         cameraCtl->OnUpdate();

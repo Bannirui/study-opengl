@@ -31,8 +31,6 @@ public:
     // 帧循环
     bool Update();
 
-    // 整合imgui
-    static void InitImGui();
     /**
      * 每一帧渲染gui
      * <ul>
@@ -80,6 +78,9 @@ private:
     static void mouseScrollCallbackDispatch(GLFWwindow *window, double xOffset, double yOffset);
     // 鼠标点击事件
     static void mouseBtnCallbackDispatch(GLFWwindow *window, int button, int action, int mods);
+
+    // 整合imgui
+    void initImGui();
 
 private:
     // 单例对象
