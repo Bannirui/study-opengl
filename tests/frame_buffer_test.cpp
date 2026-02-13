@@ -45,7 +45,8 @@ public:
 
         auto geometry2 = std::make_unique<ScreenPlane>();
         auto material2 = std::make_unique<ScreenMaterial>();
-        material2->set_screenTexture(m_frameBuffer->get_colorAttach());
+        auto texture2  = m_frameBuffer->get_colorAttach();
+        material2->set_screenTexture(texture2);
         auto mesh2 = std::make_unique<Mesh>(std::move(geometry2), std::move(material2));
         m_sceneDisplay->AddChild(std::move(mesh2));
 

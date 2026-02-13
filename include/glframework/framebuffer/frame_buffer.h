@@ -25,8 +25,8 @@ public:
     FrameBuffer& operator=(FrameBuffer&& other) noexcept ;
 
     uint32_t get_FBO() const { return m_FBO; }
-    Texture* get_colorAttach() const { return m_colorAttach.get(); };
-    Texture* get_depthStencilAttach() const { return m_depthStencilAttach.get(); };
+    std::shared_ptr<Texture> get_colorAttach() const { return m_colorAttach; };
+    std::shared_ptr<Texture> get_depthStencilAttach() const { return m_depthStencilAttach; };
 
     uint32_t get_width() const { return m_width; }
     uint32_t get_height() const { return m_height; }
@@ -37,6 +37,6 @@ private:
 
     uint32_t m_FBO{0};
 
-    std::unique_ptr<Texture> m_colorAttach;
-    std::unique_ptr<Texture> m_depthStencilAttach;
+    std::shared_ptr<Texture> m_colorAttach;
+    std::shared_ptr<Texture> m_depthStencilAttach;
 };
