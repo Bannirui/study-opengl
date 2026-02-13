@@ -87,14 +87,14 @@ int main() {
         cameraCtl->OnUpdate();
 
         // float time = glfwGetTime();
+        // 太阳自转
+        // sunPtr->set_rotationY(5.0f);
         // 地球公转
         earthOrbitPtr->set_rotationY(10.0f);
         // 地球自转
-        earthPtr->set_rotationY(60.0f);
+        earthPtr->set_rotationY(0.1f);
         // 月球公转
         moonOrbitPtr->set_rotationY(40.0f);
-        // 太阳自转
-        sunPtr->set_rotationY(5.0f);
 
         // 每一帧清一次屏
         Renderer::BeginFrame();
