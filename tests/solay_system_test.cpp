@@ -34,16 +34,45 @@ int main() {
     sunMat->set_diffuse(&sunTex);
     sunMat->set_shines(8.0f);
     auto sun = std::make_unique<Mesh>(std::move(sunGeo), std::move(sunMat));
-    scene.AddChild(std::move(sun));
+    Object* sunPtr = scene.AddChild(std::move(sun));
+    // 地球轨道
+    auto earthOrbit = std::make_unique<Object>(ObjectType::Object);
+    earthOrbit->set_position(glm::vec3(0.0f)); // 以太阳为中心
+    Object* earthOrbitPtr = sunPtr->AddChild(std::move(earthOrbit));
+    // 地球
+    auto earthGeo = std::make_unique<Sphere>(0.2f);
+    auto earthMat = std::make_unique<PhongMaterial>();
+    Texture earthTex("asset/texture/earth.jpg", 0);
+    earthMat->set_diffuse(&earthTex);
+    earthMat->set_shines(32.0f);
+    auto earth = std::make_unique<Mesh>(std::move(earthGeo), std::move(earthMat));
+    earth->set_position(glm::vec3(1.5f, 0.0f, 0.0f)); // 距离太阳
+    Object* earthPtr = earthOrbitPtr->AddChild(std::move(earth));
+    // 月球轨道
+    auto moonOrbit = std::make_unique<Object>(ObjectType::Object);
+    Object* moonOrbitPtr = earthPtr->AddChild(std::move(moonOrbit));
+    // 月球
+    auto moonGeo = std::make_unique<Sphere>(0.05f);
+    auto moonMat = std::make_unique<PhongMaterial>();
+    Texture moonTex("asset/texture/moon.jpg", 0);
+    moonMat->set_diffuse(&moonTex);
+    auto moon = std::make_unique<Mesh>(std::move(moonGeo), std::move(moonMat));
+    moon->set_position(glm::vec3(0.4f, 0.0f, 0.0f));
+    moonOrbitPtr->AddChild(std::move(moon));
 
     // 光线
-    std::unique_ptr<DirectionalLight> directionalLight = std::make_unique<DirectionalLight>();
-    directionalLight->set_direction(glm::vec3(-1.0f, -1.0f, -1.0f));
-    std::unique_ptr<AmbientLight> ambientLight = std::make_unique<AmbientLight>();
-    ambientLight->set_color(glm::vec3(0.2f));
     struct LightPack lights;
-    lights.directional = std::move(directionalLight);
-    lights.ambient = std::move(ambientLight);
+    lights.directional = std::make_unique<DirectionalLight>();
+    lights.directional->set_direction(glm::vec3(-1.0f, -1.0f, -10.f));
+    lights.ambient = std::make_unique<AmbientLight>();
+    lights.ambient->set_color(glm::vec3(0.2f));
+    lights.point = std::make_unique<PointLight>();
+    lights.point->set_position(glm::vec3(0.0f));
+    lights.point->set_specular_intensity(1.0f);
+    lights.point->m_kc = 1.0f;
+    lights.point->m_k1 = 0.0f;
+    lights.point->m_k2 = 0.0f; // 不衰减更像太阳
+
     // 相机
     PerspectiveCamera camera(static_cast<float>(glApp->get_width()) / static_cast<float>(glApp->get_height()));
     camera.set_position(glm::vec3(0.0f, 0.0f, 5.0f));
@@ -56,6 +85,16 @@ int main() {
     while (glApp->Update()) {
         render.setClearColor(glApp->get_clearColor());
         cameraCtl->OnUpdate();
+
+        // float time = glfwGetTime();
+        // 地球公转
+        earthOrbitPtr->set_rotationY(10.0f);
+        // 地球自转
+        earthPtr->set_rotationY(60.0f);
+        // 月球公转
+        moonOrbitPtr->set_rotationY(40.0f);
+        // 太阳自转
+        sunPtr->set_rotationY(5.0f);
 
         // 每一帧清一次屏
         Renderer::BeginFrame();
