@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # 项目信息
-project(study-opengl
+project(x-opengl
         VERSION 1.0
         LANGUAGES C CXX
 )
