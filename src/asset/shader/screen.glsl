@@ -24,9 +24,35 @@ in vec2 uv;
 
 uniform sampler2D u_screenTextureSampler;
 
+uniform float u_textureWidth;
+uniform float u_textureHeight;
+
 out vec4 fragColor;
+
+vec3 blur() {
+    float du = 1.0 / u_textureWidth;
+    float dv = 1.0 / u_textureHeight;
+    vec2 offsets[9] = vec2[](
+        vec2(-du, dv),  vec2(0.0, dv),  vec2(du, dv), // left-up up right-up
+        vec2(-du, 0.0), vec2(0.0, 0.0), vec2(du, 0.0), // left myself right
+        vec2(-du, -dv), vec2(0.0, -dv), vec2(du, -dv) // left-bottom bottom right-bottom
+    );
+    float kernel[9] = float[](
+        1.0, 2.0, 1.0,
+        2.0, 4.0, 2.0,
+        1.0, 2.0, 1.0
+    );
+    vec3 sumColor = vec3(0.0);
+    for(int i=0; i<9; ++i) {
+        vec3 sampleColor = texture(u_screenTextureSampler, uv+offsets[i]).rgb;
+        sumColor += sampleColor * kernel[i];
+    }
+    sumColor /= 16.0;
+    return sumColor;
+}
 
 void main()
 {
-    fragColor = texture(u_screenTextureSampler, uv);
+    vec3 color = blur();
+    fragColor = vec4(color, 1.0);
 }

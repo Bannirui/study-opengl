@@ -4,8 +4,6 @@
 
 #include "glframework/material/screen_material.h"
 
-#include "glframework/renderer/Renderer.h"
-
 ScreenMaterial::ScreenMaterial()
     : Material("asset/shader/screen.glsl") {
 }
@@ -17,5 +15,8 @@ void ScreenMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camer
         m_screenTexture->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
         shader.setInt("u_screenTextureSampler", m_screenTexture->get_unit());
+        // todo how to get app size
+        shader.setFloat("u_textureWidth", 1200);
+        shader.setFloat("u_textureHeight", 800);
     }
 }

@@ -1,4 +1,3 @@
-#include "imgui.h"
 #include "glframework/framebuffer/frame_buffer.h"
 
 #include <memory>
@@ -38,7 +37,7 @@ public:
 
         auto geometry1 = std::make_unique<Box>();
         auto material1 = std::make_unique<PhongMaterial>();
-        auto texture1  = std::make_shared<Texture>("asset/texture/grass.png", 1);
+        auto texture1  = std::make_shared<Texture>("asset/texture/wall.jpg", 1);
         material1->set_diffuse(texture1);
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_sceneOffline->AddChild(std::move(mesh1));
