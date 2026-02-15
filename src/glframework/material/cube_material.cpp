@@ -21,6 +21,6 @@ void CubeMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camer
         // 将纹理对象跟纹理单元绑定
         m_diffuse->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
-        shader.setInt("u_diffuse", m_diffuse->get_unit());
+        shader.setInt("u_cubeSampler", m_diffuse->get_unit());
     }
 }

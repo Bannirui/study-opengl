@@ -6,31 +6,33 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "glframework/Core.h"
 
-class Texture {
+class Texture
+{
 public:
     /**
      * from picture file
      */
-    static std::shared_ptr<Texture> CreateTexture(const std::string &path, uint32_t uint);
+    static std::shared_ptr<Texture> CreateTexture(const std::string& path, uint32_t uint);
 
     /**
      * from stbi, memory data
      */
-    static std::shared_ptr<Texture> CreateTexture(const std::string &path, const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn,
-                                  uint32_t uint);
+    static std::shared_ptr<Texture> CreateTexture(const std::string& path, const uint8_t* dataIn, uint32_t widthIn,
+                                                  uint32_t heightIn, uint32_t uint);
 
     /**
      * @param texture out param
      */
-    static void CreateColorAttach(uint32_t width, uint32_t height, uint32_t uint, Texture *texture);
+    static void CreateColorAttach(uint32_t width, uint32_t height, uint32_t uint, Texture* texture);
 
     /**
      * @param texture out param
      */
-    static void CreateDepthStencilAttach(uint32_t width, uint32_t height, uint32_t uint, Texture *texture);
+    static void CreateDepthStencilAttach(uint32_t width, uint32_t height, uint32_t uint, Texture* texture);
 
     Texture() = default;
 
@@ -38,7 +40,7 @@ public:
      * @param path 图片路径
      * @param unit 要绑到哪个纹理单元
      */
-    Texture(const std::string &path, uint32_t unit);
+    Texture(const std::string& path, uint32_t unit);
 
     /**
      * 把从assimp中加载出来的纹理图片生成纹理对象
@@ -48,10 +50,16 @@ public:
      * @param heightIn 图片高度
      * @param uint 要绑定的纹理单元
      */
-    Texture(const uint8_t *dataIn, uint32_t widthIn, uint32_t heightIn, uint32_t uint);
+    Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uint32_t uint);
 
     // no data, it means empty texture
     Texture(uint32_t width, uint32_t height, uint32_t uint);
+
+    /**
+     * texture target is 3D
+     * @param sortPaths right(+x), left(-x), up(+y), down(-y), back(+z), front(-z)
+     */
+    Texture(const std::vector<std::string>& sortPaths, uint32_t uint);
 
     ~Texture();
 
@@ -62,7 +70,7 @@ public:
      * @return 纹理对象绑定的纹理单元是哪个
      */
     uint32_t get_unit() const { return m_Uint; }
-    void set_uint(const uint32_t unit) { m_Uint = unit; }
+    void     set_uint(const uint32_t unit) { m_Uint = unit; }
 
 public:
     // 声明纹理缓存
@@ -74,4 +82,5 @@ private:
     uint32_t m_Height{0};
     // 纹理单元
     uint32_t m_Uint{0};
+    uint32_t m_textureTarget{GL_TEXTURE_2D};  // 2D or 3D
 };

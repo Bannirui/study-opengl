@@ -11,6 +11,7 @@ file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "*.cpp")
 foreach (TEST_SRC ${TEST_SOURCES})
     # Extract file name without extension
     get_filename_component(TEST_NAME ${TEST_SRC} NAME_WE)
+    message(STATUS "Start building ${TEST_NAME}")
     # Create executable
     add_executable(${TEST_NAME} ${TEST_SRC})
     # Link main library

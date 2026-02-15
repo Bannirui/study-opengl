@@ -1,7 +1,5 @@
 #include <memory>
 
-#include <glm/glm.hpp>
-
 #include "application/Application.h"
 #include "application/camera/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
@@ -10,10 +8,6 @@
 #include "glframework/Scene.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
-#include "glframework/geo/Plane.h"
-#include "glframework/light/AmbientLight.h"
-#include "glframework/light/DirectionalLight.h"
-#include "glframework/material/DepthMaterial.h"
 #include "glframework/material/cube_material.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
@@ -30,24 +24,19 @@ public:
         m_renderer = std::make_unique<Renderer>();
         m_scene    = std::make_unique<Scene>();
 
-        auto geometry1 = std::make_unique<Box>(1.0f);
-        auto material1 = std::make_unique<CubeMaterial>();
-        auto texture1 = std::make_shared<Texture>("asset/texture/wall.jpg", 0);
+        // right left up down rear front
+        std::vector<std::string> texturePaths = {"asset/texture/skybox/right.jpg", "asset/texture/skybox/left.jpg",
+                                                 "asset/texture/skybox/top.jpg",   "asset/texture/skybox/bottom.jpg",
+                                                 "asset/texture/skybox/back.jpg",  "asset/texture/skybox/front.jpg"};
+        auto                     geometry1    = std::make_unique<Box>(1.0f);
+        auto                     material1    = std::make_unique<CubeMaterial>();
+        auto                     texture1     = std::make_shared<Texture>(texturePaths, 1);
         material1->set_diffuse(texture1);
-        auto mesh1     = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
+        auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_scene->AddChild(std::move(mesh1));
-
-        // 光线
-        m_lights.directional = std::make_unique<DirectionalLight>();
-        // 光源从右后方
-        m_lights.directional->set_direction(glm::vec3(-1.0f));
-        m_lights.directional->set_specular_intensity(1.0f);
-        m_lights.ambient = std::make_unique<AmbientLight>();
-        m_lights.ambient->set_color(glm::vec3(0.2f));
 
         // 相机
         m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));
-        m_camera->set_position(glm::vec3(0.0f, 0.0f, 5.0f));
 
         // 相机控制器
         m_input = std::make_unique<Input>();
