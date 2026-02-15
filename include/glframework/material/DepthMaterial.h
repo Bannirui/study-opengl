@@ -10,5 +10,5 @@ class DepthMaterial : public Material
 {
 public:
     explicit DepthMaterial();
-    void ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) override;
+    void ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
 };

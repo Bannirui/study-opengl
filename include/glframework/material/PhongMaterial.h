@@ -13,7 +13,7 @@ class PhongMaterial : public Material {
 public:
     explicit PhongMaterial();
 
-    void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera, const LightPack &lights) const override;
+    void ApplyUniforms(Shader &shader, Mesh &mesh, const Camera &camera, const LightPack &lights) const override;
 
     void set_diffuse(std::shared_ptr<Texture>& texture) { this->m_diffuse = texture; }
     void set_specular_mask(std::shared_ptr<Texture>& texture) { this->m_specularMask = texture; }

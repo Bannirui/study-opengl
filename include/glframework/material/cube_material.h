@@ -15,7 +15,7 @@ public:
     void set_diffuse(std::shared_ptr<Texture>& diffuse) { m_diffuse = diffuse; }
 
 protected:
-    void ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights) override;
+    void ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
 
 private:
     std::shared_ptr<Texture> m_diffuse;

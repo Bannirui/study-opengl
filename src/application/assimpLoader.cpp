@@ -30,7 +30,7 @@ std::unique_ptr<Object> AssimpLoader::load(const std::string &path) {
         return nullptr;
     }
     // create root, owned by caller
-    std::unique_ptr<Object> root = std::make_unique<Object>(ObjectType::Object);
+    std::unique_ptr<Object> root = std::make_unique<Object>();
     processNode(scene->mRootNode, *root, scene, rootPath);
     return root;
 }
@@ -38,7 +38,7 @@ std::unique_ptr<Object> AssimpLoader::load(const std::string &path) {
 void AssimpLoader::processNode(aiNode *aiNode, Object &parent, const aiScene *aiScene,
                                const std::string &textureParentPath) {
     // 创建当前节点 加入父节点
-    auto cur = std::make_unique<Object>(ObjectType::Object);
+    auto cur = std::make_unique<Object>();
     auto localMatrix = getMat4f(aiNode->mTransformation);
     // 解构位置 缩放 旋转
     glm::vec3 pos, eulerAngle, scale;

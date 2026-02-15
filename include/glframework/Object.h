@@ -27,6 +27,7 @@ enum class ObjectType
 class Object
 {
 public:
+    Object();
     virtual ~Object() = default;
 
     glm::vec3 get_position() const { return m_position; }
@@ -55,7 +56,7 @@ public:
     void RemoveChild(Object* child);
 
     // Object是多态的 真正的渲染逻辑下沉到具体对象
-    virtual void Render(const Renderer&, const Camera&, const LightPack&) const {}
+    virtual void Render(const Renderer&, const Camera&, const LightPack&) {}
 
 protected:
     explicit Object(ObjectType type);

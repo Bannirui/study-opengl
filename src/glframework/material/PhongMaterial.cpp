@@ -17,7 +17,7 @@
 PhongMaterial::PhongMaterial() : Material("asset/shader/phone_shader.glsl") {
 }
 
-void PhongMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
+void PhongMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera &camera,
                                   const LightPack &lights) const {
     if (m_diffuse) {
         // 将纹理对象跟纹理单元绑定

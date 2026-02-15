@@ -10,7 +10,7 @@
 
 CubeMaterial::CubeMaterial() : Material("asset/shader/cube.glsl") {}
 
-void CubeMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, const LightPack& lights)
+void CubeMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera, const LightPack& lights) const
 {
     mesh.set_position(camera.get_position());
     // mvp变换矩阵
@@ -21,6 +21,6 @@ void CubeMaterial::ApplyUniforms(Shader& shader, const Mesh& mesh, const Camera&
         // 将纹理对象跟纹理单元绑定
         m_diffuse->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
-        shader.setInt("u_sampler", m_diffuse->get_unit());
+        shader.setInt("u_diffuse", m_diffuse->get_unit());
     }
 }
