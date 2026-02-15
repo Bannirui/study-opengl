@@ -12,7 +12,7 @@ WhiteMaterial::WhiteMaterial() : Material("asset/shader/white_shader.glsl") {
 }
 
 void WhiteMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
-                                  const LightPack &lights) const {
+                                  const LightPack &lights) {
     // mvp变换矩阵
     shader.setMat4("u_model", glm::value_ptr(mesh.GetModelMatrix()));
     shader.setMat4("u_view", glm::value_ptr(camera.GetViewMatrix()));

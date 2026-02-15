@@ -40,7 +40,7 @@ public:
 
     // 材质负责上传uniform给shader 渲染动作发起只由renderer负责
     virtual void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
-                               const LightPack &lights) const = 0;
+                               const LightPack &lights) = 0;
 
     bool get_depthTest() const { return m_enableDepthTest; }
     void set_depthTest(const bool option) { m_enableDepthTest = option; }

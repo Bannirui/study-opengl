@@ -16,21 +16,21 @@ class Camera;
 struct LightPack;
 
 // 区分是Object还是Mesh 决定要不要渲染
-enum class ObjectType {
+enum class ObjectType
+{
     Object,
     Mesh,
     Scene,
 };
 
 // 物体抽象 平移 缩放 转动
-class Object {
+class Object
+{
 public:
-    explicit Object(ObjectType type);
-
     virtual ~Object() = default;
 
     glm::vec3 get_position() const { return m_position; }
-    void set_position(glm::vec3 pos) { m_position = pos; }
+    void      set_position(glm::vec3 pos) { m_position = pos; }
     // 增量旋转 在上一次基础上再旋转多少度
     void set_rotationX(float angle) { m_angle_x += angle; }
     void set_rotationY(float angle) { m_angle_y += angle; }
@@ -45,18 +45,20 @@ public:
     glm::mat4 GetModelMatrix() const;
 
     // 父子关系
-    Object *get_parent() const { return m_parent; }
+    Object* get_parent() const { return m_parent; }
 
     void AddChild(std::unique_ptr<Object> child);
 
-    const std::vector<std::unique_ptr<Object> > &get_children() const { return m_children; }
-    ObjectType get_type() const { return m_type; }
+    const std::vector<std::unique_ptr<Object> >& get_children() const { return m_children; }
+    ObjectType                                   get_type() const { return m_type; }
 
-    void RemoveChild(Object *child);
+    void RemoveChild(Object* child);
 
     // Object是多态的 真正的渲染逻辑下沉到具体对象
-    virtual void Render(const Renderer &, const Camera &, const LightPack &) const {
-    }
+    virtual void Render(const Renderer&, const Camera&, const LightPack&) const {}
+
+protected:
+    explicit Object(ObjectType type);
 
 protected:
     // 位置坐标 世界坐标系
@@ -74,7 +76,7 @@ private:
     // 孩子节点
     std::vector<std::unique_ptr<Object> > m_children;
     // 父亲节点
-    Object *m_parent{nullptr};
+    Object* m_parent{nullptr};
 
     // 类型标识 将来渲染的时候看这个类型决定是不是需要渲染
     // 用const修饰语义是在构造后类型不应该再发生改变

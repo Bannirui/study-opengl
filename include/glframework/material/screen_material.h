@@ -11,7 +11,7 @@ class ScreenMaterial : public Material {
 public:
     explicit ScreenMaterial();
 
-    void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera, const LightPack &lights) const override;
+    void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera, const LightPack &lights) override;
 
     void set_screenTexture(std::shared_ptr<Texture>& texture) { m_screenTexture = texture; }
 

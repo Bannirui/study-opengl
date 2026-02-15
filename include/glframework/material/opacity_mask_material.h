@@ -12,7 +12,7 @@ class OpacityMaskMaterial : public Material {
 public:
     explicit OpacityMaskMaterial();
 
-    void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera, const LightPack &lights) const override;
+    void ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera, const LightPack &lights) override;
 
     void set_diffuse(std::shared_ptr<Texture>& texture) { m_diffuse = texture; }
     void set_opacityMask(std::shared_ptr<Texture>& texture) { m_opacityMask = texture; }

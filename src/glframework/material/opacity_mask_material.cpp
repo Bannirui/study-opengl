@@ -18,7 +18,7 @@ OpacityMaskMaterial::OpacityMaskMaterial() : Material("asset/shader/phone_opacit
 }
 
 void OpacityMaskMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
-                                        const LightPack &lights) const {
+                                        const LightPack &lights) {
     if (m_diffuse) {
         // 将纹理对象跟纹理单元绑定
         m_diffuse->Bind();

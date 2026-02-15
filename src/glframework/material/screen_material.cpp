@@ -9,7 +9,7 @@ ScreenMaterial::ScreenMaterial()
 }
 
 void ScreenMaterial::ApplyUniforms(Shader &shader, const Mesh &mesh, const Camera &camera,
-                                   const LightPack &lights) const {
+                                   const LightPack &lights) {
     if (m_screenTexture) {
         // 将纹理对象跟纹理单元绑定
         m_screenTexture->Bind();
