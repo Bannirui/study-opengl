@@ -65,7 +65,7 @@ public:
 
     void Bind() const;
 
-    uint32_t get_texture() const { return m_Texture; }
+    uint32_t get_texture() const { return m_id; }
     /**
      * @return 纹理对象绑定的纹理单元是哪个
      */
@@ -77,7 +77,7 @@ public:
     static std::unordered_map<std::string, std::shared_ptr<Texture>> s_TextureCache;
 
 private:
-    uint32_t m_Texture{0};
+    uint32_t m_id{0};
     uint32_t m_Width{0};
     uint32_t m_Height{0};
     // 纹理单元

@@ -24,13 +24,20 @@ public:
         m_renderer = std::make_unique<Renderer>();
         m_scene    = std::make_unique<Scene>();
 
+        // clang-format off
         // right left up down rear front
-        std::vector<std::string> texturePaths = {"asset/texture/skybox/right.jpg", "asset/texture/skybox/left.jpg",
-                                                 "asset/texture/skybox/top.jpg",   "asset/texture/skybox/bottom.jpg",
-                                                 "asset/texture/skybox/back.jpg",  "asset/texture/skybox/front.jpg"};
-        auto                     geometry1    = std::make_unique<Box>(1.0f);
-        auto                     material1    = std::make_unique<CubeMaterial>();
-        auto                     texture1     = std::make_shared<Texture>(texturePaths, 1);
+        std::vector<std::string> texturePaths = {
+            "asset/texture/skybox/right.jpg",
+            "asset/texture/skybox/left.jpg",
+            "asset/texture/skybox/top.jpg",
+            "asset/texture/skybox/bottom.jpg",
+            "asset/texture/skybox/back.jpg",
+            "asset/texture/skybox/front.jpg"
+        };
+        // clang-format on
+        auto geometry1 = std::make_unique<Box>(1.0f);
+        auto material1 = std::make_unique<CubeMaterial>();
+        auto texture1  = std::make_shared<Texture>(texturePaths, 1);
         material1->set_diffuse(texture1);
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_scene->AddChild(std::move(mesh1));

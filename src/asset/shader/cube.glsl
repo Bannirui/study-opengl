@@ -4,6 +4,7 @@
 
 // 本地xyz坐标
 layout (location = 0) in vec3 a_pos;
+out vec3 uvw;
 
 // 把顶点转换为世界坐标系
 uniform mat4 u_model;
@@ -12,14 +13,11 @@ uniform mat4 u_view;
 // 透视投影矩阵 将摄像机坐标转换为剪裁坐标
 uniform mat4 u_projection;
 
-out vec3 uvw;
-
 void main()
 {
-    // 世界坐标
-    vec4 transformPos = u_model * vec4(a_pos, 1.0);
+    vec4 transformPos = vec4(a_pos, 1.0);
     // 剪裁坐标
-    gl_Position = u_projection * u_view * transformPos;
+    gl_Position = u_projection * u_view * u_model * transformPos;
     uvw = a_pos;
 }
 
@@ -29,10 +27,9 @@ void main()
 
 // uvw坐标
 in vec3 uvw;
+out vec4 fragmentColor;
 
 uniform samplerCube u_cubeSampler;
-
-out vec4 fragmentColor;
 
 void main()
 {

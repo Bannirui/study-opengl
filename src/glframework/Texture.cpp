@@ -58,10 +58,10 @@ void Texture::CreateDepthStencilAttach(uint32_t width, uint32_t height, uint32_t
 
     glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    texture->m_Texture = depthStencil;
-    texture->m_Width   = width;
-    texture->m_Height  = height;
-    texture->m_Uint    = uint;
+    texture->m_id     = depthStencil;
+    texture->m_Width  = width;
+    texture->m_Height = height;
+    texture->m_Uint   = uint;
 }
 
 Texture::Texture(const std::string& path, uint32_t unit) : m_Uint(unit)
@@ -77,13 +77,13 @@ Texture::Texture(const std::string& path, uint32_t unit) : m_Uint(unit)
         exit(EXIT_FAILURE);
     }
     // 创建纹理对象
-    GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_Texture));
+    GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_id));
     // 激活纹理单元
     GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
     // 纹理对象绑定到OpenGL状态机插槽
     // 将纹理对象绑定到纹理单元 OpenGL默认至少16个纹理单元
     // 没有使用glActiveTexture()显式用指定纹理单元就默认使用0号纹理单元
-    GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_Texture));
+    GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_id));
     // 开辟显存 传输数据
     // level mipmap的层级 如果这个api调用的时候level传入了非0的值 就意味着默认要开启opengl的mipmap功能
     // 就一定要传给opengl图片大小一直到1*1大小 如果没有一直传入图片 就会报错
@@ -126,9 +126,9 @@ Texture::Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uin
         XLOG_ERROR("TEXTURE::fail to read picture from memory");
         exit(EXIT_FAILURE);
     }
-    GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_Texture));
+    GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_id));
     GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
-    GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_Texture));
+    GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_id));
     GLenum internalFormat = (channels == 4) ? GL_RGBA : GL_RGB;
     GLenum format         = (channels == 4) ? GL_RGBA : GL_RGB;
     GL_CALL_AND_CHECK_ERR(
@@ -143,9 +143,9 @@ Texture::Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uin
 
 Texture::Texture(uint32_t width, uint32_t height, uint32_t uint) : m_Width(width), m_Height(height), m_Uint(uint)
 {
-    glGenTextures(1, &m_Texture);
+    glGenTextures(1, &m_id);
     glActiveTexture(GL_TEXTURE0 + m_Uint);
-    glBindTexture(GL_TEXTURE_2D, m_Texture);
+    glBindTexture(GL_TEXTURE_2D, m_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<int>(m_Width), static_cast<int>(m_Height), 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -153,19 +153,19 @@ Texture::Texture(uint32_t width, uint32_t height, uint32_t uint) : m_Width(width
 }
 
 Texture::Texture(const std::vector<std::string>& sortPaths, uint32_t uint)
-    : m_Uint(uint), m_textureTarget(GL_TEXTURE_3D)
+    : m_Uint(uint), m_textureTarget(GL_TEXTURE_CUBE_MAP)
 {
-    glGenTextures(1, &m_Texture);
+    glGenTextures(1, &m_id);
     glActiveTexture(GL_TEXTURE0 + m_Uint);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_Texture);
+    glBindTexture(m_textureTarget, m_id);
 
     int      channels;
     int      width = 0, height = 0;
     uint8_t* data = nullptr;
     for (int i = 0, sz = sortPaths.size(); i < sz; ++i)
     {
-        data = stbi_load(sortPaths[i].c_str(), &width, &height, &channels, STBI_rgb_alpha);
-        if (!data)
+        data = stbi_load(sortPaths[i].c_str(), &width, &height, &channels, STBI_default);
+        if (data == nullptr)
         {
             XLOG_ERROR("TEXTURE::fail to read picture for {}", sortPaths[i]);
         }
@@ -189,9 +189,9 @@ Texture::Texture(const std::vector<std::string>& sortPaths, uint32_t uint)
 
 Texture::~Texture()
 {
-    if (m_Texture != 0)
+    if (m_id != 0)
     {
-        glDeleteTextures(1, &m_Texture);
+        glDeleteTextures(1, &m_id);
     }
 }
 
@@ -199,5 +199,5 @@ void Texture::Bind() const
 {
     // OpenGL是状态机 不知道当前状态机的纹理单元 所以要先切换纹理单元 然后绑定纹理对象
     GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
-    GL_CALL_AND_CHECK_ERR(glBindTexture(m_textureTarget, m_Texture));
+    GL_CALL_AND_CHECK_ERR(glBindTexture(m_textureTarget, m_id));
 }
