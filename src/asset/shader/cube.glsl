@@ -18,6 +18,8 @@ void main()
     vec4 transformPos = vec4(a_pos, 1.0);
     // 剪裁坐标
     gl_Position = u_projection * u_view * u_model * transformPos;
+    // to guarantee z(ndc)=z/w equals 1
+    gl_Position = gl_Position.xyww;
     uvw = a_pos;
 }
 

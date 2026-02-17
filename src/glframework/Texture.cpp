@@ -159,6 +159,8 @@ Texture::Texture(const std::vector<std::string>& sortPaths, uint32_t uint)
     glActiveTexture(GL_TEXTURE0 + m_Uint);
     glBindTexture(m_textureTarget, m_id);
 
+    // no need flipping Y
+    stbi_set_flip_vertically_on_load(false);
     int      channels;
     int      width = 0, height = 0;
     uint8_t* data = nullptr;
