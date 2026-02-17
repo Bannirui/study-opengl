@@ -14,7 +14,7 @@
 #include "glframework/Mesh.h"
 #include "application/camera/Camera.h"
 
-PhongMaterial::PhongMaterial() : Material("asset/shader/phone_shader.glsl") {
+PhongMaterial::PhongMaterial() : Material("asset/shader/phong_shader.glsl") {
 }
 
 void PhongMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera &camera,
@@ -23,7 +23,7 @@ void PhongMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera &came
         // 将纹理对象跟纹理单元绑定
         m_diffuse->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
-        shader.setInt("u_sampler", m_diffuse->get_unit());
+        shader.setInt("u_diffuseSampler", m_diffuse->get_unit());
     }
     // 高光蒙版贴图
     if (m_specularMask) {

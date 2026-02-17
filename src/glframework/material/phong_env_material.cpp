@@ -1,34 +1,36 @@
-//
-// Created by dingrui on 25-7-23.
-//
-
-#include "glframework/material/opacity_mask_material.h"
+#include "glframework/material/phong_env_material.h"
 
 #include "glframework/Texture.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
-#include "glframework/light/AmbientLight.h"
 #include "glframework/light/SpotLight.h"
 #include "glframework/light/PointLight.h"
 #include "glframework/light/DirectionalLight.h"
 #include "glframework/Mesh.h"
 #include "application/camera/Camera.h"
 
-OpacityMaskMaterial::OpacityMaskMaterial() : Material("asset/shader/phong_opacity_mask.glsl") {
-}
+PhongEnvMaterial::PhongEnvMaterial() : Material("asset/shader/phong_env_shader.glsl") {}
 
-void OpacityMaskMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera &camera,
-                                        const LightPack &lights) const {
-    if (m_diffuse) {
+void PhongEnvMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera, const LightPack& lights) const
+{
+    if (m_diffuse)
+    {
         // 将纹理对象跟纹理单元绑定
         m_diffuse->Bind();
         // diffuse贴图 将纹理采样器跟纹理单元绑定
-        shader.setU32("u_sampler", m_diffuse->get_unit());
+        shader.setInt("u_diffuseSampler", m_diffuse->get_unit());
     }
     // 高光蒙版贴图
-    if (m_opacityMask) {
-        m_opacityMask->Bind();
-        shader.setU32("u_opacityMaskSampler", m_opacityMask->get_unit());
+    if (m_specularMask)
+    {
+        m_specularMask->Bind();
+        shader.setInt("u_specularMaskSampler", m_specularMask->get_unit());
+    }
+    // 环境光
+    if (m_env)
+    {
+        m_env->Bind();
+        shader.setInt("u_envSampler", m_env->get_unit());
     }
     // 模型变换矩阵 aPos模型->世界空间
     shader.setMat4("u_model", glm::value_ptr(mesh.GetModelMatrix()));
@@ -39,7 +41,8 @@ void OpacityMaskMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera
     auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh.GetModelMatrix())));
     shader.setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
     // 平行光
-    if (lights.HasDirection()) {
+    if (lights.HasDirection())
+    {
         shader.setBool("u_activeDirectionalLight", true);
         shader.setFloatVec3("u_directionalLight.direction", lights.directional->get_direction());
         shader.setFloatVec3("u_directionalLight.color", lights.directional->get_color());
@@ -47,7 +50,8 @@ void OpacityMaskMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera
         shader.setFloat("u_directionalLight.specularIntensity", lights.directional->get_specular_intensity());
     }
     // 点光
-    if (lights.HasSpot()) {
+    if (lights.HasSpot())
+    {
         shader.setBool("u_activePointLight", true);
         shader.setFloatVec3("u_pointLight.pos", lights.point->get_position());
         shader.setFloatVec3("u_pointLight.color", lights.point->get_color());
@@ -58,7 +62,8 @@ void OpacityMaskMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera
         shader.setFloat("u_pointLight.kc", lights.point->m_kc);
     }
     // 聚光灯
-    if (lights.HasSpot()) {
+    if (lights.HasSpot())
+    {
         shader.setBool("u_activeSpotLight", true);
         shader.setFloatVec3("u_spotLight.pos", lights.spot->get_position());
         shader.setFloatVec3("u_spotLight.targetDirection", lights.spot->m_targetDirection);
@@ -67,14 +72,10 @@ void OpacityMaskMaterial::ApplyUniforms(Shader &shader, Mesh &mesh, const Camera
         shader.setFloat("u_spotLight.outerCos", glm::cos(glm::radians(lights.spot->m_outerAngle)));
         shader.setFloat("u_spotLight.specularIntensity", lights.spot->get_specular_intensity());
     }
-    // 环境光
-    if (lights.HasAmbient()) {
-        shader.setFloatVec3("u_ambientColor", lights.ambient->get_color());
-    }
     // 控制高光反射光斑大小
-    shader.setFloat("u_shiness", this->m_shines);
+    shader.setFloat("u_shiness", m_shines);
     // 相机位置
     shader.setFloatVec3("u_cameraPos", camera.get_position());
     // opacity
-    shader.setFloat("u_opacity", this->m_opacity);
+    shader.setFloat("u_opacity", m_opacity);
 }

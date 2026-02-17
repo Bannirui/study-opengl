@@ -11,6 +11,7 @@
 #include "glframework/geo/Sphere.h"
 #include "glframework/material/PhongMaterial.h"
 #include "glframework/material/cube_material.h"
+#include "glframework/material/phong_env_material.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
@@ -37,6 +38,7 @@ public:
             "asset/texture/skybox/front.jpg"
         };
         // clang-format on
+
         auto geometry1 = std::make_unique<Box>(4.0f);
         auto material1 = std::make_unique<CubeMaterial>();
         auto texture1  = std::make_shared<Texture>(texturePaths, 0);
@@ -45,15 +47,13 @@ public:
         m_scene->AddChild(std::move(mesh1));
 
         auto geometry2 = std::make_unique<Sphere>(3.0f);
-        auto material2 = std::make_unique<PhongMaterial>();
+        auto material2 = std::make_unique<PhongEnvMaterial>();
         auto texture2  = std::make_shared<Texture>("asset/texture/earth.jpg", 0);
         material2->set_diffuse(texture2);
+        auto texture3  = std::make_shared<Texture>(texturePaths, 1);
+        material2->set_env(texture3);
         auto mesh2 = std::make_unique<Mesh>(std::move(geometry2), std::move(material2));
         m_scene->AddChild(std::move(mesh2));
-
-        // 光线
-        m_lights.directional = std::make_unique<DirectionalLight>();
-        m_lights.directional->set_direction(glm::vec3(-1.0f, 0.0f, 0.0f));
 
         // 相机
         m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));

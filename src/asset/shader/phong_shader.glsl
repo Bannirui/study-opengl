@@ -84,7 +84,7 @@ in vec3 normal;
 in vec3 worldPos;
 
 // 采样器 diffuse贴图
-uniform sampler2D u_sampler;
+uniform sampler2D u_diffuseSampler;
 // 采样器 高光蒙版采样器
 uniform sampler2D u_specularMaskSampler;
 // 相机位置
@@ -150,7 +150,7 @@ vec3 calSpecular(vec3 lightDir, vec3 color, vec3 normal, vec3 viewDir, float int
  */
 vec3 calSpotLight(SpotLight light, vec3 normal, vec3 viewDir) {
     // 采样
-    vec3 objectColor = texture(u_sampler, uv).rgb;
+    vec3 objectColor = texture(u_diffuseSampler, uv).rgb;
     // 光源照射方向
     vec3 lightDir = normalize(worldPos - light.pos);
     vec3 targetDir = normalize(light.targetDirection);
@@ -173,7 +173,7 @@ vec3 calSpotLight(SpotLight light, vec3 normal, vec3 viewDir) {
  */
 vec3 calDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
     // 采样
-    vec3 objectColor = texture(u_sampler, uv).rgb;
+    vec3 objectColor = texture(u_diffuseSampler, uv).rgb;
     // 光源照射方向
     vec3 lightDir = normalize(light.direction);
     // diffuse
@@ -191,7 +191,7 @@ vec3 calDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
  */
 vec3 calPointLight(PointLight light, vec3 normal, vec3 viewDir) {
     // 采样
-    vec3 objectColor = texture(u_sampler, uv).rgb;
+    vec3 objectColor = texture(u_diffuseSampler, uv).rgb;
     // 光源照射方向
     vec3 lightDir = normalize(worldPos - light.pos);
     // 光源和像素之间距离
@@ -209,8 +209,8 @@ void main()
 {
     // 计算光照的通用数据
     // 采样
-    vec3 objectColor = texture(u_sampler, uv).rgb;
-    float alpha = texture(u_sampler, uv).a;
+    vec3 objectColor = texture(u_diffuseSampler, uv).rgb;
+    float alpha = texture(u_diffuseSampler, uv).a;
     // 法线向量归一
     vec3 normalN = normalize(normal);
     // 光源照射方向
