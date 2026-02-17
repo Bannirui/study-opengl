@@ -10,7 +10,7 @@
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/material/PhongMaterial.h"
-#include "glframework/material/cube_material.h"
+#include "glframework/material/cube_map_material.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
@@ -38,7 +38,7 @@ public:
         };
         // clang-format on
         auto geometry1 = std::make_unique<Box>(4.0f);
-        auto material1 = std::make_unique<CubeMaterial>();
+        auto material1 = std::make_unique<CubeMapMaterial>();
         auto texture1  = std::make_shared<Texture>(texturePaths, 0);
         material1->set_diffuse(texture1);
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));

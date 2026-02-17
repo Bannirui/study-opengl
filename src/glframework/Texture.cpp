@@ -63,8 +63,7 @@ void Texture::CreateDepthStencilAttach(uint32_t width, uint32_t height, uint32_t
     texture->m_Height = height;
     texture->m_Uint   = uint;
 }
-
-Texture::Texture(const std::string& path, uint32_t unit) : m_Uint(unit)
+Texture::Texture(const std::string& path, uint32_t unit, TextureType type)
 {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
@@ -91,17 +90,28 @@ Texture::Texture(const std::string& path, uint32_t unit) : m_Uint(unit)
     GLenum format         = (nrChannels == 4) ? GL_RGBA : GL_RGB;
     GL_CALL_AND_CHECK_ERR(
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, data));
-    // 启用opengl的mipmap功能 给gl状态机插槽GL_TEXTURE_2D上的图片生成mipmap
-    glGenerateMipmap(GL_TEXTURE_2D);
+    if (type == k2D)
+    {
+        // 启用opengl的mipmap功能 给gl状态机插槽GL_TEXTURE_2D上的图片生成mipmap
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
     stbi_image_free(data);
     // 纹理包裹 当UV坐标超出0 1怎么处理
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // 纹理过滤器
-    // 需要像素<图片像素 使用Nearest 当物体远去变小的时候介于2个mipmap之间 让opengl用mipmap的插值图片
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    // 需要像素>图片像素 使用Linear
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if (type == k2D)
+    {
+        // 需要像素<图片像素 使用Nearest 当物体远去变小的时候介于2个mipmap之间 让opengl用mipmap的插值图片
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+        // 需要像素>图片像素 使用Linear
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+    else if (type == kCube)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 }
 
 Texture::Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uint32_t uint) : m_Uint(uint)

@@ -13,6 +13,14 @@
 class Texture
 {
 public:
+    enum TextureType : uint8_t
+    {
+        kNone = 0,
+        k2D   = 1,
+        kCube = 1 << 1,
+    };
+
+public:
     /**
      * from picture file
      */
@@ -40,7 +48,7 @@ public:
      * @param path 图片路径
      * @param unit 要绑到哪个纹理单元
      */
-    Texture(const std::string& path, uint32_t unit);
+    Texture(const std::string& path, uint32_t unit, TextureType type = k2D);
 
     /**
      * 把从assimp中加载出来的纹理图片生成纹理对象
