@@ -4,5 +4,4 @@
 
 #include "glframework/light/PointLight.h"
 
-PointLight::PointLight() : Object(ObjectType::Object) {
-}
+PointLight::PointLight() : Object(kObject) {}

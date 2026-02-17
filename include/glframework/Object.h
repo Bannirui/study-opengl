@@ -15,17 +15,18 @@ class Renderer;
 class Camera;
 struct LightPack;
 
-// 区分是Object还是Mesh 决定要不要渲染
-enum class ObjectType
-{
-    Object,
-    Mesh,
-    Scene,
-};
-
 // 物体抽象 平移 缩放 转动
 class Object
 {
+public:
+    // 区分是Object还是Mesh 决定要不要渲染
+    enum ObjectType : uint8_t
+    {
+        kObject,
+        kMesh,
+        kScene,
+    };
+
 public:
     Object();
     virtual ~Object() = default;
