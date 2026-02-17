@@ -7,7 +7,7 @@
 #include "err_check.h"
 #include "x_log.h"
 #include "application/Application.h"
-#include "application/camera/CameraController.h"
+#include "../../include/application/camera/controller/CameraController.h"
 
 void Input::OnResize(int w, int h) const
 {

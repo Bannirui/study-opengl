@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "application/camera/GameCameraController.h"
+#include "application/camera/controller/GameCameraController.h"
 
 #include <glm/gtx/transform.hpp>
 #include <GLFW/glfw3.h>

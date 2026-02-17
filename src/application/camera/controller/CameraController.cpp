@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "application/camera/CameraController.h"
+#include "application/camera/controller/CameraController.h"
 
 #include <GLFW/glfw3.h>
 

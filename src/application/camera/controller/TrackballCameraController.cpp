@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-19.
 //
 
-#include "application/camera/TrackballCameraController.h"
+#include "application/camera/controller/TrackballCameraController.h"
 
 #include <glm/gtx/transform.hpp>
 

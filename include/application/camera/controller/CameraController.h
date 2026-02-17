@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Camera.h"
+#include "application/camera/Camera.h"
 
 #include <unordered_map>
 

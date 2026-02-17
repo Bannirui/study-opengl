@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "application/camera/CameraController.h"
+#include "../application/camera/controller/CameraController.h"
 
 class Input {
 public:
