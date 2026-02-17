@@ -6,7 +6,7 @@
 
 #include "x_log.h"
 
-Object::Object() : m_type(kObject) {}
+Object::Object() : m_type(ObjectType::kObject) {}
 
 Object::Object(ObjectType type) : m_type(type) {}
 

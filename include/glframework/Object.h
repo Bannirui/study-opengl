@@ -20,7 +20,7 @@ class Object
 {
 public:
     // 区分是Object还是Mesh 决定要不要渲染
-    enum ObjectType : uint8_t
+    enum class ObjectType : uint8_t
     {
         kObject,
         kMesh,

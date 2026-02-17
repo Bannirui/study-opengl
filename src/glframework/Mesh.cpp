@@ -9,7 +9,7 @@
 #include "glframework/material/Material.h"
 
 Mesh::Mesh(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material)
-    : Object(kMesh), m_geometry(std::move(geometry)), m_material(std::move(material))
+    : Object(ObjectType::kMesh), m_geometry(std::move(geometry)), m_material(std::move(material))
 {
 }
 
