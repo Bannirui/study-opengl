@@ -12,7 +12,7 @@
 #include "../include/application/camera/controller/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "../include/application/camera/controller/TrackballCameraController.h"
-#include "glframework/Mesh.h"
+#include "glframework/mesh/Mesh.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/light/AmbientLight.h"

@@ -4,7 +4,7 @@
 
 #include "glframework/material/WhiteMaterial.h"
 
-#include "glframework/Mesh.h"
+#include "glframework/mesh/Mesh.h"
 #include "glframework/renderer/Renderer.h"
 #include "application/camera/Camera.h"
 

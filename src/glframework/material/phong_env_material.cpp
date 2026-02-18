@@ -6,7 +6,7 @@
 #include "glframework/light/SpotLight.h"
 #include "glframework/light/PointLight.h"
 #include "glframework/light/DirectionalLight.h"
-#include "glframework/Mesh.h"
+#include "glframework/mesh/Mesh.h"
 #include "application/camera/Camera.h"
 
 PhongEnvMaterial::PhongEnvMaterial() : Material("asset/shader/phong_env_shader.glsl") {}

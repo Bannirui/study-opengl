@@ -6,10 +6,9 @@
 
 #include "application/Application.h"
 #include "application/camera/Camera.h"
-#include "glframework/Mesh.h"
+#include "glframework/mesh/Mesh.h"
 #include "glframework/Shader.h"
 #include "glframework/Texture.h"
-#include "glframework/material/Material.h"
 
 void Renderer::setClearColor(glm::vec3 color) {
     glClearColor(color.r, color.g, color.b, 1.0f);
