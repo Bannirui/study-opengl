@@ -1,4 +1,4 @@
-#include "glframework/material/phong_instance_material.h"
+#include "glframework/material/phong_instance_by_uniform_material.h"
 
 #include "glframework/Texture.h"
 #include "glframework/renderer/Renderer.h"
@@ -10,7 +10,7 @@
 #include "glframework/obj/mesh/Mesh.h"
 #include "application/camera/Camera.h"
 
-PhongInstanceMaterial::PhongInstanceMaterial() : Material("asset/shader/phong_instance.glsl") {}
+PhongInstanceMaterial::PhongInstanceMaterial() : Material("asset/shader/instance_by_uniform.glsl") {}
 
 void PhongInstanceMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera,
                                           const LightPack& lights) const
