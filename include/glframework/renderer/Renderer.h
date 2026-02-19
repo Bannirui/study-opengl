@@ -6,7 +6,7 @@
 
 #include <glm/glm.hpp>
 
-#include "glframework/Object.h"
+#include "../obj/Object.h"
 
 class Mesh;
 class Camera;

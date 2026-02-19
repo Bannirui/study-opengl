@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "glframework/Object.h"
+#include "glframework/obj/Object.h"
 #include "glframework/Shader.h"
 
 class Geometry;

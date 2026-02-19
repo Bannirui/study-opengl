@@ -2,7 +2,7 @@
 // Created by dingrui on 2026/2/18.
 //
 
-#include "glframework/mesh/instance_mesh.h"
+#include "glframework/obj/mesh/instance_mesh.h"
 #include "glframework/geo/Geometry.h"
 #include "glframework/material/Material.h"
 

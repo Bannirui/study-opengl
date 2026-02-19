@@ -10,8 +10,8 @@
 #include <assimp/scene.h>
 
 #include "glframework/tool/tool.h"
-#include "glframework/Object.h"
-#include "glframework/mesh/Mesh.h"
+#include "glframework/obj/Object.h"
+#include "glframework/obj/mesh/Mesh.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Model.h"
 #include "glframework/material/PhongMaterial.h"

@@ -4,7 +4,7 @@
 
 #include "glframework/material/cube_map_material.h"
 
-#include "glframework/mesh/Mesh.h"
+#include "glframework/obj/mesh/Mesh.h"
 #include "application/camera/Camera.h"
 #include "glframework/Texture.h"
 

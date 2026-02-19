@@ -7,7 +7,7 @@
 #include "glframework/light/SpotLight.h"
 #include "glframework/light/PointLight.h"
 #include "glframework/light/DirectionalLight.h"
-#include "glframework/mesh/Mesh.h"
+#include "glframework/obj/mesh/Mesh.h"
 #include "application/camera/Camera.h"
 
 PhongInstanceMaterial::PhongInstanceMaterial() : Material("asset/shader/phong_instance.glsl") {}

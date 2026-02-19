@@ -4,7 +4,7 @@
 
 #pragma once
 #include "Light.h"
-#include "glframework/Object.h"
+#include "../obj/Object.h"
 
 // 点光源
 class PointLight : public Light, public Object

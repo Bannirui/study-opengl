@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-23.
 //
 
-#include "glframework/Object.h"
+#include "glframework/obj/Object.h"
 
 #include "x_log.h"
 

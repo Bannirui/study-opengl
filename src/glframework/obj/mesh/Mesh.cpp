@@ -2,7 +2,7 @@
 // Created by dingrui on 25-7-23.
 //
 
-#include "glframework/mesh/Mesh.h"
+#include "glframework/obj/mesh/Mesh.h"
 
 #include "glframework/Shader.h"
 #include "glframework/geo/Geometry.h"

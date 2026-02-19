@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "glframework/mesh/Mesh.h"
+#include "glframework/obj/mesh/Mesh.h"
 
 class InstanceMesh : public Mesh
 {

@@ -6,7 +6,7 @@
 
 #include "application/Application.h"
 #include "application/camera/Camera.h"
-#include "glframework/mesh/Mesh.h"
+#include "glframework/obj/mesh/Mesh.h"
 #include "glframework/Shader.h"
 #include "glframework/Texture.h"
 

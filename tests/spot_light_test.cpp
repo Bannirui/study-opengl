@@ -11,7 +11,7 @@
 #include "application/camera/Camera.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/controller/TrackballCameraController.h"
-#include "glframework/mesh/Mesh.h"
+#include "glframework/obj/mesh/Mesh.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
@@ -24,7 +24,7 @@
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
-#include "glframework/Scene.h"
+#include "glframework/obj/Scene.h"
 
 class App : public Application
 {
