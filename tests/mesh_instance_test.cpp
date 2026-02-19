@@ -1,14 +1,6 @@
-//
-// Created by dingrui on 25-6-23.
-//
-
 #include <memory>
 
-#include <glm/glm.hpp>
-
-#include "err_check.h"
 #include "application/Application.h"
-#include "application/camera/Camera.h"
 #include "application/camera/controller/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
 #include "application/camera/controller/TrackballCameraController.h"
@@ -17,12 +9,10 @@
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
-#include "glframework/light/AmbientLight.h"
-#include "glframework/light/DirectionalLight.h"
-#include "glframework/light/PointLight.h"
-#include "glframework/light/SpotLight.h"
 #include "glframework/material/PhongMaterial.h"
-#include "glframework/material/WhiteMaterial.h"
+#include "glframework/material/cube_spherical_material.h"
+#include "glframework/material/phong_instance_material.h"
+#include "glframework/mesh/instance_mesh.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
@@ -38,46 +28,29 @@ public:
         m_renderer = std::make_unique<Renderer>();
         m_scene    = std::make_unique<Scene>();
 
-        // 箱子
-        auto geometry1 = std::make_unique<Box>();
-        auto material1 = std::make_unique<PhongMaterial>();
-        material1->set_shines(32.0f);
-        auto texture1 = std::make_shared<Texture>("asset/texture/box.png", 0);
+        auto geometry1 = std::make_unique<Box>(4.0f);
+        auto material1 = std::make_unique<CubeSphericalMaterial>();
+        auto texture1  = std::make_shared<Texture>("asset/texture/sphericalMap.png", 0, Texture::TextureType::kCube);
         material1->set_diffuse(texture1);
-        auto texture2 = std::make_shared<Texture>("asset/texture/sp_mask.png", 1);
-        material1->set_specular_mask(texture2);
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
-        mesh1->set_rotationY(-15.0f);
-        mesh1->set_rotationX(15.0f);
         m_scene->AddChild(std::move(mesh1));
-        // 白色物体
-        auto geometry2 = std::make_unique<Sphere>(0.1f);
-        auto material2 = std::make_unique<WhiteMaterial>();
-        auto mesh2     = std::make_unique<Mesh>(std::move(geometry2), std::move(material2));
-        mesh2->set_position(glm::vec3(2.0f, 0.0f, 0.0f));
+
+        auto geometry2 = std::make_unique<Sphere>(3.0f);
+        auto material2 = std::make_unique<PhongInstanceMaterial>();
+        auto texture2  = std::make_shared<Texture>("asset/texture/earth.jpg", 1);
+        material2->set_diffuse(texture2);
+        auto mesh2 = std::make_unique<InstanceMesh>(std::move(geometry2), std::move(material2));
+        glm::mat4 transform1 = glm::mat4(1.0f);
+        glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));
+        mesh2->AddInstanceMatric(transform1);
+        mesh2->AddInstanceMatric(transform2);
         m_scene->AddChild(std::move(mesh2));
-        // 光线
-        m_lights.spot               = std::make_unique<SpotLight>();
-        m_lights.spot->m_innerAngle = 15.0f;
-        m_lights.spot->m_outerAngle = 30.0f;
-        m_lights.spot->set_position(m_scene->get_children()[1]->get_position());
 
         m_lights.directional = std::make_unique<DirectionalLight>();
         m_lights.directional->set_direction(glm::vec3(1.0f, 0.0f, 0.0f));
 
-        m_lights.ambient = std::make_unique<AmbientLight>();
-        m_lights.ambient->set_color(glm::vec3(0.2f));
-
-        m_lights.point = std::make_unique<PointLight>();
-        m_lights.point->set_position(glm::vec3(0.0f, 0.0f, 1.5f));
-        m_lights.point->set_specular_intensity(0.5f);
-        m_lights.point->m_k2 = 0.017f;
-        m_lights.point->m_k1 = 0.07f;
-        m_lights.point->m_kc = 1.0f;
-
         // 相机
         m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));
-        m_camera->set_position(glm::vec3(0.0f, 0.0f, 5.0f));
 
         // 相机控制器
         m_input = std::make_unique<Input>();
@@ -90,7 +63,6 @@ public:
         if (m_cameraController)
         {
             m_cameraController->OnUpdate();
-            m_scene->get_children()[1]->set_rotationY(0.05f);
         }
     }
     void OnRender() override

@@ -69,6 +69,12 @@ public:
     // 4*4方阵
     void setMat4(const std::string& name, const float* values) const;
 
+    /**
+     * 4*4方阵 array
+     * @param num how many mat4
+     */
+    void setMat4Array(const std::string& name, const glm::mat4* values, int num) const;
+
 private:
     /**
      * @param vertexSrc vs程序

@@ -4,8 +4,8 @@
 
 #include "application/Application.h"
 #include "application/camera/PerspectiveCamera.h"
-#include "../include/application/camera/controller/TrackballCameraController.h"
-#include "glframework/Mesh.h"
+#include "application/camera/controller/TrackballCameraController.h"
+#include "glframework/mesh/Mesh.h"
 #include "glframework/Scene.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Plane.h"

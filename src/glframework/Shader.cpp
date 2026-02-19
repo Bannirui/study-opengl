@@ -9,11 +9,11 @@
 #include <cstring>
 #include <array>
 #include <vector>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "err_check.h"
 #include "x_log.h"
 #include "glframework/x_config.h"
-
 
 static GLenum ShaderTypeFromString(const std::string &type) {
     if (type == "vertex") return GL_VERTEX_SHADER;
@@ -126,6 +126,12 @@ void Shader::setMat3(const std::string &name, const float *values) const {
 void Shader::setMat4(const std::string &name, const float *values) const {
     // transpose 是否对传进去的数据进行转置 opengl中矩阵存储方式是列存储 glm中矩阵的存储方式是列存储 所以不需要转置
     glUniformMatrix4fv(glGetUniformLocation(m_Program, name.c_str()), 1, GL_FALSE, values);
+}
+
+void Shader::setMat4Array(const std::string& name, const glm::mat4* values, int num) const
+{
+    GLint location = glGetUniformLocation(m_Program, name.c_str());
+    glUniformMatrix4fv(location, num, GL_FALSE, glm::value_ptr(values[0]));
 }
 
 void Shader::checkCompileErrors(unsigned int shader, ShaderType type) {

@@ -1,15 +1,14 @@
 #include <memory>
 
 #include "application/Application.h"
-#include "../include/application/camera/controller/CameraController.h"
+#include "application/camera/controller/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
-#include "../include/application/camera/controller/TrackballCameraController.h"
-#include "glframework/Mesh.h"
+#include "application/camera/controller/TrackballCameraController.h"
+#include "glframework/mesh/Mesh.h"
 #include "glframework/Scene.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
-#include "glframework/material/PhongMaterial.h"
 #include "glframework/material/cube_map_material.h"
 #include "glframework/material/phong_env_material.h"
 #include "glframework/renderer/Renderer.h"

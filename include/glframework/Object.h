@@ -25,6 +25,7 @@ public:
         kObject,
         kMesh,
         kScene,
+        kInstanceMesh,
     };
 
 public:
@@ -74,13 +75,11 @@ protected:
     // 在xyz3个方向的缩放
     glm::vec3 m_scale{1.0f};
 
-private:
     // 孩子节点
     std::vector<std::unique_ptr<Object> > m_children;
     // 父亲节点
     Object* m_parent{nullptr};
 
     // 类型标识 将来渲染的时候看这个类型决定是不是需要渲染
-    // 用const修饰语义是在构造后类型不应该再发生改变
-    const ObjectType m_type;
+    ObjectType m_type{ObjectType::kObject};
 };
