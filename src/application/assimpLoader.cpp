@@ -115,12 +115,10 @@ std::unique_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
         aiMaterial *aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
         auto diffuseTexture = processTexture(aiMaterial, aiTextureType_DIFFUSE, aiScene, textureParentPath);
         if (diffuseTexture) {
-            diffuseTexture->set_uint(0);
             material->set_diffuse(diffuseTexture);
         }
         auto specularMask = processTexture(aiMaterial, aiTextureType_SPECULAR, aiScene, textureParentPath);
         if (specularMask) {
-            specularMask->set_uint(1);
             material->set_specular_mask(specularMask);
         }
     }

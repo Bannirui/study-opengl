@@ -61,9 +61,10 @@ void Texture::CreateDepthStencilAttach(uint32_t width, uint32_t height, uint32_t
     texture->m_id     = depthStencil;
     texture->m_Width  = width;
     texture->m_Height = height;
-    texture->m_Uint   = uint;
+    texture->m_uint   = uint;
 }
-Texture::Texture(const std::string& path, uint32_t unit, TextureType type)
+
+Texture::Texture(const std::string& path, uint32_t unit, TextureType type) : m_uint(unit)
 {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
@@ -78,7 +79,7 @@ Texture::Texture(const std::string& path, uint32_t unit, TextureType type)
     // 创建纹理对象
     GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_id));
     // 激活纹理单元
-    GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
+    GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_uint));
     // 纹理对象绑定到OpenGL状态机插槽
     // 将纹理对象绑定到纹理单元 OpenGL默认至少16个纹理单元
     // 没有使用glActiveTexture()显式用指定纹理单元就默认使用0号纹理单元
@@ -114,7 +115,7 @@ Texture::Texture(const std::string& path, uint32_t unit, TextureType type)
     }
 }
 
-Texture::Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uint32_t uint) : m_Uint(uint)
+Texture::Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uint32_t uint) : m_uint(uint)
 {
     // 告诉stbi处理图像数据的时候跟OpenGL保持一致 左下角0坐标
     stbi_set_flip_vertically_on_load(true);
@@ -137,7 +138,7 @@ Texture::Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uin
         exit(EXIT_FAILURE);
     }
     GL_CALL_AND_CHECK_ERR(glGenTextures(1, &m_id));
-    GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
+    GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_uint));
     GL_CALL_AND_CHECK_ERR(glBindTexture(GL_TEXTURE_2D, m_id));
     GLenum internalFormat = (channels == 4) ? GL_RGBA : GL_RGB;
     GLenum format         = (channels == 4) ? GL_RGBA : GL_RGB;
@@ -151,10 +152,10 @@ Texture::Texture(const uint8_t* dataIn, uint32_t widthIn, uint32_t heightIn, uin
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-Texture::Texture(uint32_t width, uint32_t height, uint32_t uint) : m_Width(width), m_Height(height), m_Uint(uint)
+Texture::Texture(uint32_t width, uint32_t height, uint32_t uint) : m_Width(width), m_Height(height), m_uint(uint)
 {
     glGenTextures(1, &m_id);
-    glActiveTexture(GL_TEXTURE0 + m_Uint);
+    glActiveTexture(GL_TEXTURE0 + m_uint);
     glBindTexture(GL_TEXTURE_2D, m_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<int>(m_Width), static_cast<int>(m_Height), 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, nullptr);
@@ -163,10 +164,10 @@ Texture::Texture(uint32_t width, uint32_t height, uint32_t uint) : m_Width(width
 }
 
 Texture::Texture(const std::vector<std::string>& sortPaths, uint32_t uint)
-    : m_Uint(uint), m_textureTarget(GL_TEXTURE_CUBE_MAP)
+    : m_uint(uint), m_textureTarget(GL_TEXTURE_CUBE_MAP)
 {
     glGenTextures(1, &m_id);
-    glActiveTexture(GL_TEXTURE0 + m_Uint);
+    glActiveTexture(GL_TEXTURE0 + m_uint);
     glBindTexture(m_textureTarget, m_id);
 
     // no need flipping Y
@@ -210,6 +211,6 @@ Texture::~Texture()
 void Texture::Bind() const
 {
     // OpenGL是状态机 不知道当前状态机的纹理单元 所以要先切换纹理单元 然后绑定纹理对象
-    GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_Uint));
+    GL_CALL_AND_CHECK_ERR(glActiveTexture(GL_TEXTURE0 + m_uint));
     GL_CALL_AND_CHECK_ERR(glBindTexture(m_textureTarget, m_id));
 }

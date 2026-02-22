@@ -45,19 +45,21 @@ public:
 
         auto geometry1 = std::make_unique<Box>(4.0f);
         auto material1 = std::make_unique<CubeSphericalMaterial>();
-        auto texture1  = std::make_shared<Texture>("asset/texture/sphericalMap.png", 0, Texture::TextureType::kCube);
+        auto texture1  = std::make_shared<Texture>("asset/texture/bk.jpg", 0, Texture::TextureType::kCube);
         material1->set_diffuse(texture1);
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_scene->AddChild(std::move(mesh1));
 
-        glm::mat4              transform1 = glm::mat4(1.0f);
-        glm::mat4              transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 0.0f, 0.0f));
-        glm::mat4              transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 8.0f, 0.0f));
-        std::vector<glm::mat4> transforms = {transform1, transform2, transform3};
-        auto                   grassModel = AssimpInstanceLoader::Load("asset/fbx/grass.fbx", transforms);
+        glm::mat4 transform1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+        glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f));
+        auto      transforms = {transform1, transform2};
+        auto      grassModel = AssimpInstanceLoader::Load("asset/fbx/grass.fbx", transforms);
         auto grassMaterial = std::make_shared<GrassInstanceMaterial>();
-        auto texture2  = std::make_shared<Texture>("asset/texture/grass.png", 1);
+        auto texture2      = std::make_shared<Texture>("asset/texture/grass.png", 0);
         grassMaterial->set_diffuse(texture2);
+        auto texture3 = std::make_shared<Texture>("asset/texture/grass_mask.png", 1);
+        grassMaterial->set_opacityMask(texture3);
+        grassMaterial->set_enableBlend(true);
         setInstanceMaterial(grassModel.get(), grassMaterial);
         m_scene->AddChild(std::move(grassModel));
 

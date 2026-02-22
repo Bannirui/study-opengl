@@ -22,11 +22,10 @@ void GrassInstanceMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Came
         // diffuse贴图 将纹理采样器跟纹理单元绑定
         shader.setInt("u_diffuseSampler", m_diffuse->get_unit());
     }
-    // 高光蒙版贴图
-    if (m_specularMask)
+    if (m_opacityMask)
     {
-        m_specularMask->Bind();
-        shader.setInt("u_specularMaskSampler", m_specularMask->get_unit());
+        m_opacityMask->Bind();
+        shader.setInt("u_opacityMaskSampler", m_opacityMask->get_unit());
     }
     // 模型变换矩阵 aPos模型->世界空间
     shader.setMat4("u_model", glm::value_ptr(mesh.GetModelMatrix()));
@@ -78,5 +77,5 @@ void GrassInstanceMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Came
     // 相机位置
     shader.setFloatVec3("u_cameraPos", camera.get_position());
     // opacity
-    shader.setFloat("u_opacity", this->m_opacity);
+    shader.setFloat("u_opacity", m_opacity);
 }

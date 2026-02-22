@@ -16,7 +16,8 @@
 #include "glframework/material/phong_instance_by_attribute_material.h"
 #include "glframework/obj/mesh/instance_mesh_by_attribute.h"
 
-std::unique_ptr<Object> AssimpInstanceLoader::Load(const std::string& path, const std::vector<glm::mat4>& instanceMatrices)
+std::unique_ptr<Object> AssimpInstanceLoader::Load(const std::string&            path,
+                                                   const std::vector<glm::mat4>& instanceMatrices)
 {
     // for example, the path is `asset/fbx/monkey.fbx`, the parent path is `asset/fbx/`
     std::size_t      lastIndex = path.find_last_of("\\/");
@@ -36,7 +37,8 @@ std::unique_ptr<Object> AssimpInstanceLoader::Load(const std::string& path, cons
 }
 
 void AssimpInstanceLoader::processNode(aiNode* aiNode, Object& parent, const aiScene* aiScene,
-                                       const std::string& textureParentPath, const std::vector<glm::mat4>& instanceMatrices)
+                                       const std::string&            textureParentPath,
+                                       const std::vector<glm::mat4>& instanceMatrices)
 {
     // 创建当前节点 加入父节点
     auto cur         = std::make_unique<Object>();
@@ -78,7 +80,9 @@ glm::mat4 AssimpInstanceLoader::getMat4f(aiMatrix4x4 val)
     return ret;
 }
 
-std::unique_ptr<InstanceMeshByAttribute> AssimpInstanceLoader::processMesh(aiMesh* aiMesh, const aiScene* aiScene, const std::string& texturePath,const std::vector<glm::mat4>& instanceMatrices)
+std::unique_ptr<InstanceMeshByAttribute> AssimpInstanceLoader::processMesh(
+    aiMesh* aiMesh, const aiScene* aiScene, const std::string& texturePath,
+    const std::vector<glm::mat4>& instanceMatrices)
 {
     std::vector<float> vertices;
     // pos(3)+color(3)+uv(2)+normal(3)
@@ -123,8 +127,8 @@ std::unique_ptr<InstanceMeshByAttribute> AssimpInstanceLoader::processMesh(aiMes
             indices.push_back(face.mIndices[j]);
         }
     }
-    std::unique_ptr<Model>         geometry = std::make_unique<Model>(vertices, indices, layout);
-    auto material = std::make_unique<GrassInstanceMaterial>();
+    std::unique_ptr<Model> geometry = std::make_unique<Model>(vertices, indices, layout);
+    auto                   material = std::make_unique<GrassInstanceMaterial>();
     if (aiMesh->mMaterialIndex >= 0)
     {
         aiMaterial* aiMaterial     = aiScene->mMaterials[aiMesh->mMaterialIndex];
@@ -133,12 +137,6 @@ std::unique_ptr<InstanceMeshByAttribute> AssimpInstanceLoader::processMesh(aiMes
         {
             diffuseTexture->set_uint(0);
             material->set_diffuse(diffuseTexture);
-        }
-        auto specularMask = processTexture(aiMaterial, aiTextureType_SPECULAR, aiScene, texturePath);
-        if (specularMask)
-        {
-            specularMask->set_uint(1);
-            material->set_specular_mask(specularMask);
         }
     }
     return std::make_unique<InstanceMeshByAttribute>(std::move(geometry), std::move(material), instanceMatrices);

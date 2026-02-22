@@ -19,17 +19,15 @@ target_link_libraries(${LIB_NAME}
         PUBLIC assimp
 )
 
-# 拷贝资源文件到构建目录和运行目录
-add_custom_target(copy_shader
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/asset" "${CMAKE_CURRENT_BINARY_DIR}/asset"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/asset" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/asset"
-        COMMENT "Copying shaders to build and runtime directories"
-)
-
-# 构建时触发资源文件复制
-add_dependencies(${LIB_NAME} copy_shader)
-
 target_compile_definitions(${LIB_NAME} PUBLIC
         OPENGL_VERSION_MAJOR=${OPENGL_VERSION_MAJOR}
         OPENGL_VERSION_MINOR=${OPENGL_VERSION_MINOR}
 )
+
+add_custom_target(copy_shader ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/asset ${CMAKE_CURRENT_BINARY_DIR}/asset
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/asset ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/asset
+        COMMENT "copying shaders every build"
+)
+
+add_dependencies(${LIB_NAME} copy_shader)

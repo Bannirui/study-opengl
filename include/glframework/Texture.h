@@ -77,8 +77,8 @@ public:
     /**
      * @return 纹理对象绑定的纹理单元是哪个
      */
-    uint32_t get_unit() const { return m_Uint; }
-    void     set_uint(const uint32_t unit) { m_Uint = unit; }
+    uint32_t get_unit() const { return m_uint; }
+    void     set_uint(const uint32_t unit) { m_uint = unit; }
 
 public:
     // 声明纹理缓存
@@ -89,6 +89,6 @@ private:
     uint32_t m_Width{0};
     uint32_t m_Height{0};
     // 纹理单元
-    uint32_t m_Uint{0};
+    uint32_t m_uint{0};
     uint32_t m_textureTarget{GL_TEXTURE_2D};  // 2D or 3D
 };

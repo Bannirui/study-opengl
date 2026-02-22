@@ -1,5 +1,5 @@
 # 拷贝资源文件到构建目录和运行目录
-add_custom_target(test_copy_assets
+add_custom_target(test_copy_assets ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/asset" "${CMAKE_CURRENT_BINARY_DIR}/asset"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/asset" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/asset"
         COMMENT "Copying assets to build and runtime directories"

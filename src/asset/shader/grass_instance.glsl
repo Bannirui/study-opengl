@@ -87,8 +87,8 @@ in vec3 worldPos;
 
 // 采样器 diffuse贴图
 uniform sampler2D u_diffuseSampler;
-// 采样器 高光蒙版采样器
 uniform sampler2D u_specularMaskSampler;
+uniform sampler2D u_opacityMaskSampler;
 // 相机位置
 uniform vec3 u_cameraPos;
 uniform float u_shiness;
@@ -212,7 +212,6 @@ void main()
     // 计算光照的通用数据
     // 采样
     vec3 objectColor = texture(u_diffuseSampler, uv).rgb;
-    float alpha = texture(u_diffuseSampler, uv).a;
     // 法线向量归一
     vec3 normalN = normalize(normal);
     // 光源照射方向
@@ -221,14 +220,12 @@ void main()
     vec3 viewDirN = normalize(worldPos - u_cameraPos);
     vec3 targetDirN = normalize(u_spotLight.targetDirection);
     vec3 ret = vec3(0.0f, 0.0f, 0.0f);
-    if (u_activeSpotLight)
-        ret += calSpotLight(u_spotLight, normalN, viewDirN);
-    if (u_activeDirectionalLight)
-        ret += calDirectionalLight(u_directionalLight, normalN, viewDirN);
-    if (u_activePointLight)
-        ret += calPointLight(u_pointLight, normalN, viewDirN);
+    if (u_activeSpotLight) { ret += calSpotLight(u_spotLight, normalN, viewDirN); }
+    if (u_activeDirectionalLight) { ret += calDirectionalLight(u_directionalLight, normalN, viewDirN); }
+    if (u_activePointLight) { ret += calPointLight(u_pointLight, normalN, viewDirN); }
     // 为了避免光照背面的死黑 添加环境光
     vec3 ambientColor = objectColor * u_ambientColor;
     vec3 finalColor = ret + ambientColor;
+    float alpha = texture(u_opacityMaskSampler, uv).r;
     fragColor = vec4(finalColor, alpha * u_opacity);
 }
