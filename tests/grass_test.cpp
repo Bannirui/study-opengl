@@ -50,14 +50,14 @@ public:
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_scene->AddChild(std::move(mesh1));
 
-        glm::mat4 transform1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-        glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f));
-        auto      transforms = {transform1, transform2};
-        auto      grassModel = AssimpInstanceLoader::Load("asset/fbx/grass.fbx", transforms);
-        auto grassMaterial = std::make_shared<GrassInstanceMaterial>();
-        auto texture2      = std::make_shared<Texture>("asset/texture/grass.png", 0);
+        glm::mat4 transform1    = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+        glm::mat4 transform2    = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        auto      transforms    = {transform1, transform2};
+        auto      grassModel    = AssimpInstanceLoader::Load("asset/obj/grass.obj", transforms);
+        auto      grassMaterial = std::make_shared<GrassInstanceMaterial>();
+        auto      texture2      = std::make_shared<Texture>("asset/texture/grass.png", 1);
         grassMaterial->set_diffuse(texture2);
-        auto texture3 = std::make_shared<Texture>("asset/texture/grass_mask.png", 1);
+        auto texture3 = std::make_shared<Texture>("asset/texture/grass_mask.png", 2);
         grassMaterial->set_opacityMask(texture3);
         grassMaterial->set_enableBlend(true);
         setInstanceMaterial(grassModel.get(), grassMaterial);
