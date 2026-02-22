@@ -28,7 +28,7 @@ public:
         m_renderer = std::make_unique<Renderer>();
         m_scene    = std::make_unique<Scene>();
 
-        auto model = AssimpLoader::load("asset/fbx/backpack/backpack.obj");
+        auto model = AssimpLoader::load("asset/obj/backpack/backpack.obj");
         m_scene->AddChild(std::move(model));
         m_scene->SetAngleX(30.0f);
         m_scene->SetAngleY(30.0f);
