@@ -11,14 +11,15 @@ public:
      * @param num how many instances
      */
     InstanceMeshByAttribute(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material,
-                            const std::vector<glm::mat4>& attributes);
+                            const std::vector<glm::mat4>& transforms);
     ~InstanceMeshByAttribute() override;
 
     void Render(const Renderer& renderer, const Camera& camera, const LightPack& lights) override;
-    void UpdateVBO();
 
 private:
     void bindVBO();
+    void updateVBO();
+    void sortInstanceMatrices(glm::mat4 viewMatrix);
 
 private:
     std::vector<glm::mat4> m_instanceMatrices;

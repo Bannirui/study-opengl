@@ -18,8 +18,6 @@ out vec3 worldPos;
 
 // 把顶点转换为世界坐标系
 uniform mat4 u_model;
-// 法线矩阵
-uniform mat3 u_normalMatrix;
 // 摄像机矩阵 转换成摄像机坐标系
 uniform mat4 u_view;
 // 透视投影矩阵 将摄像机坐标转换为剪裁坐标
@@ -37,7 +35,7 @@ void main()
     // 法线不能直接传给fs 在发生变换的时候要把变换作用到法线上 根据model矩阵求出法线矩阵
     // 法线矩阵=(model矩阵的逆矩阵)转置
     // 经过法线矩阵作用之后的法线
-    normal = u_normalMatrix * a_normal;
+    normal = transpose(inverse(mat3(u_model * a_instanceMatrix))) * a_normal;
 }
 
 #type fragment

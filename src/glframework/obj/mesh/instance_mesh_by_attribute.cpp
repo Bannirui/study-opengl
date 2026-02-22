@@ -1,13 +1,15 @@
 #include "glframework/obj/mesh/instance_mesh_by_attribute.h"
+
+#include "application/camera/Camera.h"
 #include "glframework/geo/Geometry.h"
 #include "glframework/material/Material.h"
 
 InstanceMeshByAttribute::InstanceMeshByAttribute(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material,
-                                                 const std::vector<glm::mat4>& attributes)
+                                                 const std::vector<glm::mat4>& transforms)
     : Mesh(std::move(geometry), std::move(material))
 {
     m_type = ObjectType::kInstanceMesh;
-    m_instanceMatrices.assign(attributes.begin(), attributes.end());
+    m_instanceMatrices.assign(transforms.begin(), transforms.end());
     bindVBO();
 }
 
@@ -86,6 +88,9 @@ void InstanceMeshByAttribute::Render(const Renderer& renderer, const Camera& cam
         glDisable(GL_CULL_FACE);
     }
 
+    sortInstanceMatrices(camera.GetViewMatrix());
+    updateVBO();
+
     // 用哪个shader
     Shader& shader = m_material->get_shader();
     // 更新shader的uniform变量
@@ -121,11 +126,28 @@ void InstanceMeshByAttribute::bindVBO()
     glBindVertexArray(0);
 }
 
-void InstanceMeshByAttribute::UpdateVBO()
+void InstanceMeshByAttribute::updateVBO()
 {
     // bind VBO
     glBindBuffer(GL_ARRAY_BUFFER, m_matrixVBOId);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::mat4) * m_instanceMatrices.size(), m_instanceMatrices.data());
     // unbind VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void InstanceMeshByAttribute::sortInstanceMatrices(glm::mat4 viewMatrix)
+{
+    std::sort(m_instanceMatrices.begin(), m_instanceMatrices.end(),
+              [viewMatrix](const glm::mat4& a, const glm::mat4& b)
+              {
+                  // z of A
+                  auto modelMatrixA    = a;
+                  auto worldPositionA  = modelMatrixA * glm::vec4(0.0, 0.0, 0.0, 1.0);
+                  auto cameraPositionA = viewMatrix * worldPositionA;
+                  // z of B
+                  auto modelMatrixB    = b;
+                  auto worldPositionB  = modelMatrixB * glm::vec4(0.0, 0.0, 0.0, 1.0);
+                  auto cameraPositionB = viewMatrix * worldPositionB;
+                  return cameraPositionA.z - cameraPositionB.z;
+              });
 }

@@ -32,9 +32,6 @@ void GrassInstanceMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Came
     // 视图矩阵 世界空间->摄影机空间
     shader.setMat4("u_view", glm::value_ptr(camera.GetViewMatrix()));
     shader.setMat4("u_projection", glm::value_ptr(camera.GetProjectionMatrix()));
-    // normal matrix
-    auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(mesh.GetModelMatrix())));
-    shader.setMat3("u_normalMatrix", glm::value_ptr(normalMatrix));
     // 平行光
     if (lights.HasDirection())
     {

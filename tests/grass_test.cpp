@@ -45,17 +45,28 @@ public:
 
         auto geometry1 = std::make_unique<Box>(4.0f);
         auto material1 = std::make_unique<CubeSphericalMaterial>();
-        auto texture1  = std::make_shared<Texture>("asset/texture/bk.jpg", 0, Texture::TextureType::kCube);
+        auto texture1  = std::make_shared<Texture>("asset/texture/sphericalMap.png", 0, Texture::TextureType::kCube);
         material1->set_diffuse(texture1);
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_scene->AddChild(std::move(mesh1));
 
-        glm::mat4 transform1    = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-        glm::mat4 transform2    = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        auto      transforms    = {transform1, transform2};
-        auto      grassModel    = AssimpInstanceLoader::Load("asset/obj/grass.obj", transforms);
-        auto      grassMaterial = std::make_shared<GrassInstanceMaterial>();
-        auto      texture2      = std::make_shared<Texture>("asset/texture/grass.png", 1);
+        int                    r = 20, c = 20;
+        std::vector<glm::mat4> transforms{};
+        srand(glfwGetTime());
+        for (int i = 0; i < r; ++i)
+        {
+            for (int j = 0; j < c; ++j)
+            {
+                glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(1.0 * r, 0.0f, 1.0 * c));
+                glm::mat4 rotate    = glm::rotate(glm::radians((float)(rand() % 90)), glm::vec3(0.0, 1.0, 0.0));
+                auto      transform = translate * rotate;
+                transforms.push_back(transform);
+            }
+        }
+
+        auto grassModel    = AssimpInstanceLoader::Load("asset/obj/grass.obj", transforms);
+        auto grassMaterial = std::make_shared<GrassInstanceMaterial>();
+        auto texture2      = std::make_shared<Texture>("asset/texture/grass.png", 1);
         grassMaterial->set_diffuse(texture2);
         auto texture3 = std::make_shared<Texture>("asset/texture/grass_mask.png", 2);
         grassMaterial->set_opacityMask(texture3);
