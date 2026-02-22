@@ -22,6 +22,6 @@ Plane::Plane(float width, float height) {
     // clang-format on
     VertexLayout layout{};
     layout.posDim = VertexPosDim::k3D;
-    layout.attrs = VertexAttr::kTexCoord | VertexAttr::kNormal;
+    layout.attrs = VBOType::kTexCoord | VBOType::kNormal;
     Geometry::SetupBuffers(vertices, sizeof(vertices), layout, indices, sizeof(indices));
 }

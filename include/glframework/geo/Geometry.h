@@ -16,7 +16,7 @@ public:
         k3D   = 3,  // vertex xyz pos, stride equals 3*float
     };
 
-    enum class VertexAttr : uint32_t
+    enum class VBOType : uint32_t
     {
         kNone = 0,
         // uv坐标
@@ -29,14 +29,12 @@ public:
         kTangent = 1 << 3,
     };
 
-    using VertexAttrMask = VertexAttr;
-
     struct VertexLayout
     {
         // xyz坐标
         VertexPosDim posDim;
         // uv坐标 颜色 法线 切线
-        VertexAttr attrs;
+        VBOType attrs;
     };
 
 public:
@@ -61,35 +59,35 @@ protected:
 protected:
     struct AttrDesc
     {
-        VertexAttr attr;        // attribute, uv 颜色 法线 切线
-        uint32_t   components;  // how many float for the attribute
+        VBOType  types;       // attribute, uv 颜色 法线 切线
+        uint32_t components;  // how many float for the attribute
     };
 
-    static constexpr AttrDesc kAttrTable[] = {
-        {VertexAttr::kTexCoord, 2},  // uv, stride 2*floats
-        {VertexAttr::kColor, 3},     // rgb, stride 3*floats
-        {VertexAttr::kNormal, 3},    // xyz, stride 3*floats
-        {VertexAttr::kTangent, 3},   // xyz, stride 3*floats
+    static constexpr AttrDesc kVBOTable[] = {
+        {VBOType::kTexCoord, 2},    // uv, stride 2*floats
+        {VBOType::kColor, 3},    // rgb, stride 3*floats
+        {VBOType::kNormal, 3},   // xyz, stride 3*floats
+        {VBOType::kTangent, 3},  // xyz, stride 3*floats
     };
 
 protected:
-    friend constexpr VertexAttr operator|(VertexAttr x, VertexAttr y)
+    friend constexpr VBOType operator|(VBOType x, VBOType y)
     {
-        return static_cast<VertexAttr>(static_cast<uint32_t>(x) | static_cast<uint32_t>(y));
+        return static_cast<VBOType>(static_cast<uint32_t>(x) | static_cast<uint32_t>(y));
     }
 
-    friend constexpr VertexAttr operator&(VertexAttr x, VertexAttr y)
+    friend constexpr VBOType operator&(VBOType x, VBOType y)
     {
-        return static_cast<VertexAttr>(static_cast<uint32_t>(x) & static_cast<uint32_t>(y));
+        return static_cast<VBOType>(static_cast<uint32_t>(x) & static_cast<uint32_t>(y));
     }
 
-    friend constexpr VertexAttr& operator|=(VertexAttr& x, VertexAttr y)
+    friend constexpr VBOType& operator|=(VBOType& x, VBOType y)
     {
         x = x | y;
         return x;
     }
 
-    static constexpr bool Has(VertexAttr value, VertexAttr flag) { return (value & flag) != VertexAttr::kNone; }
+    static constexpr bool Has(VBOType value, VBOType flag) { return (value & flag) != VBOType::kNone; }
 
 protected:
     GLuint m_VAO{0};

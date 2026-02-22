@@ -22,6 +22,6 @@ ScreenPlane::ScreenPlane() {
     // clang-format on
     VertexLayout layout{};
     layout.posDim = VertexPosDim::k2D;
-    layout.attrs = VertexAttr::kTexCoord;
+    layout.attrs = VBOType::kTexCoord;
     Geometry::SetupBuffers(vertices, sizeof(vertices), layout, indices, sizeof(indices));
 }

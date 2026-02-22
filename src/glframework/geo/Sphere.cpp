@@ -152,7 +152,7 @@ Sphere::Sphere(float radius) {
     // 数据灌到gl状态机
     VertexLayout layout{};
     layout.posDim = VertexPosDim::k3D;
-    layout.attrs = VertexAttr::kTexCoord | VertexAttr::kNormal | VertexAttr::kTangent;
+    layout.attrs = VBOType::kTexCoord | VBOType::kNormal | VBOType::kTangent;
     Geometry::SetupBuffers(vertices.data(), sizeof(float) * vertices.size(), layout, indices.data(),
                            sizeof(uint32_t) * indices.size());
 }

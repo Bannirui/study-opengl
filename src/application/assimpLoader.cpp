@@ -108,7 +108,7 @@ std::unique_ptr<Mesh> AssimpLoader::processMesh(aiMesh *aiMesh, const aiScene *a
     }
     Geometry::VertexLayout layout{};
     layout.posDim = Geometry::VertexPosDim::k3D;
-    layout.attrs = Geometry::VertexAttr::kTexCoord | Geometry::VertexAttr::kNormal;
+    layout.attrs = Geometry::VBOType::kTexCoord | Geometry::VBOType::kNormal;
     std::unique_ptr<Model> geometry = std::make_unique<Model>(vertices, indices, layout);
     std::unique_ptr<PhongMaterial> material = std::make_unique<PhongMaterial>();
     if (aiMesh->mMaterialIndex >= 0) {
