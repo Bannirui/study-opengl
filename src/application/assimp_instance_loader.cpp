@@ -12,6 +12,7 @@
 #include "glframework/Texture.h"
 #include "glframework/geo/Model.h"
 #include "x_log.h"
+#include "glframework/material/grass_instance_material.h"
 #include "glframework/material/phong_instance_by_attribute_material.h"
 #include "glframework/obj/mesh/instance_mesh_by_attribute.h"
 
@@ -123,7 +124,7 @@ std::unique_ptr<InstanceMeshByAttribute> AssimpInstanceLoader::processMesh(aiMes
         }
     }
     std::unique_ptr<Model>         geometry = std::make_unique<Model>(vertices, indices, layout);
-    std::unique_ptr<PhongInstanceByAttributeMaterial> material = std::make_unique<PhongInstanceByAttributeMaterial>();
+    auto material = std::make_unique<GrassInstanceMaterial>();
     if (aiMesh->mMaterialIndex >= 0)
     {
         aiMaterial* aiMaterial     = aiScene->mMaterials[aiMesh->mMaterialIndex];

@@ -6,11 +6,9 @@
 #include <glm/glm.hpp>
 #include <assimp/scene.h>
 
-#include "glframework/obj/mesh/instance_mesh_by_attribute.h"
-
 class Object;
-class Mesh;
 class Texture;
+class InstanceMeshByAttribute;
 
 class AssimpInstanceLoader
 {

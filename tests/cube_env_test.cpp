@@ -38,15 +38,15 @@ public:
         };
         // clang-format on
 
-        auto geometry1 = std::make_unique<Box>(4.0f);
-        auto material1 = std::make_unique<CubeMapMaterial>();
+        auto geometry1 = std::make_shared<Box>(4.0f);
+        auto material1 = std::make_shared<CubeMapMaterial>();
         auto texture1  = std::make_shared<Texture>(texturePaths, 0);
         material1->set_diffuse(texture1);
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_scene->AddChild(std::move(mesh1));
 
-        auto geometry2 = std::make_unique<Sphere>(3.0f);
-        auto material2 = std::make_unique<PhongEnvMaterial>();
+        auto geometry2 = std::make_shared<Sphere>(3.0f);
+        auto material2 = std::make_shared<PhongEnvMaterial>();
         auto texture2  = std::make_shared<Texture>("asset/texture/earth.jpg", 0);
         material2->set_diffuse(texture2);
         auto texture3  = std::make_shared<Texture>(texturePaths, 1);

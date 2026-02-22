@@ -33,8 +33,8 @@ public:
     {
         m_renderer     = std::make_unique<Renderer>();
         m_scene        = std::make_unique<Scene>();
-        auto geometry1 = std::make_unique<Box>(5.0f);
-        auto material1 = std::make_unique<PhongMaterial>();
+        auto geometry1 = std::make_shared<Box>(5.0f);
+        auto material1 = std::make_shared<PhongMaterial>();
         auto texture1  = std::make_shared<Texture>("asset/texture/box.png", 0);
         material1->set_diffuse(texture1);
         material1->set_shines(32.0f);

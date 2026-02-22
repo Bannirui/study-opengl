@@ -9,14 +9,28 @@
 #include "glframework/obj/Scene.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
-#include "glframework/geo/Sphere.h"
 #include "glframework/material/cube_spherical_material.h"
-#include "glframework/material/phong_instance_by_attribute_material.h"
+#include "glframework/material/grass_instance_material.h"
 #include "glframework/obj/mesh/instance_mesh_by_attribute.h"
-#include "glframework/obj/mesh/instance_mesh_by_uniform.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
 #include "input/input.h"
+
+void setInstanceMaterial(Object* obj, const std::shared_ptr<Material>& material)
+{
+    if (!obj)
+    {
+        return;
+    }
+    if (auto* mesh = dynamic_cast<InstanceMeshByAttribute*>(obj))
+    {
+        mesh->set_material(material);
+    }
+    for (auto& child : obj->get_children())
+    {
+        setInstanceMaterial(child.get(), material);
+    }
+}
 
 class App : public Application
 {
@@ -36,12 +50,15 @@ public:
         auto mesh1 = std::make_unique<Mesh>(std::move(geometry1), std::move(material1));
         m_scene->AddChild(std::move(mesh1));
 
-        glm::mat4 transform1 = glm::mat4(1.0f);
-        glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));
-        glm::mat4 transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 8.0f, 0.0f));
-        glm::mat4 transform4 = glm::translate(glm::mat4(1.0f), glm::vec3(12.0f, -2.0f, 4.0f));
-        std::vector<glm::mat4> transforms = {transform1, transform2, transform3, transform4};
-        auto grassModel = AssimpInstanceLoader::Load("asset/fbx/grass.fbx", transforms);
+        glm::mat4              transform1 = glm::mat4(1.0f);
+        glm::mat4              transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 0.0f, 0.0f));
+        glm::mat4              transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 8.0f, 0.0f));
+        std::vector<glm::mat4> transforms = {transform1, transform2, transform3};
+        auto                   grassModel = AssimpInstanceLoader::Load("asset/fbx/grass.fbx", transforms);
+        auto grassMaterial = std::make_shared<GrassInstanceMaterial>();
+        auto texture2  = std::make_shared<Texture>("asset/texture/grass.png", 1);
+        grassMaterial->set_diffuse(texture2);
+        setInstanceMaterial(grassModel.get(), grassMaterial);
         m_scene->AddChild(std::move(grassModel));
 
         m_lights.directional = std::make_unique<DirectionalLight>();
