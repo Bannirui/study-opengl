@@ -2,11 +2,21 @@
 #include "glframework/geo/Geometry.h"
 #include "glframework/material/Material.h"
 
-InstanceMeshByAttribute::InstanceMeshByAttribute(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material)
+InstanceMeshByAttribute::InstanceMeshByAttribute(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material,
+                                                 const std::vector<glm::mat4>& attributes)
     : Mesh(std::move(geometry), std::move(material))
 {
     m_type = ObjectType::kInstanceMesh;
+    m_instanceMatrices.assign(attributes.begin(), attributes.end());
     bindVBO();
+}
+
+InstanceMeshByAttribute::~InstanceMeshByAttribute()
+{
+    if (m_matrixVBOId > 0)
+    {
+        glDeleteBuffers(1, &m_matrixVBOId);
+    }
 }
 
 void InstanceMeshByAttribute::Render(const Renderer& renderer, const Camera& camera, const LightPack& lights)
@@ -81,7 +91,6 @@ void InstanceMeshByAttribute::Render(const Renderer& renderer, const Camera& cam
     // 更新shader的uniform变量
     shader.Bind();
     m_material->ApplyUniforms(shader, *this, camera, lights);
-    bindInstanceData(shader);
     // 绑定VAO
     glBindVertexArray(m_geometry->get_VAO());
     // 执行绘制指令
@@ -95,5 +104,28 @@ void InstanceMeshByAttribute::Render(const Renderer& renderer, const Camera& cam
 void InstanceMeshByAttribute::bindVBO()
 {
     glGenBuffers(1, &m_matrixVBOId);
+    // bind VBO
+    glBindBuffer(GL_ARRAY_BUFFER, m_matrixVBOId);
+    glBufferData(GL_ARRAY_BUFFER, m_instanceMatrices.size() * sizeof(glm::mat4), &m_instanceMatrices[0],
+                 GL_DYNAMIC_DRAW);
+    // bind VAO
+    glBindVertexArray(m_geometry->get_VAO());
+    for (int i = 0; i < 4; ++i)
+    {
+        glEnableVertexAttribArray(3 + i);
+        glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(float) * i * 4));
+        // instance one by one
+        glVertexAttribDivisor(3 + i, 1);
+    }
+    // unbind VAO
+    glBindVertexArray(0);
+}
 
+void InstanceMeshByAttribute::UpdateVBO()
+{
+    // bind VBO
+    glBindBuffer(GL_ARRAY_BUFFER, m_matrixVBOId);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::mat4) * m_instanceMatrices.size(), m_instanceMatrices.data());
+    // unbind VBO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

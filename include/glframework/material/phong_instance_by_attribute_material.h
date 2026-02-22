@@ -4,10 +4,10 @@
 
 class Texture;
 
-class PhongInstanceByUniformMaterial : public Material
+class PhongInstanceByAttributeMaterial : public Material
 {
 public:
-    explicit PhongInstanceByUniformMaterial();
+    explicit PhongInstanceByAttributeMaterial();
 
     void ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera, const LightPack& lights) const override;
 

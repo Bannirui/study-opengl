@@ -10,7 +10,8 @@
 #include "glframework/geo/Box.h"
 #include "glframework/geo/Sphere.h"
 #include "glframework/material/cube_spherical_material.h"
-#include "glframework/material/phong_instance_by_uniform_material.h"
+#include "glframework/material/phong_instance_by_attribute_material.h"
+#include "glframework/obj/mesh/instance_mesh_by_attribute.h"
 #include "glframework/obj/mesh/instance_mesh_by_uniform.h"
 #include "glframework/renderer/Renderer.h"
 #include "glframework/renderer/light_pack.h"
@@ -35,14 +36,15 @@ public:
         m_scene->AddChild(std::move(mesh1));
 
         auto geometry2 = std::make_unique<Sphere>(3.0f);
-        auto material2 = std::make_unique<PhongInstanceByUniformMaterial>();
+        auto material2 = std::make_unique<PhongInstanceByAttributeMaterial>();
         auto texture2  = std::make_shared<Texture>("asset/texture/earth.jpg", 1);
         material2->set_diffuse(texture2);
-        auto mesh2 = std::make_unique<InstanceMeshByUniform>(std::move(geometry2), std::move(material2));
         glm::mat4 transform1 = glm::mat4(1.0f);
         glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));
-        mesh2->AddInstanceMatric(transform1);
-        mesh2->AddInstanceMatric(transform2);
+        glm::mat4 transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 8.0f, 0.0f));
+        glm::mat4 transform4 = glm::translate(glm::mat4(1.0f), glm::vec3(12.0f, -2.0f, 4.0f));
+        std::vector<glm::mat4> transforms = {transform1, transform2, transform3, transform4};
+        auto mesh2 = std::make_unique<InstanceMeshByAttribute>(std::move(geometry2), std::move(material2), transforms);
         m_scene->AddChild(std::move(mesh2));
 
         m_lights.directional = std::make_unique<DirectionalLight>();

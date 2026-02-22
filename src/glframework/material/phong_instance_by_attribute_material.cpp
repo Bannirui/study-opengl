@@ -1,4 +1,4 @@
-#include "glframework/material/phong_instance_by_uniform_material.h"
+#include "glframework/material/phong_instance_by_attribute_material.h"
 
 #include "glframework/Texture.h"
 #include "glframework/renderer/Renderer.h"
@@ -10,9 +10,9 @@
 #include "glframework/obj/mesh/Mesh.h"
 #include "application/camera/Camera.h"
 
-PhongInstanceByUniformMaterial::PhongInstanceByUniformMaterial() : Material("asset/shader/instance_by_uniform.glsl") {}
+PhongInstanceByAttributeMaterial::PhongInstanceByAttributeMaterial() : Material("asset/shader/instance_by_attribute.glsl") {}
 
-void PhongInstanceByUniformMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera,
+void PhongInstanceByAttributeMaterial::ApplyUniforms(Shader& shader, Mesh& mesh, const Camera& camera,
                                           const LightPack& lights) const
 {
     if (m_diffuse)
