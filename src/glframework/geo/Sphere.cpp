@@ -153,6 +153,6 @@ Sphere::Sphere(float radius) {
     VertexLayout layout{};
     layout.posDim = VertexPosDim::k3D;
     layout.attrs = VBOType::kTexCoord | VBOType::kNormal | VBOType::kTangent;
-    Geometry::SetupBuffers(vertices.data(), sizeof(float) * vertices.size(), layout, indices.data(),
+    SetupBuffers(vertices.data(), sizeof(float) * vertices.size(), layout, indices.data(),
                            sizeof(uint32_t) * indices.size());
 }

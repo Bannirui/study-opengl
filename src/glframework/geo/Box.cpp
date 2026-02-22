@@ -51,5 +51,5 @@ Box::Box(float sz) {
     VertexLayout layout{};
     layout.posDim = VertexPosDim::k3D;
     layout.attrs = VBOType::kTexCoord | VBOType::kNormal;
-    Geometry::SetupBuffers(vertices, sizeof(vertices), layout, indices, sizeof(indices));
+    SetupBuffers(vertices, sizeof(vertices), layout, indices, sizeof(indices));
 }

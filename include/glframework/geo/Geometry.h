@@ -53,7 +53,7 @@ protected:
      * @param indices ebo
      * @param indexSz 多少个byte
      */
-    virtual void SetupBuffers(const void* vertices, size_t vertSz, VertexLayout layout, const uint32_t* indices,
+    void SetupBuffers(const void* vertices, size_t vertSz, VertexLayout layout, const uint32_t* indices,
                               size_t indexSz);
 
 protected:
