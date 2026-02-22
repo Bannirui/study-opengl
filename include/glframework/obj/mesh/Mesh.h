@@ -24,9 +24,6 @@ public:
     void Render(const Renderer&, const Camera&, const LightPack&) override;
 
 protected:
-    virtual void BindInstanceData(Shader& shader) const {};
-
-protected:
     // 形状和材质于Mesh而言 Mesh并不是拥有 而仅仅是挂载
     // 形状
     std::unique_ptr<Geometry> m_geometry;

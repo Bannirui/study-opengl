@@ -1,29 +1,26 @@
-//
-// Created by dingrui on 2026/2/18.
-//
-
 #pragma once
 
 #include <vector>
 
 #include "glframework/obj/mesh/Mesh.h"
 
-class InstanceMeshByUniform : public Mesh
+class InstanceMeshByAttribute : public Mesh
 {
 public:
     /**
      * @param num how many instances
      */
-    InstanceMeshByUniform(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material);
-    ~InstanceMeshByUniform() override = default;
+    InstanceMeshByAttribute(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material);
+    ~InstanceMeshByAttribute() override = default;
 
     void Render(const Renderer& renderer, const Camera& camera, const LightPack& lights) override;
 
     void AddInstanceMatric(const glm::mat4& v) { m_instanceMatrices.push_back(v); }
 
 private:
-    void applyInstanceData(Shader& shader) const;
+    void bindVBO() const;
 
 private:
     std::vector<glm::mat4> m_instanceMatrices;
+    int                    m_matrixVBOId{0};
 };

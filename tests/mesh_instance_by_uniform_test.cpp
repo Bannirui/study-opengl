@@ -38,7 +38,7 @@ public:
         auto material2 = std::make_unique<PhongInstanceMaterial>();
         auto texture2  = std::make_shared<Texture>("asset/texture/earth.jpg", 1);
         material2->set_diffuse(texture2);
-        auto mesh2 = std::make_unique<InstanceMesh>(std::move(geometry2), std::move(material2));
+        auto mesh2 = std::make_unique<InstanceMeshByUniform>(std::move(geometry2), std::move(material2));
         glm::mat4 transform1 = glm::mat4(1.0f);
         glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));
         mesh2->AddInstanceMatric(transform1);

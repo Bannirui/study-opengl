@@ -1,18 +1,15 @@
-//
-// Created by dingrui on 2026/2/18.
-//
-
-#include "glframework/obj/mesh/instance_mesh_by_uniform.h"
+#include "glframework/obj/mesh/instance_mesh_by_attribute.h"
 #include "glframework/geo/Geometry.h"
 #include "glframework/material/Material.h"
 
-InstanceMeshByUniform::InstanceMeshByUniform(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material)
+InstanceMeshByAttribute::InstanceMeshByAttribute(std::unique_ptr<Geometry> geometry, std::unique_ptr<Material> material)
     : Mesh(std::move(geometry), std::move(material))
 {
     m_type = ObjectType::kInstanceMesh;
+    bindVBO();
 }
 
-void InstanceMeshByUniform::Render(const Renderer& renderer, const Camera& camera, const LightPack& lights)
+void InstanceMeshByAttribute::Render(const Renderer& renderer, const Camera& camera, const LightPack& lights)
 {
     // depth
     if (this->m_material->get_depthTest())
@@ -84,7 +81,7 @@ void InstanceMeshByUniform::Render(const Renderer& renderer, const Camera& camer
     // 更新shader的uniform变量
     shader.Bind();
     m_material->ApplyUniforms(shader, *this, camera, lights);
-    applyInstanceData(shader);
+    bindInstanceData(shader);
     // 绑定VAO
     glBindVertexArray(m_geometry->get_VAO());
     // 执行绘制指令
@@ -95,7 +92,8 @@ void InstanceMeshByUniform::Render(const Renderer& renderer, const Camera& camer
     shader.Unbind();
 }
 
-void InstanceMeshByUniform::applyInstanceData(Shader& shader) const
+void InstanceMeshByAttribute::bindVBO()
 {
-    shader.setMat4Array("u_matrices", m_instanceMatrices.data(), static_cast<int>(m_instanceMatrices.size()));
+    glGenBuffers(1, &m_matrixVBOId);
+
 }
