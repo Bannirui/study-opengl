@@ -4,6 +4,8 @@
 
 #include "application/camera/controller/CameraController.h"
 
+#include "x_log.h"
+
 #include <GLFW/glfw3.h>
 
 CameraController::CameraController(Camera& camera) : m_Camera(camera) {}

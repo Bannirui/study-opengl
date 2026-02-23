@@ -65,7 +65,7 @@ public:
         // 相机控制器
         m_input->CreateCameraController<TrackballCameraController>(*m_camera);
         m_cameraController = m_input->get_CameraController();
-        m_cameraController->SetScaleSpeed(1.0f);
+        m_cameraController->set_scaleSpeed(1.0f);
     }
     void OnUpdate(float dt) override
     {

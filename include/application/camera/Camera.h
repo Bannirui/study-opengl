@@ -45,6 +45,8 @@ protected:
     glm::vec3 m_Up{0.0f, 1.0f, 0.0f};
     glm::vec3 m_Right{1.0f, 0.0f, 0.0f};
 
+    // 近平面距离
     float m_Near{0.0f};
+    // 远平面距离
     float m_Far{0.0f};
 };

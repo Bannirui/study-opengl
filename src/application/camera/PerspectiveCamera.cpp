@@ -15,8 +15,10 @@ PerspectiveCamera::PerspectiveCamera(float aspect)
     m_Far    = c_FAR;
 }
 PerspectiveCamera::PerspectiveCamera(float fovy, float aspect, float near, float far)
-    : m_Fovy(fovy), m_Aspect(aspect), m_Near(near), m_Far(far)
+    : m_Fovy(fovy), m_Aspect(aspect)
 {
+    m_Near = near;
+    m_Far = far;
 }
 
 glm::mat4 PerspectiveCamera::GetProjectionMatrix() const

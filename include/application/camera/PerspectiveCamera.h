@@ -27,8 +27,4 @@ private:
     float m_Fovy = 0.0f;
     // 近平面纵横百分比
     float m_Aspect = 0.0f;
-    // 近平面距离
-    float m_Near = 0.0f;
-    // 远平面距离
-    float m_Far = 0.0f;
 };

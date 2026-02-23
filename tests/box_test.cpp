@@ -11,7 +11,7 @@
 #include "application/camera/Camera.h"
 #include "application/camera/controller/CameraController.h"
 #include "application/camera/PerspectiveCamera.h"
-#include "application/camera/controller/TrackballCameraController.h"
+#include "application/camera/controller/GameCameraController.h"
 #include "glframework/obj/mesh/Mesh.h"
 #include "glframework/Texture.h"
 #include "glframework/geo/Box.h"
@@ -56,9 +56,9 @@ public:
 
         // 相机控制器
         m_input = std::make_unique<Input>();
-        m_input->CreateCameraController<TrackballCameraController>(*m_camera);
+        m_input->CreateCameraController<GameCameraController>(*m_camera);
         m_cameraController = m_input->get_CameraController();
-        m_cameraController->SetScaleSpeed(1.0f);
+        m_cameraController->set_scaleSpeed(1.0f);
     }
     void OnUpdate(float dt) override
     {

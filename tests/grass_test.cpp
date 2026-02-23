@@ -43,7 +43,7 @@ public:
         m_renderer = std::make_unique<Renderer>();
         m_scene    = std::make_unique<Scene>();
 
-        auto geometry1 = std::make_unique<Box>(4.0f);
+        auto geometry1 = std::make_unique<Box>(1.0f);
         auto material1 = std::make_unique<CubeSphericalMaterial>();
         auto texture1  = std::make_shared<Texture>("asset/texture/sphericalMap.png", 0, Texture::TextureType::kCube);
         material1->set_diffuse(texture1);
@@ -78,13 +78,15 @@ public:
         m_lights.directional->set_direction(glm::vec3(1.0f, 0.0f, 0.0f));
 
         // 相机
-        m_camera = std::make_unique<PerspectiveCamera>(static_cast<float>(m_Width) / static_cast<float>(m_Height));
+        m_camera = std::make_unique<PerspectiveCamera>(
+            60.0f, static_cast<float>(m_Width) / static_cast<float>(m_Height), 0.1f, 200.0f);
 
         // 相机控制器
         m_input = std::make_unique<Input>();
         m_input->CreateCameraController<TrackballCameraController>(*m_camera);
         m_cameraController = m_input->get_CameraController();
-        m_cameraController->SetScaleSpeed(1.0f);
+        m_cameraController->set_scaleSpeed(1.0f);
+        m_cameraController->set_sensitivity(0.4f);
     }
     void OnUpdate(float dt) override
     {

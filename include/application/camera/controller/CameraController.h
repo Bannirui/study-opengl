@@ -40,8 +40,8 @@ public:
     // 每一帧调用
     virtual void OnUpdate();
 
-    void SetSensitivity(float sensitivity) { m_Sensitivity = sensitivity; }
-    void SetScaleSpeed(float speed) { m_ScaleSpeed = speed; }
+    void set_sensitivity(float sensitivity) { m_Sensitivity = sensitivity; }
+    void set_scaleSpeed(float speed) { m_ScaleSpeed = speed; }
 
 protected:
     // 相机前后转动 绕着x轴
