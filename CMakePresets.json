@@ -17,9 +17,9 @@
       "binaryDir": "build/linux-gcc-debug",
       "toolchainFile": "cmake/toolchains/linux-gcc.cmake",
       "environment": {
-        "http_proxy": "http://127.0.0.1:7890",
-        "https_proxy": "http://127.0.0.1:7890",
-        "ALL_PROXY": "socks5://127.0.0.1:7890"
+        "http_proxy": "http://192.168.31.168:7890",
+        "https_proxy": "http://192.168.31.168:7890",
+        "ALL_PROXY": "socks5://192.168.31.168:7890"
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
